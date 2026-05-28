@@ -4,6 +4,7 @@ import 'package:dark_trade_app/services/market_data_service.dart';
 import 'package:dark_trade_app/services/portfolio_service.dart';
 import 'package:dark_trade_app/services/us_stock_service.dart';
 import 'package:dark_trade_app/services/career_service.dart';
+import 'package:dark_trade_app/pages/trade_history_page.dart';
 import 'package:dark_trade_app/widgets/career_selector.dart';
 import 'package:dark_trade_app/widgets/gain_loss_card.dart';
 import 'package:dark_trade_app/widgets/equity_curve_chart.dart';
@@ -167,19 +168,10 @@ class AssetsPage extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        // TODO Task 16: Replace with TradeHistoryPage
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const Scaffold(
-                              backgroundColor: _bg,
-                              body: Center(
-                                child: Text(
-                                  '交易记录 (Task 16)',
-                                  style: TextStyle(color: _muted, fontSize: 16),
-                                ),
-                              ),
-                            ),
+                            builder: (_) => const TradeHistoryPage(),
                           ),
                         );
                       },
