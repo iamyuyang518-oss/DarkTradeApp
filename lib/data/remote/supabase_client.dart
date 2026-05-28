@@ -3,9 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseClientManager {
   SupabaseClientManager._();
 
-  // Replace with actual values before deployment
-  static const _url = 'YOUR_SUPABASE_URL';
-  static const _anonKey = 'YOUR_SUPABASE_ANON_KEY';
+  static const _url = 'https://pzugizdkhvppqadiaxgq.supabase.co';
+  static const _anonKey = 'sb_publishable_opvEIIVFPbsIUgAAbefc4Q_fzxbwsY7';
 
   static late final SupabaseClient client;
 
