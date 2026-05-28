@@ -14,6 +14,7 @@ import 'package:dark_trade_app/services/portfolio_service.dart';
 import 'package:dark_trade_app/services/trade_history_service.dart';
 import 'package:dark_trade_app/services/trade_selection_service.dart';
 import 'package:dark_trade_app/services/us_stock_service.dart';
+import 'package:dark_trade_app/widgets/confetti_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -33,6 +34,7 @@ class TradePage extends StatefulWidget {
 
 class _TradePageState extends State<TradePage> {
   late final TradeFormController _c;
+  bool _showConfetti = false;
 
   // ---- price lookup helpers ------------------------------------------------
 
@@ -87,6 +89,10 @@ class _TradePageState extends State<TradePage> {
 
     if (result.success) {
       HapticFeedback.mediumImpact();
+      setState(() => _showConfetti = true);
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) setState(() => _showConfetti = false);
+      });
       if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
@@ -166,80 +172,102 @@ class _TradePageState extends State<TradePage> {
       _c.autoFillPrice(_lookupLive);
     }
 
+    final careerService = context.watch<CareerService>();
+
     return ListenableBuilder(
       listenable: _c,
       builder: (context, _) {
         return ColoredBox(
           color: TradePage.bg,
           child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                  child: SymbolBar(
-                    quote: _c.selectedQuote,
-                    onTap: _openSymbolPicker,
+            child: ConfettiOverlay(
+              play: _showConfetti,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                    child: SymbolBar(
+                      quote: _c.selectedQuote,
+                      onTap: _openSymbolPicker,
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                  child: SideToggle(
-                    isBuy: _c.isBuy,
-                    onChanged: (buy) => _c.toggleSide(buy),
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
                       children: [
-                        LabeledField(
-                          label: '价格',
-                          hint: 'USDT',
-                          controller: _c.priceCtrl,
-                          accentGold: true,
-                        ),
-                        const SizedBox(height: 20),
-                        LabeledField(
-                          label: '数量',
-                          hint: _c.isBuy ? '买入数量' : '卖出数量',
-                          controller: _c.qtyCtrl,
-                          accentGold: false,
-                        ),
-                        const SizedBox(height: 22),
+                        const Text('可用', style: TextStyle(color: Colors.white54, fontSize: 13)),
+                        const SizedBox(width: 8),
                         Text(
-                          '快捷仓位',
-                          style: TextStyle(
-                            color: TradePage.white.withValues(alpha: 0.75),
-                            fontSize: 13,
+                          '${careerService.activeCareer?.currentBalance.toStringAsFixed(2) ?? "0.00"} USDT',
+                          style: const TextStyle(
+                            color: Color(0xFFFFD700),
+                            fontSize: 15,
                             fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        QuickPositionChips(
-                          onPercentTap: _applyQuickPercent,
-                        ),
-                        const SizedBox(height: 20),
-                        EstimateRow(
-                          isBuy: _c.isBuy,
-                          price: _c.price,
-                          quantity: _c.quantity,
                         ),
                       ],
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-                  child: ExecuteButton(
-                    isBuy: _c.isBuy,
-                    onPressed: _onExecute,
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                    child: SideToggle(
+                      isBuy: _c.isBuy,
+                      onChanged: (buy) => _c.toggleSide(buy),
+                    ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          LabeledField(
+                            label: '价格',
+                            hint: 'USDT',
+                            controller: _c.priceCtrl,
+                            accentGold: true,
+                          ),
+                          const SizedBox(height: 20),
+                          LabeledField(
+                            label: '数量',
+                            hint: _c.isBuy ? '买入数量' : '卖出数量',
+                            controller: _c.qtyCtrl,
+                            accentGold: false,
+                          ),
+                          const SizedBox(height: 22),
+                          Text(
+                            '快捷仓位',
+                            style: TextStyle(
+                              color: TradePage.white.withValues(alpha: 0.75),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          QuickPositionChips(
+                            onPercentTap: _applyQuickPercent,
+                          ),
+                          const SizedBox(height: 20),
+                          EstimateRow(
+                            isBuy: _c.isBuy,
+                            price: _c.price,
+                            quantity: _c.quantity,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+                    child: ExecuteButton(
+                      isBuy: _c.isBuy,
+                      onPressed: _onExecute,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
