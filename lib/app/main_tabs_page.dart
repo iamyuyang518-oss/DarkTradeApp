@@ -7,6 +7,7 @@ import 'package:dark_trade_app/presentation/pages/profile/profile_page.dart';
 import 'package:dark_trade_app/presentation/pages/trade/trade_page.dart';
 import 'package:dark_trade_app/presentation/widgets/guest_banner.dart';
 import 'package:dark_trade_app/presentation/widgets/onboarding_dialog.dart';
+import 'package:dark_trade_app/presentation/widgets/risk_disclaimer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +25,7 @@ class MainTabsPage extends StatefulWidget {
 
 class _MainTabsPageState extends State<MainTabsPage> {
   int _index = 0;
+  bool _disclaimerShown = false;
 
   /// Built once; [IndexedStack] keeps subtree state when switching tabs.
   late final List<Widget> _pages = <Widget>[
@@ -51,10 +53,23 @@ class _MainTabsPageState extends State<MainTabsPage> {
             careerService.createCareer(name, balance);
             Navigator.of(context).pop();
             _showTabHint();
+            _checkDisclaimer();
           },
         ),
       );
+    } else {
+      _checkDisclaimer();
     }
+  }
+
+  void _checkDisclaimer() {
+    if (_disclaimerShown) return;
+    _disclaimerShown = true;
+    showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const RiskDisclaimerDialog(),
+    );
   }
 
   void _showTabHint() {

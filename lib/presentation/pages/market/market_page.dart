@@ -1,3 +1,4 @@
+import 'package:dark_trade_app/core/constants.dart';
 import 'package:dark_trade_app/presentation/pages/market/stock_detail_page.dart';
 import 'package:dark_trade_app/domain/services/a_share_service.dart';
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
@@ -149,6 +150,13 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget> {
                         )),
                       ],
                     ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: Text(
+                    AppText.dataDelayNote,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
                 Expanded(

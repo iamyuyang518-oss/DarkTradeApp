@@ -1,3 +1,4 @@
+import 'package:dark_trade_app/core/constants.dart';
 import 'package:dark_trade_app/presentation/pages/trade/logic/trade_form_controller.dart';
 import 'package:dark_trade_app/presentation/pages/trade/widgets/estimate_row.dart';
 import 'package:dark_trade_app/presentation/pages/trade/widgets/execute_button.dart';
@@ -255,6 +256,14 @@ class _TradePageState extends State<TradePage> {
                     child: ExecuteButton(
                       isBuy: _c.isBuy,
                       onPressed: _onExecute,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8, top: 4),
+                    child: Text(
+                      AppText.disclaimerFooter,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 11),
                     ),
                   ),
                 ],
