@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:dark_trade_app/core/constants.dart';
 import 'package:dark_trade_app/domain/services/auth_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
+import 'package:dark_trade_app/domain/services/trade_history_service.dart';
 import 'package:dark_trade_app/presentation/pages/profile/auth_sheet.dart';
 import 'package:dark_trade_app/presentation/pages/profile/career_management_sheet.dart';
 import 'package:dark_trade_app/presentation/pages/profile/trade_history_page.dart';
@@ -141,6 +142,10 @@ class ProfilePage extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: () async {
                     await auth.logout();
+                    final careerService = context.read<CareerService>();
+                    final tradeHistory = context.read<TradeHistoryService>();
+                    careerService.clearRemoteRepo();
+                    tradeHistory.clearRemoteRepo();
                   },
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.down),

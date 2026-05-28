@@ -1,5 +1,10 @@
 import 'package:dark_trade_app/core/constants.dart';
+import 'package:dark_trade_app/data/repositories/supabase_career_repo.dart';
+import 'package:dark_trade_app/data/repositories/supabase_trade_history_repo.dart';
 import 'package:dark_trade_app/domain/services/auth_service.dart';
+import 'package:dark_trade_app/domain/services/career_service.dart';
+import 'package:dark_trade_app/domain/services/trade_history_service.dart';
+import 'package:dark_trade_app/presentation/pages/profile/migration_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -125,7 +130,6 @@ class _AuthSheetState extends State<AuthSheet> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
     final auth = context.read<AuthService>();
-    // CareerService remote repo setup will be added in a follow-up task
     final username = _usernameCtrl.text.trim();
     final password = _passwordCtrl.text;
 
@@ -144,13 +148,35 @@ class _AuthSheetState extends State<AuthSheet> {
       return;
     }
 
-    // Login/register successful — set remote repos
+    // Login/register successful — set remote repos and handle migration
+    setState(() => _loading = false);
+
     if (auth.isLoggedIn) {
-      // CareerService and TradeHistoryService need remote repos set
-      // Will import and set in a follow-up task
+      final careerService = context.read<CareerService>();
+      final tradeHistory = context.read<TradeHistoryService>();
+
+      // Set remote repos
+      careerService.setRemoteRepo(SupabaseCareerRepo());
+      tradeHistory.setRemoteRepo(SupabaseTradeHistoryRepo());
+
+      // Check if local data exists
+      if (careerService.careers.isNotEmpty && mounted) {
+        final shouldImport = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => MigrationDialog(
+            careerCount: careerService.careers.length,
+            onImport: () => Navigator.of(context).pop(true),
+            onSkip: () => Navigator.of(context).pop(false),
+          ),
+        );
+        if (shouldImport == true) {
+          await careerService.migrateLocalToRemote();
+          await tradeHistory.migrateLocalToRemote();
+        }
+      }
     }
 
-    setState(() => _loading = false);
     if (mounted) Navigator.of(context).pop();
   }
 }
