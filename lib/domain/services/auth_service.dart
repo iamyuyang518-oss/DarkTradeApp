@@ -28,9 +28,7 @@ class AuthService extends ChangeNotifier {
         _userId = session.user.id;
         await _loadProfile();
       }
-    } catch (_) {
-      // Supabase might not be initialized yet in test environments
-    }
+    } catch (_) {}
     _initialized = true;
     notifyListeners();
   }
@@ -47,15 +45,14 @@ class AuthService extends ChangeNotifier {
       if (data != null) {
         _username = (data)['username'] as String?;
       }
-    } catch (_) {
-      // Profile might not exist yet
-    }
+    } catch (_) {}
   }
 
-  /// Returns null on success, error message string on failure
-  Future<String?> register(String username, String password) async {
+  /// Register with real email + username + password.
+  /// Supabase sends confirmation to [email].
+  /// [username] is stored in profiles as display name.
+  Future<String?> register(String email, String username, String password) async {
     try {
-      final email = '$username@darktrade.internal';
       final res = await SupabaseClientManager.instance.auth.signUp(
         email: email,
         password: password,
@@ -80,17 +77,15 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  /// Returns null on success, error message string on failure
-  Future<String?> login(String username, String password) async {
+  /// Login with email + password
+  Future<String?> login(String email, String password) async {
     try {
-      final email = '$username@darktrade.internal';
       await SupabaseClientManager.instance.auth.signInWithPassword(
         email: email,
         password: password,
       );
       _state = AuthState.loggedIn;
       _userId = SupabaseClientManager.instance.auth.currentUser!.id;
-      _username = username;
       await _loadProfile();
       notifyListeners();
       return null;
@@ -104,9 +99,7 @@ class AuthService extends ChangeNotifier {
   Future<void> logout() async {
     try {
       await SupabaseClientManager.instance.auth.signOut();
-    } catch (_) {
-      // Ignore sign-out errors
-    }
+    } catch (_) {}
     _state = AuthState.guest;
     _username = null;
     _userId = null;

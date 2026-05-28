@@ -16,6 +16,7 @@ class AuthSheet extends StatefulWidget {
 }
 
 class _AuthSheetState extends State<AuthSheet> {
+  final _emailCtrl = TextEditingController();
   final _usernameCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -25,6 +26,7 @@ class _AuthSheetState extends State<AuthSheet> {
 
   @override
   void dispose() {
+    _emailCtrl.dispose();
     _usernameCtrl.dispose();
     _passwordCtrl.dispose();
     super.dispose();
@@ -59,20 +61,40 @@ class _AuthSheetState extends State<AuthSheet> {
               ],
             ),
             const SizedBox(height: 16),
+            // Email field (always shown)
             TextFormField(
-              controller: _usernameCtrl,
+              controller: _emailCtrl,
+              keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
-                labelText: '用户名',
-                hintText: '2-20 位字母、数字或汉字',
+                labelText: '邮箱',
+                hintText: 'example@mail.com',
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.radiusSm)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
               ),
               validator: (v) {
-                if (v == null || v.trim().length < 2) return '用户名至少 2 位';
-                if (v.trim().length > 20) return '用户名最多 20 位';
+                if (v == null || v.trim().isEmpty) return '请输入邮箱';
+                if (!v.contains('@') || !v.contains('.')) return '邮箱格式不正确';
                 return null;
               },
             ),
+            // Username field (register only)
+            if (!_isLogin) ...[
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _usernameCtrl,
+                decoration: InputDecoration(
+                  labelText: '用户名',
+                  hintText: '2-20 位字母、数字或汉字',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppDimens.radiusSm)),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                ),
+                validator: (v) {
+                  if (v == null || v.trim().length < 2) return '用户名至少 2 位';
+                  if (v.trim().length > 20) return '用户名最多 20 位';
+                  return null;
+                },
+              ),
+            ],
             const SizedBox(height: 12),
             TextFormField(
               controller: _passwordCtrl,
@@ -130,14 +152,15 @@ class _AuthSheetState extends State<AuthSheet> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
     final auth = context.read<AuthService>();
-    final username = _usernameCtrl.text.trim();
+    final email = _emailCtrl.text.trim();
     final password = _passwordCtrl.text;
 
     String? error;
     if (_isLogin) {
-      error = await auth.login(username, password);
+      error = await auth.login(email, password);
     } else {
-      error = await auth.register(username, password);
+      final username = _usernameCtrl.text.trim();
+      error = await auth.register(email, username, password);
     }
 
     if (error != null) {
@@ -148,18 +171,15 @@ class _AuthSheetState extends State<AuthSheet> {
       return;
     }
 
-    // Login/register successful — set remote repos and handle migration
     setState(() => _loading = false);
 
     if (auth.isLoggedIn) {
       final careerService = context.read<CareerService>();
       final tradeHistory = context.read<TradeHistoryService>();
 
-      // Set remote repos
       careerService.setRemoteRepo(SupabaseCareerRepo());
       tradeHistory.setRemoteRepo(SupabaseTradeHistoryRepo());
 
-      // Check if local data exists
       if (careerService.careers.isNotEmpty && mounted) {
         final shouldImport = await showDialog<bool>(
           context: context,
