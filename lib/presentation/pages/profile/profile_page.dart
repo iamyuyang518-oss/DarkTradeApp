@@ -1,9 +1,9 @@
-// ignore_for_file: dead_code, prefer_const_declarations
-// Reason: isLoggedIn is a P2 placeholder; logged-in code paths are intentionally present.
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:dark_trade_app/core/constants.dart';
+import 'package:dark_trade_app/domain/services/auth_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
+import 'package:dark_trade_app/presentation/pages/profile/auth_sheet.dart';
 import 'package:dark_trade_app/presentation/pages/profile/career_management_sheet.dart';
 import 'package:dark_trade_app/presentation/pages/profile/trade_history_page.dart';
 
@@ -12,12 +12,13 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthService>();
     final careerService = context.watch<CareerService>();
-    final isLoggedIn = false; // P2: replace with AuthService
+    final isLoggedIn = auth.isLoggedIn;
     final activeCareer = careerService.activeCareer;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFBF5),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(20),
@@ -32,43 +33,57 @@ class ProfilePage extends StatelessWidget {
                     height: 72,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFD4A853), width: 2),
-                      color: const Color(0xFFF5EDE0),
+                      border: Border.all(color: AppColors.gold, width: 2),
+                      color: AppColors.unselectedBg,
                     ),
-                    child: const Icon(Icons.person, size: 36, color: Color(0xFFD4A853)),
+                    child: const Icon(Icons.person, size: 36, color: AppColors.gold),
                   ),
                   const SizedBox(height: 12),
                   if (isLoggedIn)
-                    const Column(
+                    Column(
                       children: [
-                        Text('用户名', style: TextStyle(color: Color(0xFF3D3025), fontSize: 20, fontWeight: FontWeight.bold)),
-                        SizedBox(height: 4),
-                        Text('UID: 888888', style: TextStyle(color: Color(0xFFA09078), fontSize: 13)),
+                        Text(
+                          auth.username ?? '用户',
+                          style: const TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'UID: ${auth.userId?.substring(0, 8) ?? '---'}',
+                          style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                        ),
                       ],
                     )
                   else ...[
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        border: Border.all(color: const Color(0xFFFF9500)),
+                        border: Border.all(color: AppColors.unselectedText),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Text('游客模式', style: TextStyle(color: Color(0xFFFF9500), fontSize: 13)),
+                      child: const Text(
+                        '游客模式',
+                        style: TextStyle(color: AppColors.unselectedText, fontSize: 13),
+                      ),
                     ),
                     const SizedBox(height: 12),
                     SizedBox(
                       width: 200,
                       child: OutlinedButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('注册/登录功能即将上线')),
-                          );
-                        },
+                        onPressed: () => _showAuthSheet(context),
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFFD4A853)),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          side: const BorderSide(color: AppColors.gold),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                          ),
                         ),
-                        child: const Text('注册 / 登录', style: TextStyle(color: Color(0xFFD4A853))),
+                        child: const Text(
+                          AppText.registerLogin,
+                          style: TextStyle(color: AppColors.gold),
+                        ),
                       ),
                     ),
                   ],
@@ -77,27 +92,28 @@ class ProfilePage extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             // Career summary section
-            if (activeCareer != null) _sectionCard(
-              title: '当前生涯',
-              trailing: Text(activeCareer.name, style: const TextStyle(color: Color(0xFFD4A853))),
-              onTap: () => showModalBottomSheet(
-                context: context,
-                backgroundColor: const Color(0xFFFFFFFF),
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+            if (activeCareer != null)
+              _sectionCard(
+                title: '当前生涯',
+                trailing: Text(activeCareer.name, style: const TextStyle(color: AppColors.gold)),
+                onTap: () => showModalBottomSheet(
+                  context: context,
+                  backgroundColor: AppColors.surface,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimens.radiusLg)),
+                  ),
+                  builder: (_) => const CareerManagementSheet(),
                 ),
-                builder: (_) => const CareerManagementSheet(),
               ),
-            ),
             const SizedBox(height: 12),
             // Menu items
             _menuCard(context, [
               _menuItem('生涯管理', Icons.sports_esports, () {
                 showModalBottomSheet(
                   context: context,
-                  backgroundColor: const Color(0xFFFFFFFF),
+                  backgroundColor: AppColors.surface,
                   shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimens.radiusLg)),
                   ),
                   builder: (_) => const CareerManagementSheet(),
                 );
@@ -105,13 +121,16 @@ class ProfilePage extends StatelessWidget {
               _menuItem('交易记录', Icons.receipt_long, () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const TradeHistoryPage()));
               }),
-              if (isLoggedIn) _menuItem('修改密码', Icons.lock_outline, () {}),
+              if (isLoggedIn)
+                _menuItem('修改密码', Icons.lock_outline, () {
+                  // P2: stub — change password not yet implemented
+                }),
               _menuItem('关于 DarkTrade', Icons.info_outline, () {
                 showAboutDialog(
                   context: context,
-                  applicationName: 'DarkTrade',
+                  applicationName: AppText.appName,
                   applicationVersion: 'v2.0.0',
-                  applicationLegalese: '模拟交易平台 — 投资有风险，入市需谨慎',
+                  applicationLegalese: AppText.disclaimerFooter,
                 );
               }),
             ]),
@@ -120,24 +139,41 @@ class ProfilePage extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
-                  onPressed: () {
-                    // P2: implement logout
+                  onPressed: () async {
+                    await auth.logout();
                   },
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.redAccent),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    side: const BorderSide(color: AppColors.down),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppDimens.radiusSm),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: const Text('退出登录', style: TextStyle(color: Colors.redAccent)),
+                  child: const Text('退出登录', style: TextStyle(color: AppColors.down)),
                 ),
               ),
             const SizedBox(height: 16),
             const Center(
-              child: Text('DarkTrade v2.0.0', style: TextStyle(color: Color(0xFFC4B898), fontSize: 12)),
+              child: Text(
+                'DarkTrade v2.0.0',
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+              ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showAuthSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimens.radiusLg)),
+      ),
+      builder: (_) => const AuthSheet(),
     );
   }
 
@@ -147,15 +183,15 @@ class ProfilePage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFFFFFFF),
-          borderRadius: BorderRadius.circular(12),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppDimens.radiusMd),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: const TextStyle(color: Color(0xFFA09078), fontSize: 14)),
+            Text(title, style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),
             if (trailing != null) trailing,
-            if (trailing == null) const Icon(Icons.chevron_right, color: Color(0xFFC4B898)),
+            if (trailing == null) const Icon(Icons.chevron_right, color: AppColors.textSecondary),
           ],
         ),
       ),
@@ -165,8 +201,8 @@ class ProfilePage extends StatelessWidget {
   Widget _menuCard(BuildContext context, List<Widget> items) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFFFFFFF),
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDimens.radiusMd),
       ),
       child: Column(children: items),
     );
@@ -178,13 +214,13 @@ class ProfilePage extends StatelessWidget {
         width: 36,
         height: 36,
         decoration: BoxDecoration(
-          color: const Color(0xFFD4A853).withAlpha(25),
-          borderRadius: BorderRadius.circular(8),
+          color: AppColors.gold.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(AppDimens.radiusSm),
         ),
-        child: Icon(icon, color: const Color(0xFFD4A853), size: 20),
+        child: Icon(icon, color: AppColors.gold, size: 20),
       ),
-      title: Text(title, style: const TextStyle(color: Color(0xFF3D3025))),
-      trailing: const Icon(Icons.chevron_right, color: Color(0xFFC4B898)),
+      title: Text(title, style: const TextStyle(color: AppColors.textPrimary)),
+      trailing: const Icon(Icons.chevron_right, color: AppColors.textSecondary),
       onTap: onTap,
     );
   }
