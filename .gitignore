@@ -1,0 +1,14 @@
+# Miscellaneous
+*.log
+nul
+NUL
+
+# Flutter
+.dart_tool/
+.packages
+build/
+*.iml
+.metadata
+
+# IDE
+.idea/
