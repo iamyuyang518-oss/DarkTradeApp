@@ -3,6 +3,10 @@ import 'package:dark_trade_app/services/live_market_service.dart';
 import 'package:dark_trade_app/services/market_data_service.dart';
 import 'package:dark_trade_app/services/portfolio_service.dart';
 import 'package:dark_trade_app/services/us_stock_service.dart';
+import 'package:dark_trade_app/services/career_service.dart';
+import 'package:dark_trade_app/widgets/career_selector.dart';
+import 'package:dark_trade_app/widgets/gain_loss_card.dart';
+import 'package:dark_trade_app/widgets/equity_curve_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -40,6 +44,8 @@ class AssetsPage extends StatelessWidget {
     final usStock = context.watch<UsStockService>();
     final aShare = context.watch<AShareService>();
     final portfolio = context.watch<PortfolioService>();
+    final careerService = context.watch<CareerService>();
+    final activeCareer = careerService.activeCareer;
 
     // Build price lookup for display (no need to call portfolio.updatePrices
     // during build — it would trigger rebuild loop).
@@ -85,6 +91,18 @@ class AssetsPage extends StatelessWidget {
       child: SafeArea(
         child: CustomScrollView(
           slivers: [
+            // ---- 生涯选择器 ----
+            if (activeCareer != null)
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(20, 16, 20, 4),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: CareerSelector(),
+                  ),
+                ),
+              ),
+
             // ---- 总资产 ----
             SliverToBoxAdapter(
               child: Padding(
@@ -113,7 +131,7 @@ class AssetsPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    Text(
+                    const Text(
                       '估值以 USDT 计价',
                       style: TextStyle(
                         color: _muted,
@@ -124,6 +142,67 @@ class AssetsPage extends StatelessWidget {
                 ),
               ),
             ),
+
+            // ---- 盈亏卡片 ----
+            if (activeCareer != null)
+              SliverToBoxAdapter(
+                child: GainLossCard(
+                  career: activeCareer,
+                  todayPnl: 0, // TODO: compute from holdings * daily price change
+                ),
+              ),
+
+            // ---- 权益曲线 ----
+            if (activeCareer != null)
+              SliverToBoxAdapter(
+                child: EquityCurveChart(data: activeCareer.equityHistory),
+              ),
+
+            // ---- 交易记录按钮 ----
+            if (activeCareer != null)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        // TODO Task 16: Replace with TradeHistoryPage
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const Scaffold(
+                              backgroundColor: _bg,
+                              body: Center(
+                                child: Text(
+                                  '交易记录 (Task 16)',
+                                  style: TextStyle(color: _muted, fontSize: 16),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.receipt_long, color: _bg),
+                      label: const Text(
+                        '交易记录',
+                        style: TextStyle(
+                          color: _bg,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _gold,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
 
             // ---- 资产分布 ----
             if (allocations.isNotEmpty)
@@ -197,7 +276,7 @@ class AssetsPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
+                      const Text(
                         '前往交易页开始你的第一笔交易',
                         style: TextStyle(
                           color: _muted,
