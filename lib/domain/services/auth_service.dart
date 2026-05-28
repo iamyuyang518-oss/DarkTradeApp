@@ -36,15 +36,16 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<void> _loadProfile() async {
-    if (_userId == null) return;
+    final uid = _userId;
+    if (uid == null) return;
     try {
       final data = await SupabaseClientManager.instance
           .from('profiles')
           .select('username')
-          .eq('id', _userId)
+          .eq('id', uid)
           .maybeSingle();
       if (data != null) {
-        _username = (data as Map<String, dynamic>)['username'] as String?;
+        _username = (data)['username'] as String?;
       }
     } catch (_) {
       // Profile might not exist yet
