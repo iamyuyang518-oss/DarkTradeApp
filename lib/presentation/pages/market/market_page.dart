@@ -1,7 +1,5 @@
-import 'package:dark_trade_app/flutter_flow/flutter_flow_util.dart';
 import 'package:dark_trade_app/presentation/pages/market/stock_detail_page.dart';
 import 'package:dark_trade_app/domain/services/a_share_service.dart';
-import 'package:dark_trade_app/domain/services/live_market_service.dart';
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
 import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +10,17 @@ import 'package:provider/provider.dart';
 // Page model
 // ---------------------------------------------------------------------------
 
-class MarketExplorerModel extends FlutterFlowModel<MarketExplorerWidget> {
+class MarketExplorerModel extends ChangeNotifier {
   final TextEditingController searchController = TextEditingController();
-  String selectedCategory = '全部';
+  String _selectedCategory = '全部';
+  String get selectedCategory => _selectedCategory;
   final Set<String> expandedIds = {};
+
+  void selectCategory(String cat) {
+    if (_selectedCategory == cat) return;
+    _selectedCategory = cat;
+    notifyListeners();
+  }
 
   void toggleExpanded(String id) {
     if (expandedIds.contains(id)) {
@@ -28,8 +33,7 @@ class MarketExplorerModel extends FlutterFlowModel<MarketExplorerWidget> {
 
   void _onSearchChanged() => notifyListeners();
 
-  @override
-  void initState(BuildContext context) {
+  void init() {
     searchController.addListener(_onSearchChanged);
   }
 
@@ -52,12 +56,8 @@ class MarketExplorerWidget extends StatefulWidget {
   State<MarketExplorerWidget> createState() => _MarketExplorerWidgetState();
 }
 
-class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
-    with TickerProviderStateMixin {
-  late MarketExplorerModel _model;
-  late TabController _tabController;
-
-  static const _tabs = ['加密货币', 'A股'];
+class _MarketExplorerWidgetState extends State<MarketExplorerWidget> {
+  late final MarketExplorerModel _model;
 
   // ---- theme colors -------------------------------------------------------
   static const Color _amber = Color(0xFFD4A853);
@@ -73,70 +73,28 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
   static const Color _green = Color(0xFF43A047);
   static const Color _red = Color(0xFFE57373);
 
+  static const _categories = ['全部', '金融', '科技', '医药', '消费', '能源', '综合'];
+
   @override
   void initState() {
     super.initState();
-    _model = createModel(context, () => MarketExplorerModel());
-    _model.initState(context);
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      if (!_tabController.indexIsChanging) {
-        _model.notifyListeners();
-      }
-    });
-    registerFfmPageSetState((fn) {
-      if (mounted) setState(fn);
-    });
+    _model = MarketExplorerModel();
+    _model.init();
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
-    unregisterFfmPageSetState();
     _model.dispose();
     super.dispose();
   }
 
   // ---- helpers -------------------------------------------------------------
 
-  MarketDataService _serviceForTab(int index) {
-    return switch (index) {
-      1 => context.read<AShareService>(),
-      _ => context.read<LiveMarketService>(),
-    };
-  }
-
-  List<String> _categoriesForTab(int index) {
-    return switch (index) {
-      1 => ['全部', '金融', '科技', '医药', '消费', '能源', '综合'],
-      _ => ['全部', 'Layer1', 'DeFi', 'Meme', '平台币', '其他'],
-    };
-  }
-
   String? _categoryFor(StockQuote q) {
-    switch (q.marketType) {
-      case MarketType.crypto:
-        return _cryptoCat(q.symbol.toUpperCase());
-      case MarketType.aShare:
-        return AShareService.sectorForCode(q.symbol);
-      case MarketType.usStock:
-        return null; // No longer displayed
+    if (q.marketType == MarketType.aShare) {
+      return AShareService.sectorForCode(q.symbol);
     }
-  }
-
-  static String? _cryptoCat(String symbol) {
-    const layer1 = {
-      'BTC', 'ETH', 'SOL', 'AVAX', 'DOT', 'ATOM', 'NEAR', 'ADA',
-      'XRP', 'TRX', 'ETC', 'LTC', 'FIL', 'XLM',
-    };
-    const defi = {'UNI', 'LINK'};
-    const meme = {'DOGE', 'SHIB'};
-    const platform = {'BNB', 'MATIC'};
-    if (layer1.contains(symbol)) return 'Layer1';
-    if (defi.contains(symbol)) return 'DeFi';
-    if (meme.contains(symbol)) return 'Meme';
-    if (platform.contains(symbol)) return '平台币';
-    return '其他';
+    return null;
   }
 
   // ---- mood computation ----------------------------------------------------
@@ -153,6 +111,9 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
 
   @override
   Widget build(BuildContext context) {
+    final service = context.watch<AShareService>();
+    final mood = _computeMood(service.quotes);
+
     return ListenableBuilder(
       listenable: _model,
       builder: (context, _) {
@@ -168,14 +129,40 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
                   height: 1,
                   decoration: const BoxDecoration(color: _border),
                 ),
-                _buildTabBar(context),
+                SizedBox(
+                  height: 42,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                    child: Row(
+                      children: [
+                        Text('A 股', style: GoogleFonts.notoSansSc(
+                          fontSize: 14, fontWeight: FontWeight.w600, color: _amber,
+                        )),
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 1, height: 16,
+                          color: _border,
+                        ),
+                        const SizedBox(width: 8),
+                        Text('实时行情', style: GoogleFonts.notoSansSc(
+                          fontSize: 12, color: _textSecondary,
+                        )),
+                      ],
+                    ),
+                  ),
+                ),
                 Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _buildMarketTab(context, 0),
-                      _buildMarketTab(context, 1),
-                    ],
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.only(bottom: 40),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildCategoryChips(context),
+                        _buildMoodCard(mood),
+                        _buildStockList(context, service),
+                        if (service.quotes.isNotEmpty) _buildBeginnerTip(),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -238,7 +225,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
               onChanged: (_) => _model._onSearchChanged(),
               style: GoogleFonts.notoSansSc(fontSize: 14, color: _textPrimary),
               decoration: InputDecoration(
-                hintText: '搜索币种、代码或板块...',
+                hintText: '搜索股票代码或名称...',
                 hintStyle: GoogleFonts.notoSansSc(fontSize: 14, color: _textMuted),
                 prefixIcon: const Icon(Icons.search_rounded, color: _textMuted, size: 20),
                 filled: true,
@@ -261,50 +248,6 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
           ),
         ],
       ),
-    );
-  }
-
-  // ---- tab bar -------------------------------------------------------------
-
-  Widget _buildTabBar(BuildContext context) {
-    return Material(
-      color: _bg,
-      child: TabBar(
-        controller: _tabController,
-        indicatorColor: _amber,
-        indicatorWeight: 2,
-        labelColor: _amber,
-        unselectedLabelColor: _textSecondary,
-        labelStyle: GoogleFonts.notoSansSc(fontSize: 14, fontWeight: FontWeight.w600),
-        unselectedLabelStyle: GoogleFonts.notoSansSc(fontSize: 14, fontWeight: FontWeight.w500),
-        tabs: _tabs.map((t) => Tab(text: t)).toList(),
-      ),
-    );
-  }
-
-  // ---- tab content ---------------------------------------------------------
-
-  Widget _buildMarketTab(BuildContext context, int tabIndex) {
-    final service = _serviceForTab(tabIndex);
-
-    return ListenableBuilder(
-      listenable: service,
-      builder: (context, _) {
-        final mood = _computeMood(service.quotes);
-
-        return SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 40),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildCategoryChips(context, tabIndex),
-              _buildMoodCard(mood),
-              _buildStockList(context, service),
-              if (service.quotes.isNotEmpty) _buildBeginnerTip(),
-            ],
-          ),
-        );
-      },
     );
   }
 
@@ -393,24 +336,19 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
 
   // ---- category chips ------------------------------------------------------
 
-  Widget _buildCategoryChips(BuildContext context, int tabIndex) {
-    final categories = _categoriesForTab(tabIndex);
-
+  Widget _buildCategoryChips(BuildContext context) {
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          children: categories.map((cat) {
+          children: _categories.map((cat) {
             final selected = _model.selectedCategory == cat;
             return Padding(
               padding: const EdgeInsetsDirectional.only(end: 8),
               child: GestureDetector(
-                onTap: () {
-                  _model.selectedCategory = cat;
-                  _model.notifyListeners();
-                },
+                onTap: () => _model.selectCategory(cat),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
                   decoration: BoxDecoration(

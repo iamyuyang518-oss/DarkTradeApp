@@ -1,8 +1,6 @@
 import 'package:dark_trade_app/domain/services/a_share_service.dart';
-import 'package:dark_trade_app/domain/services/live_market_service.dart';
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
 import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
-import 'package:dark_trade_app/domain/services/us_stock_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,10 +23,8 @@ class _SymbolPickerSheetState extends State<SymbolPickerSheet> {
   String _query = '';
 
   List<StockQuote> _allQuotes(BuildContext context) {
-    final crypto = context.read<LiveMarketService>().quotes;
-    final usStock = context.read<UsStockService>().quotes;
     final aShare = context.read<AShareService>().quotes;
-    return [...crypto, ...usStock, ...aShare];
+    return [...aShare];
   }
 
   @override

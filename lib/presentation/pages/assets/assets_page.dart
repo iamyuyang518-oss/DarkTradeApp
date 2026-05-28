@@ -1,8 +1,6 @@
 import 'package:dark_trade_app/domain/services/a_share_service.dart';
-import 'package:dark_trade_app/domain/services/live_market_service.dart';
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
 import 'package:dark_trade_app/domain/services/portfolio_service.dart';
-import 'package:dark_trade_app/domain/services/us_stock_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
 import 'package:dark_trade_app/presentation/pages/profile/trade_history_page.dart';
 import 'package:dark_trade_app/presentation/widgets/career_selector.dart';
@@ -41,18 +39,13 @@ class AssetsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Watch all data sources for reactive updates
-    final crypto = context.watch<LiveMarketService>();
-    final usStock = context.watch<UsStockService>();
     final aShare = context.watch<AShareService>();
     final portfolio = context.watch<PortfolioService>();
     final careerService = context.watch<CareerService>();
     final activeCareer = careerService.activeCareer;
 
-    // Build price lookup for display (no need to call portfolio.updatePrices
-    // during build — it would trigger rebuild loop).
+    // Build price lookup for display
     final priceMap = <String, double>{};
-    _fillPriceMap(priceMap, crypto.quotes);
-    _fillPriceMap(priceMap, usStock.quotes);
     _fillPriceMap(priceMap, aShare.quotes);
 
     // Compute holdings with live prices

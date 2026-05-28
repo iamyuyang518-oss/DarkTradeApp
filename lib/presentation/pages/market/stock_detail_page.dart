@@ -1,10 +1,8 @@
 import 'dart:math';
 
 import 'package:dark_trade_app/domain/services/a_share_service.dart';
-import 'package:dark_trade_app/domain/services/live_market_service.dart';
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
 import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
-import 'package:dark_trade_app/domain/services/us_stock_service.dart';
 import 'package:dark_trade_app/presentation/widgets/kline_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -45,11 +43,7 @@ class _StockDetailPageState extends State<StockDetailPage> {
 
   Future<void> _load() async {
     try {
-      final client = switch (widget.quote.marketType) {
-        MarketType.crypto => context.read<LiveMarketService>().client,
-        MarketType.usStock => context.read<UsStockService>().client,
-        MarketType.aShare => context.read<AShareService>().client,
-      };
+      final client = context.read<AShareService>().client;
 
       final bars = await fetchKline(
         widget.quote.id,

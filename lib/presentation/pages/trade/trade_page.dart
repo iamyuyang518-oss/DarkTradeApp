@@ -8,12 +8,10 @@ import 'package:dark_trade_app/presentation/pages/trade/widgets/symbol_bar.dart'
 import 'package:dark_trade_app/presentation/pages/trade/widgets/symbol_picker_sheet.dart';
 import 'package:dark_trade_app/domain/services/a_share_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
-import 'package:dark_trade_app/domain/services/live_market_service.dart';
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
 import 'package:dark_trade_app/domain/services/portfolio_service.dart';
 import 'package:dark_trade_app/domain/services/trade_history_service.dart';
 import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
-import 'package:dark_trade_app/domain/services/us_stock_service.dart';
 import 'package:dark_trade_app/presentation/widgets/confetti_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -47,14 +45,7 @@ class _TradePageState extends State<TradePage> {
   }
 
   StockQuote? _lookupLive(String stockId, MarketType type) {
-    switch (type) {
-      case MarketType.crypto:
-        return _findLive(context.read<LiveMarketService>(), stockId);
-      case MarketType.usStock:
-        return _findLive(context.read<UsStockService>(), stockId);
-      case MarketType.aShare:
-        return _findLive(context.read<AShareService>(), stockId);
-    }
+    return _findLive(context.read<AShareService>(), stockId);
   }
 
   // ---- symbol picker -------------------------------------------------------
