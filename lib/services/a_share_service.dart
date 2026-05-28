@@ -60,7 +60,8 @@ class AShareService extends MarketDataService {
 
   @override
   Future<ParsedMarkets> fetchAndParse() async {
-    final response = await client.get(_aShareUri).timeout(requestTimeout);
+    final uri = MarketDataService.corsProxy(_aShareUri.toString());
+    final response = await client.get(uri).timeout(requestTimeout);
 
     if (response.statusCode != 200) {
       throw MarketsFetchException(

@@ -337,6 +337,12 @@ abstract class MarketDataService extends ChangeNotifier {
     }
   }
 
+  /// Wraps a third-party API URL with a CORS proxy so that browser-hosted
+  /// Flutter apps can reach servers that don't send CORS headers.
+  static Uri corsProxy(String targetUrl) {
+    return Uri.parse('https://corsproxy.io/?${Uri.encodeComponent(targetUrl)}');
+  }
+
   /// Subclasses implement the actual HTTP request + parsing. Must return at
   /// least one quote (or throw).
   Future<ParsedMarkets> fetchAndParse();
