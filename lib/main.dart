@@ -1,5 +1,7 @@
 import 'package:dark_trade_app/app/app.dart';
 import 'package:dark_trade_app/data/local/hive_service.dart';
+import 'package:dark_trade_app/data/repositories/career_repository.dart';
+import 'package:dark_trade_app/data/repositories/trade_history_repository.dart';
 import 'package:dark_trade_app/data/remote/supabase_client.dart';
 import 'package:dark_trade_app/domain/services/a_share_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
@@ -14,11 +16,20 @@ void main() async {
   await HiveService.init();
   await SupabaseClientManager.init();
 
+  // Create repositories
+  final careerRepo = HiveCareerRepo();
+  final tradeHistoryRepo = HiveTradeHistoryRepo();
+
+  // Create services with repository dependencies
+  final careerService = CareerService(
+    localRepo: careerRepo,
+    tradeHistoryRepo: tradeHistoryRepo,
+  )..load();
+  final tradeHistory = TradeHistoryService(localRepo: tradeHistoryRepo);
+
   final aShare = AShareService()..start();
   final portfolio = PortfolioService()..seedDemo();
   final tradeSelection = TradeSelectionService();
-  final careerService = CareerService();
-  final tradeHistory = TradeHistoryService();
 
   runApp(
     MultiProvider(
