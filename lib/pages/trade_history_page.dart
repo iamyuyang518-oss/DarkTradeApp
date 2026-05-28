@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/trade_history_service.dart';
 import '../services/career_service.dart';
-import '../models/trade_record.dart';
+import '../data/local/models/trade_record.dart';
 
 class TradeHistoryPage extends StatefulWidget {
   const TradeHistoryPage({super.key});
@@ -24,11 +24,11 @@ class _TradeHistoryPageState extends State<TradeHistoryPage> {
         : <TradeRecord>[];
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0D0D),
+      backgroundColor: const Color(0xFFFFFBF5),
       appBar: AppBar(
-        title: const Text('交易记录', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF0D0D0D),
-        iconTheme: const IconThemeData(color: Color(0xFFFFD700)),
+        title: const Text('交易记录', style: TextStyle(color: Color(0xFF3D3025))),
+        backgroundColor: const Color(0xFFFFFBF5),
+        iconTheme: const IconThemeData(color: Color(0xFFD4A853)),
       ),
       body: Column(
         children: [
@@ -52,10 +52,10 @@ class _TradeHistoryPageState extends State<TradeHistoryPage> {
               label: Text(label),
               selected: isSelected,
               onSelected: (_) => setState(() => _selectedDays = d),
-              selectedColor: const Color(0xFFFFD700),
-              backgroundColor: const Color(0xFF222222),
+              selectedColor: const Color(0xFFD4A853),
+              backgroundColor: const Color(0xFFF5EDE0),
               labelStyle: TextStyle(
-                color: isSelected ? Colors.black : Colors.white,
+                color: isSelected ? Colors.white : Color(0xFF3D3025),
               ),
               side: BorderSide.none,
             ),
@@ -72,9 +72,9 @@ class _TradeHistoryPageState extends State<TradeHistoryPage> {
         children: [
           Text('📭', style: TextStyle(fontSize: 48)),
           SizedBox(height: 12),
-          Text('还没有交易记录', style: TextStyle(color: Colors.white54, fontSize: 16)),
+          Text('还没有交易记录', style: TextStyle(color: Color(0xFFA09078), fontSize: 16)),
           SizedBox(height: 4),
-          Text('去行情页看看吧 👀', style: TextStyle(color: Colors.white38, fontSize: 14)),
+          Text('去行情页看看吧 👀', style: TextStyle(color: Color(0xFFC4B898), fontSize: 14)),
         ],
       ),
     );
@@ -97,7 +97,7 @@ class _TradeHistoryPageState extends State<TradeHistoryPage> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -118,8 +118,8 @@ class _TradeHistoryPageState extends State<TradeHistoryPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(r.name, style: const TextStyle(color: Colors.white, fontSize: 15)),
-                Text(r.symbol, style: const TextStyle(color: Colors.white38, fontSize: 12)),
+                Text(r.name, style: const TextStyle(color: Color(0xFF3D3025), fontSize: 15)),
+                Text(r.symbol, style: const TextStyle(color: Color(0xFFA09078), fontSize: 12)),
               ],
             ),
           ),
@@ -128,11 +128,11 @@ class _TradeHistoryPageState extends State<TradeHistoryPage> {
             children: [
               Text(
                 r.quantity.toStringAsFixed(4),
-                style: const TextStyle(color: Colors.white, fontSize: 14),
+                style: const TextStyle(color: Color(0xFF3D3025), fontSize: 14),
               ),
               Text(
                 '@ \$${r.price.toStringAsFixed(2)}',
-                style: const TextStyle(color: Colors.white38, fontSize: 12),
+                style: const TextStyle(color: Color(0xFFA09078), fontSize: 12),
               ),
             ],
           ),

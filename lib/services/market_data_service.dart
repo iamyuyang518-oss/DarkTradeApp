@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:enough_convert/gbk.dart' as gbk_codec;
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
@@ -213,36 +214,28 @@ List<KlineBar> _parseBinanceKlines(String body) {
 }
 
 /// Parses Tencent Finance K-line response for US stocks and A-shares.
-/// US stocks: data.usAAPL.day → [[date, open, close, high, low, volume], ...]
-/// A-shares: data.sh600519.qfqday → [[date, open, close, high, low, volume], ...]
+/// Parses Tencent Finance K-line JSON response.
+///
+/// Response structure: {"code":0,"data":{"usAAPL":{"day":[...]}}} or
+/// {"code":0,"data":{"sh600519":{"qfqday":[...]}}}.
+/// Each row is [date_string, open, close, high, low, volume].
 List<KlineBar> _parseTencentKlines(String body, MarketType marketType) {
   final map = jsonDecode(body) as Map<String, dynamic>;
   final data = map['data'] as Map<String, dynamic>?;
   if (data == null || data.isEmpty) return [];
 
+  // Find the first stock entry and extract its day/qfqday array.
   List<dynamic>? raw;
-  if (marketType == MarketType.usStock) {
-    // US: find the first key that ends with '.day'
-    for (final k in data.keys) {
-      if (k.endsWith('.day')) {
-        raw = data[k] as List<dynamic>?;
-        break;
-      }
-    }
-  } else {
-    // A-share: find the key that ends with '.qfqday'
-    for (final k in data.keys) {
-      if (k.endsWith('.qfqday')) {
-        raw = data[k] as List<dynamic>?;
-        break;
-      }
-    }
+  for (final stockData in data.values) {
+    if (stockData is! Map<String, dynamic>) continue;
+    final key = marketType == MarketType.usStock ? 'day' : 'qfqday';
+    raw = stockData[key] as List<dynamic>?;
+    if (raw != null && raw.isNotEmpty) break;
   }
   if (raw == null || raw.isEmpty) return [];
 
   return raw.map((e) {
     final arr = e as List<dynamic>;
-    // Format: [date_string, open, close, high, low, volume]
     return KlineBar(
       date: DateTime.tryParse(arr[0] as String? ?? '') ?? DateTime(0),
       open: toDouble(arr[1]) ?? 0,
@@ -341,6 +334,29 @@ abstract class MarketDataService extends ChangeNotifier {
   /// Flutter apps can reach servers that don't send CORS headers.
   static Uri corsProxy(String targetUrl) {
     return Uri.parse('https://corsproxy.io/?${Uri.encodeComponent(targetUrl)}');
+  }
+
+  /// Decodes a Tencent Finance API response body.
+  ///
+  /// The API returns GBK-encoded text. Browsers do not natively support GBK
+  /// decoding via TextDecoder, so the response text arrives as if it were
+  /// Latin-1 (each GBK byte maps to the corresponding Unicode code point).
+  /// This method recovers the original GBK bytes and decodes them properly.
+  static String decodeTencentResponse(String body) {
+    if (body.isEmpty) return body;
+    // Fast check: if the text already contains CJK characters the browser
+    // decoded it for us (common in Chinese-locale browsers).
+    for (var i = 0; i < body.length && i < 200; i++) {
+      final cu = body.codeUnitAt(i);
+      if (cu >= 0x4E00 && cu <= 0x9FFF) return body;
+    }
+    // Recover original GBK bytes from the Latin-1-misinterpreted text.
+    final bytes = Uint8List(body.length);
+    for (var i = 0; i < body.length; i++) {
+      final cu = body.codeUnitAt(i);
+      bytes[i] = cu <= 0xFF ? cu : 0x3F;
+    }
+    return gbk_codec.gbk.decode(bytes);
   }
 
   /// Subclasses implement the actual HTTP request + parsing. Must return at

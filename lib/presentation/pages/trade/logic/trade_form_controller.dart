@@ -1,4 +1,4 @@
-import 'package:dark_trade_app/models/trade_record.dart' as trade_model;
+import 'package:dark_trade_app/data/local/models/trade_record.dart' as trade_model;
 import 'package:dark_trade_app/services/career_service.dart';
 import 'package:dark_trade_app/services/market_data_service.dart';
 import 'package:dark_trade_app/services/portfolio_service.dart';

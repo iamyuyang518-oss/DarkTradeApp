@@ -17,7 +17,7 @@ class ProfilePage extends StatelessWidget {
     final activeCareer = careerService.activeCareer;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0D0D),
+      backgroundColor: const Color(0xFFFFFBF5),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(20),
@@ -32,18 +32,18 @@ class ProfilePage extends StatelessWidget {
                     height: 72,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFFFD700), width: 2),
-                      color: const Color(0xFF1A1A1A),
+                      border: Border.all(color: const Color(0xFFD4A853), width: 2),
+                      color: const Color(0xFFF5EDE0),
                     ),
-                    child: const Icon(Icons.person, size: 36, color: Color(0xFFFFD700)),
+                    child: const Icon(Icons.person, size: 36, color: Color(0xFFD4A853)),
                   ),
                   const SizedBox(height: 12),
                   if (isLoggedIn)
                     const Column(
                       children: [
-                        Text('用户名', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                        Text('用户名', style: TextStyle(color: Color(0xFF3D3025), fontSize: 20, fontWeight: FontWeight.bold)),
                         SizedBox(height: 4),
-                        Text('UID: 888888', style: TextStyle(color: Colors.white38, fontSize: 13)),
+                        Text('UID: 888888', style: TextStyle(color: Color(0xFFA09078), fontSize: 13)),
                       ],
                     )
                   else ...[
@@ -65,10 +65,10 @@ class ProfilePage extends StatelessWidget {
                           );
                         },
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFFFFD700)),
+                          side: const BorderSide(color: Color(0xFFD4A853)),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
-                        child: const Text('注册 / 登录', style: TextStyle(color: Color(0xFFFFD700))),
+                        child: const Text('注册 / 登录', style: TextStyle(color: Color(0xFFD4A853))),
                       ),
                     ),
                   ],
@@ -79,10 +79,10 @@ class ProfilePage extends StatelessWidget {
             // Career summary section
             if (activeCareer != null) _sectionCard(
               title: '当前生涯',
-              trailing: Text(activeCareer.name, style: const TextStyle(color: Color(0xFFFFD700))),
+              trailing: Text(activeCareer.name, style: const TextStyle(color: Color(0xFFD4A853))),
               onTap: () => showModalBottomSheet(
                 context: context,
-                backgroundColor: const Color(0xFF1A1A1A),
+                backgroundColor: const Color(0xFFFFFFFF),
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                 ),
@@ -95,7 +95,7 @@ class ProfilePage extends StatelessWidget {
               _menuItem('生涯管理', Icons.sports_esports, () {
                 showModalBottomSheet(
                   context: context,
-                  backgroundColor: const Color(0xFF1A1A1A),
+                  backgroundColor: const Color(0xFFFFFFFF),
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                   ),
@@ -133,7 +133,7 @@ class ProfilePage extends StatelessWidget {
               ),
             const SizedBox(height: 16),
             const Center(
-              child: Text('DarkTrade v2.0.0', style: TextStyle(color: Colors.white24, fontSize: 12)),
+              child: Text('DarkTrade v2.0.0', style: TextStyle(color: Color(0xFFC4B898), fontSize: 12)),
             ),
           ],
         ),
@@ -147,15 +147,15 @@ class ProfilePage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1A),
+          color: const Color(0xFFFFFFFF),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: const TextStyle(color: Colors.white54, fontSize: 14)),
+            Text(title, style: const TextStyle(color: Color(0xFFA09078), fontSize: 14)),
             if (trailing != null) trailing,
-            if (trailing == null) const Icon(Icons.chevron_right, color: Colors.white24),
+            if (trailing == null) const Icon(Icons.chevron_right, color: Color(0xFFC4B898)),
           ],
         ),
       ),
@@ -165,7 +165,7 @@ class ProfilePage extends StatelessWidget {
   Widget _menuCard(BuildContext context, List<Widget> items) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
+        color: const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(children: items),
@@ -178,13 +178,13 @@ class ProfilePage extends StatelessWidget {
         width: 36,
         height: 36,
         decoration: BoxDecoration(
-          color: const Color(0xFFFFD700).withAlpha(25),
+          color: const Color(0xFFD4A853).withAlpha(25),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: const Color(0xFFFFD700), size: 20),
+        child: Icon(icon, color: const Color(0xFFD4A853), size: 20),
       ),
-      title: Text(title, style: const TextStyle(color: Colors.white)),
-      trailing: const Icon(Icons.chevron_right, color: Colors.white24),
+      title: Text(title, style: const TextStyle(color: Color(0xFF3D3025))),
+      trailing: const Icon(Icons.chevron_right, color: Color(0xFFC4B898)),
       onTap: onTap,
     );
   }

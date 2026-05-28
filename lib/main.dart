@@ -1,7 +1,7 @@
 import 'package:dark_trade_app/app/main_tabs_page.dart';
 import 'package:dark_trade_app/services/a_share_service.dart';
 import 'package:dark_trade_app/services/career_service.dart';
-import 'package:dark_trade_app/services/hive_service.dart';
+import 'package:dark_trade_app/data/local/hive_service.dart';
 import 'package:dark_trade_app/services/live_market_service.dart';
 import 'package:dark_trade_app/services/portfolio_service.dart';
 import 'package:dark_trade_app/services/trade_history_service.dart';
@@ -42,44 +42,44 @@ class DarkTradeApp extends StatelessWidget {
   const DarkTradeApp({super.key});
 
   static const Color _bg = MainTabsPage.background;
-  static const Color _gold = MainTabsPage.selectedGold;
+  static const Color _amber = MainTabsPage.selectedGold;
 
   @override
   Widget build(BuildContext context) {
-    final dark = ThemeData(
+    final light = ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       scaffoldBackgroundColor: _bg,
-      colorScheme: const ColorScheme.dark(
-        brightness: Brightness.dark,
-        primary: _gold,
-        onPrimary: _bg,
-        secondary: _gold,
-        onSecondary: _bg,
-        surface: Color(0xFF151515),
-        onSurface: Color(0xFFE8E8E8),
-        error: Color(0xFFCF6679),
-        onError: _bg,
+      colorScheme: const ColorScheme.light(
+        brightness: Brightness.light,
+        primary: _amber,
+        onPrimary: Color(0xFFFFFFFF),
+        secondary: _amber,
+        onSecondary: Color(0xFFFFFFFF),
+        surface: Color(0xFFFFFFFF),
+        onSurface: Color(0xFF3D3025),
+        error: Color(0xFFE57373),
+        onError: Color(0xFFFFFFFF),
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: _bg,
-        foregroundColor: Color(0xFFE8E8E8),
+        foregroundColor: Color(0xFF3D3025),
         elevation: 0,
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: _bg,
-        selectedItemColor: _gold,
+        selectedItemColor: _amber,
         unselectedItemColor: MainTabsPage.unselectedGray,
         type: BottomNavigationBarType.fixed,
-        elevation: 8,
+        elevation: 1,
       ),
     );
 
     return MaterialApp(
       title: 'Dark Trade',
       debugShowCheckedModeBanner: false,
-      theme: dark,
-      themeMode: ThemeMode.dark,
+      theme: light,
+      themeMode: ThemeMode.light,
       home: const MainTabsPage(),
     );
   }

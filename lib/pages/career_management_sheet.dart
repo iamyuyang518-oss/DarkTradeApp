@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/career_service.dart';
-import '../models/career.dart';
+import '../data/local/models/career.dart';
 
 class CareerManagementSheet extends StatefulWidget {
   const CareerManagementSheet({super.key});
@@ -26,14 +26,14 @@ class _CareerManagementSheetState extends State<CareerManagementSheet> {
           const Center(
             child: SizedBox(
               width: 40,
-              child: Divider(color: Colors.white24, thickness: 3),
+              child: Divider(color: Color(0xFFC4B898), thickness: 3),
             ),
           ),
           const SizedBox(height: 16),
           const Text(
             '生涯管理',
             style: TextStyle(
-              color: Colors.white,
+              color: Color(0xFF3D3025),
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
@@ -52,15 +52,15 @@ class _CareerManagementSheetState extends State<CareerManagementSheet> {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: isActive ? const Color(0xFFFFD700).withAlpha(25) : const Color(0xFF222222),
+        color: isActive ? const Color(0xFFD4A853).withAlpha(25) : const Color(0xFFF5EDE0),
         borderRadius: BorderRadius.circular(12),
-        border: isActive ? Border.all(color: const Color(0xFFFFD700)) : null,
+        border: isActive ? Border.all(color: const Color(0xFFD4A853)) : null,
       ),
       child: ListTile(
-        title: Text(career.name, style: const TextStyle(color: Colors.white)),
+        title: Text(career.name, style: const TextStyle(color: Color(0xFF3D3025))),
         subtitle: Text(
           '初始资金 \$${career.initialBalance.toStringAsFixed(0)}  收益率 ${career.totalReturnRate.toStringAsFixed(1)}%',
-          style: const TextStyle(color: Colors.white54, fontSize: 12),
+          style: const TextStyle(color: Color(0xFFA09078), fontSize: 12),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -71,7 +71,7 @@ class _CareerManagementSheetState extends State<CareerManagementSheet> {
                   service.switchCareer(career.id);
                   Navigator.pop(context);
                 },
-                child: const Text('切换', style: TextStyle(color: Color(0xFFFFD700))),
+                child: const Text('切换', style: TextStyle(color: Color(0xFFD4A853))),
               ),
             if (service.careers.length > 1)
               IconButton(
@@ -91,10 +91,10 @@ class _CareerManagementSheetState extends State<CareerManagementSheet> {
       width: double.infinity,
       child: OutlinedButton.icon(
         onPressed: () => _showCreateDialog(service),
-        icon: const Icon(Icons.add, color: Color(0xFFFFD700)),
-        label: const Text('新建生涯', style: TextStyle(color: Color(0xFFFFD700))),
+        icon: const Icon(Icons.add, color: Color(0xFFD4A853)),
+        label: const Text('新建生涯', style: TextStyle(color: Color(0xFFD4A853))),
         style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: Color(0xFFFFD700)),
+          side: const BorderSide(color: Color(0xFFD4A853)),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           padding: const EdgeInsets.symmetric(vertical: 12),
         ),
@@ -110,31 +110,31 @@ class _CareerManagementSheetState extends State<CareerManagementSheet> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A1A),
-        title: const Text('新建生涯', style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFFFFFFFF),
+        title: const Text('新建生涯', style: TextStyle(color: Color(0xFF3D3025))),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameCtrl,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Color(0xFF3D3025)),
               decoration: const InputDecoration(
                 labelText: '生涯名称',
-                labelStyle: TextStyle(color: Colors.white54),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFFFD700))),
+                labelStyle: TextStyle(color: Color(0xFFA09078)),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFC4B898))),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFD4A853))),
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: balanceCtrl,
               keyboardType: TextInputType.number,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Color(0xFF3D3025)),
               decoration: const InputDecoration(
                 labelText: '初始资金 (USDT)',
-                labelStyle: TextStyle(color: Colors.white54),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFFFD700))),
+                labelStyle: TextStyle(color: Color(0xFFA09078)),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFC4B898))),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFD4A853))),
               ),
             ),
           ],
@@ -142,7 +142,7 @@ class _CareerManagementSheetState extends State<CareerManagementSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('取消', style: TextStyle(color: Colors.white54)),
+            child: const Text('取消', style: TextStyle(color: Color(0xFFA09078))),
           ),
           TextButton(
             onPressed: () {
@@ -153,7 +153,7 @@ class _CareerManagementSheetState extends State<CareerManagementSheet> {
                 Navigator.pop(ctx);
               }
             },
-            child: const Text('创建', style: TextStyle(color: Color(0xFFFFD700))),
+            child: const Text('创建', style: TextStyle(color: Color(0xFFD4A853))),
           ),
         ],
       ),

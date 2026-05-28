@@ -17,6 +17,7 @@ dependencies:
   hive_flutter: ^1.1.0
   supabase_flutter: ^2.8.1
   share_plus: ^10.1.4
+  enough_convert: ^1.6.0
 
 dev_dependencies:
   flutter_test:

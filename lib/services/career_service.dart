@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import '../models/career.dart';
-import 'hive_service.dart';
+import '../data/local/models/career.dart';
+import '../data/local/hive_service.dart';
 
 class CareerService extends ChangeNotifier {
   Career? _activeCareer;

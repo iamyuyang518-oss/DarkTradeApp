@@ -1,6 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import '../models/career.dart';
-import '../models/trade_record.dart';
+import 'models/career.dart';
+import 'models/trade_record.dart';
 
 class HiveService {
   static const String careersBox = 'careers';

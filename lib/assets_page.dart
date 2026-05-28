@@ -15,10 +15,10 @@ import 'package:provider/provider.dart';
 class AssetsPage extends StatelessWidget {
   const AssetsPage({super.key});
 
-  static const Color _bg = Color(0xFF0D0D0D);
-  static const Color _gold = Color(0xFFFFD700);
-  static const Color _white = Color(0xFFF5F5F5);
-  static const Color _muted = Color(0xFF8A8A8A);
+  static const Color _bg = Color(0xFFFFFBF5);
+  static const Color _gold = Color(0xFFD4A853);
+  static const Color _white = Color(0xFF3D3025);
+  static const Color _muted = Color(0xFFB8A080);
 
   static String _formatUsd(double v) {
     final s = v.toStringAsFixed(2);
@@ -359,7 +359,7 @@ class _DistributionTile extends StatelessWidget {
           child: LinearProgressIndicator(
             value: allocation.percent.clamp(0.0, 1.0),
             minHeight: 6,
-            backgroundColor: const Color(0xFF1A1A1A),
+            backgroundColor: const Color(0xFFF5EDE0),
             valueColor:
                 const AlwaysStoppedAnimation<Color>(AssetsPage._gold),
           ),

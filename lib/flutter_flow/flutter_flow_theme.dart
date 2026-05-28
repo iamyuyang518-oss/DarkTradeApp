@@ -24,40 +24,40 @@ abstract class FlutterFlowTheme {
 
 class LightModeTheme extends FlutterFlowTheme {
   @override
-  Color get primary => const Color(0xFF2563EB);
+  Color get primary => const Color(0xFFD4A853);
 
   @override
   Color get onPrimary => const Color(0xFFFFFFFF);
 
   @override
-  Color get primaryBackground => const Color(0xFFF8FAFC);
+  Color get primaryBackground => const Color(0xFFFFFBF5);
 
   @override
   Color get secondaryBackground => const Color(0xFFFFFFFF);
 
   @override
-  Color get primaryText => const Color(0xFF0F172A);
+  Color get primaryText => const Color(0xFF3D3025);
 
   @override
-  Color get secondaryText => const Color(0xFF64748B);
+  Color get secondaryText => const Color(0xFFA09078);
 
   @override
-  Color get alternate => const Color(0xFFE2E8F0);
+  Color get alternate => const Color(0xFFE8DCC8);
 
   @override
-  Color get success => const Color(0xFF16A34A);
+  Color get success => const Color(0xFF43A047);
 
   @override
-  TextStyle get headlineMedium => GoogleFonts.inter(fontSize: 24);
+  TextStyle get headlineMedium => GoogleFonts.notoSansSc(fontSize: 24);
 
   @override
-  TextStyle get labelLarge => GoogleFonts.inter(fontSize: 14);
+  TextStyle get labelLarge => GoogleFonts.notoSansSc(fontSize: 14);
 
   @override
-  TextStyle get labelSmall => GoogleFonts.inter(fontSize: 11);
+  TextStyle get labelSmall => GoogleFonts.notoSansSc(fontSize: 11);
 
   @override
-  TextStyle get bodyMedium => GoogleFonts.inter(fontSize: 14);
+  TextStyle get bodyMedium => GoogleFonts.notoSansSc(fontSize: 14);
 }
 
 class DarkModeTheme extends FlutterFlowTheme {

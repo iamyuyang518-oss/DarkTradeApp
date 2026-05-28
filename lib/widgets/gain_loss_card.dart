@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/career.dart';
+import '../data/local/models/career.dart';
 
 class GainLossCard extends StatelessWidget {
   final Career career;
@@ -22,12 +22,12 @@ class GainLossCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF1A1A1A), Color(0xFF222222)],
+          colors: [Color(0xFFFFFFFF), Color(0xFFF5EDE0)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white10),
+        border: Border.all(color: Color(0xFFE8DCC8)),
       ),
       child: Row(
         children: [
@@ -45,7 +45,7 @@ class GainLossCard extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          Text(label, style: const TextStyle(color: Colors.white54, fontSize: 12)),
+          Text(label, style: const TextStyle(color: Color(0xFFA09078), fontSize: 12)),
           const SizedBox(height: 4),
           Text(
             '${value >= 0 ? "+" : ""}${value.toStringAsFixed(2)}$suffix',
@@ -57,6 +57,6 @@ class GainLossCard extends StatelessWidget {
   }
 
   Widget _divider() {
-    return Container(width: 1, height: 40, color: Colors.white10);
+    return Container(width: 1, height: 40, color: Color(0xFFE8DCC8));
   }
 }

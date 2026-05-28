@@ -31,7 +31,7 @@ class GuestBanner extends StatelessWidget {
               child: const Text(
                 '注册 / 登录',
                 style: TextStyle(
-                  color: Color(0xFFFFD700),
+                  color: Color(0xFFD4A853),
                   fontSize: 13,
                   decoration: TextDecoration.underline,
                 ),

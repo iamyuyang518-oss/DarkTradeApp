@@ -1,0 +1,46 @@
+<h2>设计范围确认</h2>
+<p class="subtitle">亮色暖调主题改造 + 移除美股，需要改哪些页面？</p>
+
+<h3>改动涉及 4 个主页面</h3>
+
+<div style="display:flex; flex-direction:column; gap:12px;">
+
+<div class="option" data-choice="market" onclick="toggleSelect(this)" style="display:flex;align-items:center;gap:16px;padding:16px;background:#FFFBF5;border:1px solid #E8DCC8;border-radius:14px;">
+  <span style="font-size:32px;">📊</span>
+  <div class="content">
+    <h3>行情页 (Market Explorer)</h3>
+    <p>去掉美股 Tab（3→2），新设计：情绪仪表盘 + 股票卡片 + 迷你走势条 + 板块标签 + 新手提示</p>
+  </div>
+</div>
+
+<div class="option" data-choice="assets" onclick="toggleSelect(this)" style="display:flex;align-items:center;gap:16px;padding:16px;background:#FFFBF5;border:1px solid #E8DCC8;border-radius:14px;">
+  <span style="font-size:32px;">💰</span>
+  <div class="content">
+    <h3>资产页 (Assets)</h3>
+    <p>持仓列表 + 总资产展示，跟随主题变量自动切换亮色</p>
+  </div>
+</div>
+
+<div class="option" data-choice="trade" onclick="toggleSelect(this)" style="display:flex;align-items:center;gap:16px;padding:16px;background:#FFFBF5;border:1px solid #E8DCC8;border-radius:14px;">
+  <span style="font-size:32px;">🔄</span>
+  <div class="content">
+    <h3>交易页 (Trade)</h3>
+    <p>买卖下单界面，主题色自动适配，移除美股选项</p>
+  </div>
+</div>
+
+<div class="option" data-choice="profile" onclick="toggleSelect(this)" style="display:flex;align-items:center;gap:16px;padding:16px;background:#FFFBF5;border:1px solid #E8DCC8;border-radius:14px;">
+  <span style="font-size:32px;">👤</span>
+  <div class="content">
+    <h3>个人页 (Profile) + 详情页</h3>
+    <p>个人资料、交易记录、股票详情 K 线图 — 全部跟随主题亮色化</p>
+  </div>
+</div>
+
+</div>
+
+<div style="margin-top:20px; padding:16px; background:#FFF8ED; border-radius:12px; border:1px solid #F0E0C0;">
+  <p style="color:#5A4A3A; font-size:13px; margin:0;">
+    <strong>策略：</strong>统一改主题文件中的颜色变量（CSS Variables 同理），所有页面自动适配亮色。行情页单独做布局和交互改动（去美股 + 新卡片设计）。
+  </p>
+</div>
