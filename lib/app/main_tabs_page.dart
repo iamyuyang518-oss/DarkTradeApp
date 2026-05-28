@@ -4,6 +4,7 @@ import 'package:dark_trade_app/profile_page.dart';
 import 'package:dark_trade_app/services/trade_selection_service.dart';
 import 'package:dark_trade_app/presentation/pages/trade/trade_page.dart';
 import 'package:flutter/material.dart';
+import '../widgets/guest_banner.dart';
 import 'package:provider/provider.dart';
 
 /// Shell: bottom navigation + [IndexedStack] so each tab keeps its own state.
@@ -53,9 +54,16 @@ class _MainTabsPageState extends State<MainTabsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MainTabsPage.background,
-      body: IndexedStack(
-        index: _index,
-        children: _pages,
+      body: Column(
+        children: [
+          const GuestBanner(),
+          Expanded(
+            child: IndexedStack(
+              index: _index,
+              children: _pages,
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
