@@ -11,9 +11,9 @@ import 'package:provider/provider.dart';
 class MainTabsPage extends StatefulWidget {
   const MainTabsPage({super.key});
 
-  static const Color background = Color(0xFF0D0D0D);
-  static const Color selectedGold = Color(0xFFFFD700);
-  static const Color unselectedGray = Color(0xFF8A8A8A);
+  static const Color background = Color(0xFFFFFBF5);
+  static const Color selectedGold = Color(0xFFD4A853);
+  static const Color unselectedGray = Color(0xFFB8A080);
 
   @override
   State<MainTabsPage> createState() => _MainTabsPageState();

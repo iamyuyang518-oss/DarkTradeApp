@@ -12,10 +12,10 @@ class LabeledField extends StatelessWidget {
     this.accentGold = false,
   });
 
-  static const Color _gold = Color(0xFFFFD700);
-  static const Color _white = Color(0xFFF5F5F5);
-  static const Color _muted = Color(0xFF8A8A8A);
-  static const Color _bg = Color(0xFF0D0D0D);
+  static const Color _gold = Color(0xFFD4A853);
+  static const Color _white = Color(0xFF3D3025);
+  static const Color _muted = Color(0xFFB8A080);
+  static const Color _bg = Color(0xFFF5EDE0);
 
   final String label;
   final String hint;

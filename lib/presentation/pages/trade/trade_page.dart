@@ -24,9 +24,9 @@ import 'package:provider/provider.dart';
 class TradePage extends StatefulWidget {
   const TradePage({super.key});
 
-  static const Color bg = Color(0xFF0D0D0D);
-  static const Color gold = Color(0xFFFFD700);
-  static const Color white = Color(0xFFF5F5F5);
+  static const Color bg = Color(0xFFFFFBF5);
+  static const Color gold = Color(0xFFD4A853);
+  static const Color white = Color(0xFF3D3025);
 
   @override
   State<TradePage> createState() => _TradePageState();
@@ -66,7 +66,7 @@ class _TradePageState extends State<TradePage> {
       backgroundColor: const Color(0xFF121212),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-        side: BorderSide(color: Color(0xFFFFD700), width: 0.5),
+        side: BorderSide(color: Color(0xFFD4A853), width: 0.5),
       ),
       builder: (_) => const SymbolPickerSheet(),
     );
@@ -196,12 +196,12 @@ class _TradePageState extends State<TradePage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Row(
                       children: [
-                        const Text('可用', style: TextStyle(color: Colors.white54, fontSize: 13)),
+                        const Text('可用', style: TextStyle(color: Color(0xFFA09078), fontSize: 13)),
                         const SizedBox(width: 8),
                         Text(
                           '${careerService.activeCareer?.currentBalance.toStringAsFixed(2) ?? "0.00"} USDT',
                           style: const TextStyle(
-                            color: Color(0xFFFFD700),
+                            color: Color(0xFFD4A853),
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                           ),

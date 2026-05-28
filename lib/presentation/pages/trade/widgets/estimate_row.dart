@@ -10,9 +10,9 @@ class EstimateRow extends StatelessWidget {
     required this.quantity,
   });
 
-  static const Color _gold = Color(0xFFFFD700);
-  static const Color _white = Color(0xFFF5F5F5);
-  static const Color _muted = Color(0xFF8A8A8A);
+  static const Color _gold = Color(0xFFD4A853);
+  static const Color _white = Color(0xFF3D3025);
+  static const Color _muted = Color(0xFFB8A080);
 
   final bool isBuy;
   final double price;
@@ -26,7 +26,7 @@ class EstimateRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: const Color(0xFF121212),
+        color: const Color(0xFFF5EDE0),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: _gold.withValues(alpha: 0.1)),
       ),

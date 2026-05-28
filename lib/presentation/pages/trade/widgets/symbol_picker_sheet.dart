@@ -16,11 +16,11 @@ class SymbolPickerSheet extends StatefulWidget {
 }
 
 class _SymbolPickerSheetState extends State<SymbolPickerSheet> {
-  static const Color _gold = Color(0xFFFFD700);
-  static const Color _white = Color(0xFFF5F5F5);
-  static const Color _muted = Color(0xFF8A8A8A);
-  static const Color _green = Color(0xFF22C55E);
-  static const Color _red = Color(0xFFEF4444);
+  static const Color _gold = Color(0xFFD4A853);
+  static const Color _white = Color(0xFF3D3025);
+  static const Color _muted = Color(0xFFB8A080);
+  static const Color _green = Color(0xFF43A047);
+  static const Color _red = Color(0xFFE57373);
 
   String _query = '';
 
@@ -67,7 +67,7 @@ class _SymbolPickerSheetState extends State<SymbolPickerSheet> {
                 prefixIcon:
                     const Icon(Icons.search, color: _muted, size: 22),
                 filled: true,
-                fillColor: const Color(0xFF1A1A1A),
+                fillColor: const Color(0xFFF5EDE0),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide:

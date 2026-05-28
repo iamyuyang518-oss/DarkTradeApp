@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 class SymbolBar extends StatelessWidget {
   const SymbolBar({super.key, required this.quote, required this.onTap});
 
-  static const Color _gold = Color(0xFFFFD700);
-  static const Color _white = Color(0xFFF5F5F5);
-  static const Color _muted = Color(0xFF8A8A8A);
-  static const Color _green = Color(0xFF22C55E);
-  static const Color _red = Color(0xFFEF4444);
+  static const Color _gold = Color(0xFFD4A853);
+  static const Color _white = Color(0xFF3D3025);
+  static const Color _muted = Color(0xFFB8A080);
+  static const Color _green = Color(0xFF43A047);
+  static const Color _red = Color(0xFFE57373);
 
   final StockQuote? quote;
   final VoidCallback onTap;
@@ -19,7 +19,7 @@ class SymbolBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color(0xFF121212),
+      color: const Color(0xFFF5EDE0),
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: onTap,

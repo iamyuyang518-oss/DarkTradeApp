@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 class SideToggle extends StatelessWidget {
   const SideToggle({super.key, required this.isBuy, required this.onChanged});
 
-  static const Color _gold = Color(0xFFFFD700);
-  static const Color _green = Color(0xFF22C55E);
-  static const Color _red = Color(0xFFEF4444);
-  static const Color _idleBg = Color(0xFF1E1E1E);
-  static const Color _idleText = Color(0xFF6B6B6B);
+  static const Color _gold = Color(0xFFD4A853);
+  static const Color _green = Color(0xFF43A047);
+  static const Color _red = Color(0xFFE57373);
+  static const Color _idleBg = Color(0xFFF5EDE0);
+  static const Color _idleText = Color(0xFFB8A080);
 
   final bool isBuy;
   final ValueChanged<bool> onChanged;

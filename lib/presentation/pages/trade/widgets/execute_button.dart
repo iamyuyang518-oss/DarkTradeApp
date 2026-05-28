@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 class ExecuteButton extends StatelessWidget {
   const ExecuteButton({super.key, required this.isBuy, required this.onPressed});
 
-  static const Color _gold = Color(0xFFFFD700);
-  static const Color _green = Color(0xFF22C55E);
-  static const Color _red = Color(0xFFEF4444);
+  static const Color _gold = Color(0xFFD4A853);
+  static const Color _green = Color(0xFF43A047);
+  static const Color _red = Color(0xFFE57373);
 
   final bool isBuy;
   final VoidCallback onPressed;

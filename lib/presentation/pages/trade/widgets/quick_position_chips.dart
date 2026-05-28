@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class QuickPositionChips extends StatelessWidget {
   const QuickPositionChips({super.key, required this.onPercentTap});
 
-  static const Color _gold = Color(0xFFFFD700);
+  static const Color _gold = Color(0xFFD4A853);
 
   final ValueChanged<double> onPercentTap;
 
@@ -62,7 +62,7 @@ class _QuickChipState extends State<_QuickChip>
           CurvedAnimation(parent: _c, curve: Curves.easeInOut),
         ),
         child: Material(
-          color: const Color(0xFF141414),
+          color: const Color(0xFFF5EDE0),
           borderRadius: BorderRadius.circular(8),
           child: InkWell(
             onTap: _tap,
