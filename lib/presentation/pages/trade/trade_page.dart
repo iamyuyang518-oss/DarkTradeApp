@@ -14,6 +14,7 @@ import 'package:dark_trade_app/domain/services/portfolio_service.dart';
 import 'package:dark_trade_app/domain/services/trade_history_service.dart';
 import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
 import 'package:dark_trade_app/presentation/widgets/confetti_overlay.dart';
+import 'package:dark_trade_app/presentation/widgets/tip_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -250,6 +251,10 @@ class _TradePageState extends State<TradePage> {
                         ],
                       ),
                     ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    child: TipBubble(),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
