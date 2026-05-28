@@ -1,5 +1,6 @@
 import 'package:dark_trade_app/app/app.dart';
 import 'package:dark_trade_app/data/local/hive_service.dart';
+import 'package:dark_trade_app/data/remote/supabase_client.dart';
 import 'package:dark_trade_app/domain/services/a_share_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
 import 'package:dark_trade_app/domain/services/portfolio_service.dart';
@@ -11,6 +12,7 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await HiveService.init();
+  await SupabaseClientManager.init();
 
   final aShare = AShareService()..start();
   final portfolio = PortfolioService()..seedDemo();
