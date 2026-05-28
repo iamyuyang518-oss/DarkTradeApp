@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../domain/services/trade_history_service.dart';
-import '../domain/services/career_service.dart';
-import '../data/local/models/trade_record.dart';
+import 'package:dark_trade_app/domain/services/trade_history_service.dart';
+import 'package:dark_trade_app/domain/services/career_service.dart';
+import 'package:dark_trade_app/data/local/models/trade_record.dart';
 
 class TradeHistoryPage extends StatefulWidget {
   const TradeHistoryPage({super.key});

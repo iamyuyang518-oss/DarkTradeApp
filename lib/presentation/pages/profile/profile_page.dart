@@ -3,9 +3,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'domain/services/career_service.dart';
-import 'pages/career_management_sheet.dart';
-import 'pages/trade_history_page.dart';
+import 'package:dark_trade_app/domain/services/career_service.dart';
+import 'package:dark_trade_app/presentation/pages/profile/career_management_sheet.dart';
+import 'package:dark_trade_app/presentation/pages/profile/trade_history_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});

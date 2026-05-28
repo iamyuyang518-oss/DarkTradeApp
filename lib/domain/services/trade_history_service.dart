@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import '../data/local/models/trade_record.dart';
-import '../data/local/hive_service.dart';
+import 'package:dark_trade_app/data/local/models/trade_record.dart';
+import 'package:dark_trade_app/data/local/hive_service.dart';
 
 class TradeHistoryService extends ChangeNotifier {
   List<TradeRecord> getRecordsForCareer(String careerId) {

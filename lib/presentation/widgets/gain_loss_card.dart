@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../data/local/models/career.dart';
+import 'package:dark_trade_app/data/local/models/career.dart';
 
 class GainLossCard extends StatelessWidget {
   final Career career;

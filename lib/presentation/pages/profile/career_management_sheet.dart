@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../domain/services/career_service.dart';
-import '../data/local/models/career.dart';
+import 'package:dark_trade_app/domain/services/career_service.dart';
+import 'package:dark_trade_app/data/local/models/career.dart';
 
 class CareerManagementSheet extends StatefulWidget {
   const CareerManagementSheet({super.key});

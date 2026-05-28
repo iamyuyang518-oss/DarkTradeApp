@@ -5,7 +5,7 @@ import 'package:dark_trade_app/domain/services/live_market_service.dart';
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
 import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
 import 'package:dark_trade_app/domain/services/us_stock_service.dart';
-import 'package:dark_trade_app/widgets/kline_chart.dart';
+import 'package:dark_trade_app/presentation/widgets/kline_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

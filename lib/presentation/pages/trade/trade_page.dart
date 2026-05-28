@@ -14,7 +14,7 @@ import 'package:dark_trade_app/domain/services/portfolio_service.dart';
 import 'package:dark_trade_app/domain/services/trade_history_service.dart';
 import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
 import 'package:dark_trade_app/domain/services/us_stock_service.dart';
-import 'package:dark_trade_app/widgets/confetti_overlay.dart';
+import 'package:dark_trade_app/presentation/widgets/confetti_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
