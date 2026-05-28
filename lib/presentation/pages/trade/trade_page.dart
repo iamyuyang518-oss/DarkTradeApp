@@ -7,9 +7,11 @@ import 'package:dark_trade_app/presentation/pages/trade/widgets/side_toggle.dart
 import 'package:dark_trade_app/presentation/pages/trade/widgets/symbol_bar.dart';
 import 'package:dark_trade_app/presentation/pages/trade/widgets/symbol_picker_sheet.dart';
 import 'package:dark_trade_app/services/a_share_service.dart';
+import 'package:dark_trade_app/services/career_service.dart';
 import 'package:dark_trade_app/services/live_market_service.dart';
 import 'package:dark_trade_app/services/market_data_service.dart';
 import 'package:dark_trade_app/services/portfolio_service.dart';
+import 'package:dark_trade_app/services/trade_history_service.dart';
 import 'package:dark_trade_app/services/trade_selection_service.dart';
 import 'package:dark_trade_app/services/us_stock_service.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +32,7 @@ class TradePage extends StatefulWidget {
 }
 
 class _TradePageState extends State<TradePage> {
-  late final TradeFormController _c = TradeFormController();
+  late final TradeFormController _c;
 
   // ---- price lookup helpers ------------------------------------------------
 
@@ -132,6 +134,10 @@ class _TradePageState extends State<TradePage> {
   @override
   void initState() {
     super.initState();
+    _c = TradeFormController(
+      careerService: context.read<CareerService>(),
+      tradeHistoryService: context.read<TradeHistoryService>(),
+    );
     // Sync controller with cross-tab selection changes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final quote = context.read<TradeSelectionService>().selectedQuote;

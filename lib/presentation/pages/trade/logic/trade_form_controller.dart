@@ -1,5 +1,8 @@
+import 'package:dark_trade_app/models/trade_record.dart' as trade_model;
+import 'package:dark_trade_app/services/career_service.dart';
 import 'package:dark_trade_app/services/market_data_service.dart';
 import 'package:dark_trade_app/services/portfolio_service.dart';
+import 'package:dark_trade_app/services/trade_history_service.dart';
 import 'package:flutter/material.dart';
 
 /// Result of a trade execution attempt — UI layer decides how to display it.
@@ -12,12 +15,20 @@ class TradeResult {
 /// Core business logic for the trade form, extracted from the monolithic
 /// TradePage. Holds all mutable state (side, selected quote, price/qty
 /// controllers), exposes computed values, and delegates execution to
-/// [PortfolioService].
+/// [PortfolioService]. Uses [CareerService] for balance checks and P&L
+/// tracking, and [TradeHistoryService] for persisting trade records.
 class TradeFormController extends ChangeNotifier {
-  TradeFormController() {
+  TradeFormController({
+    required CareerService careerService,
+    required TradeHistoryService tradeHistoryService,
+  })  : _careerService = careerService,
+        _tradeHistoryService = tradeHistoryService {
     priceCtrl.addListener(_onFieldChanged);
     qtyCtrl.addListener(_onFieldChanged);
   }
+
+  final CareerService _careerService;
+  final TradeHistoryService _tradeHistoryService;
 
   final TextEditingController priceCtrl = TextEditingController();
   final TextEditingController qtyCtrl = TextEditingController();
@@ -89,7 +100,8 @@ class TradeFormController extends ChangeNotifier {
 
     double maxQty;
     if (_isBuy) {
-      maxQty = portfolio.usdtBalance / p;
+      final balance = _careerService.activeCareer?.currentBalance ?? 0;
+      maxQty = balance / p;
     } else {
       final holding = portfolio.getHolding(quote.id);
       maxQty = holding?.amount ?? 0;
@@ -103,6 +115,11 @@ class TradeFormController extends ChangeNotifier {
 
   /// Validates inputs and executes the trade via [portfolio].
   /// Returns a [TradeResult] so the UI layer can decide how to present feedback.
+  ///
+  /// Balance checks use [CareerService] (aggregate career balance), while
+  /// holdings checks still use [PortfolioService] (individual asset holdings).
+  /// After execution, a [TradeRecord] is persisted via [TradeHistoryService]
+  /// and P&L is reported to [CareerService] for sell trades.
   TradeResult execute({required PortfolioService portfolio}) {
     final p = price;
     final q = quantity;
@@ -116,9 +133,17 @@ class TradeFormController extends ChangeNotifier {
       return const TradeResult(success: false, message: '请先选择交易对');
     }
 
-    // Validate balance / holdings (±1e-8 tolerance)
+    // Validate balance / holdings (±1e-8 tolerance).
+    // Buy  limit is checked against the career balance (aggregate cash).
+    // Sell limit is checked against portfolio holdings (individual asset).
+    double? pnl;
+    final career = _careerService.activeCareer;
+    if (career == null) {
+      return const TradeResult(success: false, message: '没有活跃的交易生涯');
+    }
+
     if (_isBuy) {
-      if (p * q > portfolio.usdtBalance + 1e-8) {
+      if (p * q > career.currentBalance + 1e-8) {
         return const TradeResult(success: false, message: 'USDT 余额不足');
       }
     } else {
@@ -126,9 +151,11 @@ class TradeFormController extends ChangeNotifier {
       if (holding == null || q > holding.amount + 1e-8) {
         return const TradeResult(success: false, message: '持仓不足');
       }
+      // Calculate realized P&L before the portfolio sell mutates the holding.
+      pnl = (p - holding.avgCost) * q;
     }
 
-    // Execute
+    // Execute on PortfolioService (manages holdings).
     if (_isBuy) {
       portfolio.buy(
         stockId: quote.id,
@@ -138,9 +165,28 @@ class TradeFormController extends ChangeNotifier {
         amount: q,
         price: p,
       );
+      // Deduct cost from career available balance.
+      career.currentBalance -= p * q;
+      career.save();
+      _careerService.notifyListeners();
     } else {
       portfolio.sell(stockId: quote.id, amount: q, price: p);
+      _careerService.recordPnl(pnl!);
     }
+
+    // Persist trade record for history / analytics.
+    final record = trade_model.TradeRecord(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      careerId: career.id,
+      type: _isBuy ? trade_model.TradeType.buy : trade_model.TradeType.sell,
+      symbol: quote.symbol,
+      name: quote.name,
+      marketType: _marketTypeFromQuote(quote),
+      quantity: q,
+      price: p,
+      pnl: pnl, // null for buys
+    );
+    _tradeHistoryService.addRecord(record);
 
     qtyCtrl.clear();
     notifyListeners();
@@ -150,6 +196,19 @@ class TradeFormController extends ChangeNotifier {
       success: true,
       message: '$side ${quote.symbol} ${q.toStringAsFixed(4)}',
     );
+  }
+
+  /// Maps the [MarketType] enum from `market_data_service.dart` to the
+  /// identically-named but separate enum in `trade_record.dart`.
+  static trade_model.MarketType _marketTypeFromQuote(StockQuote quote) {
+    switch (quote.marketType) {
+      case MarketType.crypto:
+        return trade_model.MarketType.crypto;
+      case MarketType.usStock:
+        return trade_model.MarketType.usStock;
+      case MarketType.aShare:
+        return trade_model.MarketType.aShare;
+    }
   }
 
   @override
