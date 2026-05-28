@@ -24,7 +24,7 @@ class CareerAdapter extends TypeAdapter<Career> {
       totalPnl: fields[4] as double,
       totalTrades: fields[5] as int,
       winningTrades: fields[6] as int,
-      bestTradePnl: fields[7] as double,
+      bestTradePnl: fields[7] as double?,
       createdAt: fields[8] as DateTime?,
       equityHistory: (fields[9] as List?)?.cast<double>(),
     );

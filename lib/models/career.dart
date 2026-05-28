@@ -11,7 +11,7 @@ class Career extends HiveObject {
   String name;
 
   @HiveField(2)
-  double initialBalance;
+  final double initialBalance;
 
   @HiveField(3)
   double currentBalance;
@@ -26,7 +26,7 @@ class Career extends HiveObject {
   int winningTrades;
 
   @HiveField(7)
-  double bestTradePnl;
+  double? bestTradePnl;
 
   @HiveField(8)
   DateTime createdAt;
@@ -42,7 +42,7 @@ class Career extends HiveObject {
     this.totalPnl = 0,
     this.totalTrades = 0,
     this.winningTrades = 0,
-    this.bestTradePnl = 0,
+    this.bestTradePnl,
     DateTime? createdAt,
     List<double>? equityHistory,
   })  : createdAt = createdAt ?? DateTime.now(),
@@ -63,7 +63,7 @@ class Career extends HiveObject {
     if (pnl > 0) winningTrades++;
     totalPnl += pnl;
     currentBalance += pnl;
-    if (pnl > bestTradePnl) bestTradePnl = pnl;
+    if (bestTradePnl == null || pnl > bestTradePnl!) bestTradePnl = pnl;
   }
 
   void recordEquitySnapshot(double totalAssetValue) {

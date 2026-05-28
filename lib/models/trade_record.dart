@@ -2,6 +2,24 @@ import 'package:hive/hive.dart';
 
 part 'trade_record.g.dart';
 
+@HiveType(typeId: 2)
+enum TradeType {
+  @HiveField(0)
+  buy,
+  @HiveField(1)
+  sell,
+}
+
+@HiveType(typeId: 3)
+enum MarketType {
+  @HiveField(0)
+  crypto,
+  @HiveField(1)
+  usStock,
+  @HiveField(2)
+  aShare,
+}
+
 @HiveType(typeId: 1)
 class TradeRecord extends HiveObject {
   @HiveField(0)
@@ -11,7 +29,7 @@ class TradeRecord extends HiveObject {
   final String careerId;
 
   @HiveField(2)
-  final String type; // 'buy' or 'sell'
+  final TradeType type;
 
   @HiveField(3)
   final String symbol;
@@ -20,7 +38,7 @@ class TradeRecord extends HiveObject {
   final String name;
 
   @HiveField(5)
-  final String marketType; // 'crypto', 'usStock', 'aShare'
+  final MarketType marketType;
 
   @HiveField(6)
   final double quantity;
@@ -29,7 +47,7 @@ class TradeRecord extends HiveObject {
   final double price;
 
   @HiveField(8)
-  final double? pnl; // null for buys, set for sells
+  final double? pnl;
 
   @HiveField(9)
   final DateTime createdAt;
@@ -45,5 +63,7 @@ class TradeRecord extends HiveObject {
     required this.price,
     this.pnl,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+  })  : assert(quantity > 0, 'quantity must be positive'),
+        assert(price > 0, 'price must be positive'),
+        createdAt = createdAt ?? DateTime.now();
 }
