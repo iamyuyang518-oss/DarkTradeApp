@@ -4,6 +4,7 @@ import 'package:dark_trade_app/data/repositories/career_repository.dart';
 import 'package:dark_trade_app/data/repositories/trade_history_repository.dart';
 import 'package:dark_trade_app/data/remote/supabase_client.dart';
 import 'package:dark_trade_app/domain/services/a_share_service.dart';
+import 'package:dark_trade_app/domain/services/auth_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
 import 'package:dark_trade_app/domain/services/portfolio_service.dart';
 import 'package:dark_trade_app/domain/services/trade_history_service.dart';
@@ -39,6 +40,7 @@ void main() async {
         ChangeNotifierProvider.value(value: tradeSelection),
         ChangeNotifierProvider.value(value: careerService),
         ChangeNotifierProvider.value(value: tradeHistory),
+        ChangeNotifierProvider(create: (_) => AuthService()),
       ],
       child: const DarkTradeApp(),
     ),
