@@ -62,7 +62,6 @@ class Career extends HiveObject {
     totalTrades++;
     if (pnl > 0) winningTrades++;
     totalPnl += pnl;
-    currentBalance += pnl;
     if (bestTradePnl == null || pnl > bestTradePnl!) bestTradePnl = pnl;
   }
 

@@ -134,7 +134,7 @@ class TradeFormController extends ChangeNotifier {
     }
 
     // Validate balance / holdings (±1e-8 tolerance).
-    // Buy  limit is checked against the career balance (aggregate cash).
+    // Buy  limit is checked against career balance + portfolio balance.
     // Sell limit is checked against portfolio holdings (individual asset).
     double? pnl;
     final career = _careerService.activeCareer;
@@ -143,7 +143,10 @@ class TradeFormController extends ChangeNotifier {
     }
 
     if (_isBuy) {
-      if (p * q > career.currentBalance + 1e-8) {
+      final cost = p * q;
+      final portfolioBalance = portfolio.usdtBalance;
+      if (cost > career.currentBalance + 1e-8 ||
+          cost > portfolioBalance + 1e-8) {
         return const TradeResult(success: false, message: 'USDT 余额不足');
       }
     } else {
@@ -157,6 +160,8 @@ class TradeFormController extends ChangeNotifier {
 
     // Execute on PortfolioService (manages holdings).
     if (_isBuy) {
+      final holdingBefore = portfolio.getHolding(quote.id);
+      final prevAmount = holdingBefore?.amount ?? 0;
       portfolio.buy(
         stockId: quote.id,
         symbol: quote.symbol,
@@ -165,12 +170,20 @@ class TradeFormController extends ChangeNotifier {
         amount: q,
         price: p,
       );
+      // Verify the buy actually executed (portfolio may reject silently).
+      final holdingAfter = portfolio.getHolding(quote.id);
+      final newAmount = holdingAfter?.amount ?? 0;
+      if (newAmount <= prevAmount) {
+        return const TradeResult(success: false, message: '交易执行失败，余额不足');
+      }
       // Deduct cost from career available balance.
       career.currentBalance -= p * q;
       career.save();
       _careerService.notifyListeners();
     } else {
       portfolio.sell(stockId: quote.id, amount: q, price: p);
+      // Credit full sale proceeds to career balance, then record stats.
+      career.currentBalance += p * q;
       _careerService.recordPnl(pnl!);
     }
 
