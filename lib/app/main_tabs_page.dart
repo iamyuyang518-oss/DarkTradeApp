@@ -1,10 +1,13 @@
+import 'package:dark_trade_app/core/constants.dart';
+import 'package:dark_trade_app/domain/services/career_service.dart';
+import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
 import 'package:dark_trade_app/presentation/pages/assets/assets_page.dart';
 import 'package:dark_trade_app/presentation/pages/market/market_page.dart';
 import 'package:dark_trade_app/presentation/pages/profile/profile_page.dart';
-import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
 import 'package:dark_trade_app/presentation/pages/trade/trade_page.dart';
-import 'package:flutter/material.dart';
 import 'package:dark_trade_app/presentation/widgets/guest_banner.dart';
+import 'package:dark_trade_app/presentation/widgets/onboarding_dialog.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 /// Shell: bottom navigation + [IndexedStack] so each tab keeps its own state.
@@ -34,6 +37,35 @@ class _MainTabsPageState extends State<MainTabsPage> {
   void initState() {
     super.initState();
     context.read<TradeSelectionService>().addListener(_onTradeSelectionChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkOnboarding());
+  }
+
+  void _checkOnboarding() {
+    final careerService = context.read<CareerService>();
+    if (careerService.careers.isEmpty) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => WelcomeDialog(
+          onConfirm: (name, balance) {
+            careerService.createCareer(name, balance);
+            Navigator.of(context).pop();
+            _showTabHint();
+          },
+        ),
+      );
+    }
+  }
+
+  void _showTabHint() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('👆 从这里探索 A 股市场'),
+        backgroundColor: AppColors.gold,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   @override
