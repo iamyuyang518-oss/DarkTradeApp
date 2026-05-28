@@ -430,7 +430,39 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
   // ---- stock list ----------------------------------------------------------
 
   Widget _buildStockList(BuildContext context, MarketDataService service) {
+    // ---- empty / error states -----------------------------------------------
     if (service.quotes.isEmpty) {
+      if (service.lastError != null) {
+        // Error state -- no cached data either
+        return Padding(
+          padding: const EdgeInsets.all(32),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.cloud_off_rounded,
+                    size: 40,
+                    color: FlutterFlowTheme.of(context).secondaryText),
+                const SizedBox(height: 12),
+                Text(
+                  service.lastError!,
+                  textAlign: TextAlign.center,
+                  style: FlutterFlowTheme.of(context).bodyMedium.override(
+                        color: FlutterFlowTheme.of(context).secondaryText,
+                      ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () => service.refresh(),
+                  icon: const Icon(Icons.refresh_rounded, size: 18),
+                  label: const Text('重试'),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+      // Loading state -- no error yet, waiting for first fetch
       return const Padding(
         padding: EdgeInsets.all(32),
         child: Center(child: CircularProgressIndicator()),
@@ -466,6 +498,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
       itemBuilder: (context, i) {
         final row = filtered[i];
         return StockRowWidget(
+          key: ValueKey(row.id),
           change: row.changeLabel,
           chartData: row.chartCsv,
           name: row.name,
