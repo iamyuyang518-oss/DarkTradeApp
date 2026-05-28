@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/career_service.dart';
+import '../domain/services/career_service.dart';
 import '../pages/career_management_sheet.dart';
 
 class CareerSelector extends StatelessWidget {

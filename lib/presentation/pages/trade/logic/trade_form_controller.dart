@@ -1,8 +1,8 @@
 import 'package:dark_trade_app/data/local/models/trade_record.dart' as trade_model;
-import 'package:dark_trade_app/services/career_service.dart';
-import 'package:dark_trade_app/services/market_data_service.dart';
-import 'package:dark_trade_app/services/portfolio_service.dart';
-import 'package:dark_trade_app/services/trade_history_service.dart';
+import 'package:dark_trade_app/domain/services/career_service.dart';
+import 'package:dark_trade_app/domain/services/market_data_service.dart';
+import 'package:dark_trade_app/domain/services/portfolio_service.dart';
+import 'package:dark_trade_app/domain/services/trade_history_service.dart';
 import 'package:flutter/material.dart';
 
 /// Result of a trade execution attempt — UI layer decides how to display it.

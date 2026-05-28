@@ -1,9 +1,9 @@
 import 'package:dark_trade_app/flutter_flow/flutter_flow_util.dart';
 import 'package:dark_trade_app/pages/stock_detail_page.dart';
-import 'package:dark_trade_app/services/a_share_service.dart';
-import 'package:dark_trade_app/services/live_market_service.dart';
-import 'package:dark_trade_app/services/market_data_service.dart';
-import 'package:dark_trade_app/services/trade_selection_service.dart';
+import 'package:dark_trade_app/domain/services/a_share_service.dart';
+import 'package:dark_trade_app/domain/services/live_market_service.dart';
+import 'package:dark_trade_app/domain/services/market_data_service.dart';
+import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';

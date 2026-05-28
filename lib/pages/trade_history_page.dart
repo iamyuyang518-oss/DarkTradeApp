@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/trade_history_service.dart';
-import '../services/career_service.dart';
+import '../domain/services/trade_history_service.dart';
+import '../domain/services/career_service.dart';
 import '../data/local/models/trade_record.dart';
 
 class TradeHistoryPage extends StatefulWidget {

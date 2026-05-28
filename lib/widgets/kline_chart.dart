@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:dark_trade_app/services/market_data_service.dart';
+import 'package:dark_trade_app/domain/services/market_data_service.dart';
 import 'package:flutter/material.dart';
 
 /// Chart display mode.

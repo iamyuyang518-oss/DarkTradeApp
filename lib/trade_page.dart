@@ -1,9 +1,9 @@
-import 'package:dark_trade_app/services/a_share_service.dart';
-import 'package:dark_trade_app/services/live_market_service.dart';
-import 'package:dark_trade_app/services/market_data_service.dart';
-import 'package:dark_trade_app/services/portfolio_service.dart';
-import 'package:dark_trade_app/services/trade_selection_service.dart';
-import 'package:dark_trade_app/services/us_stock_service.dart';
+import 'package:dark_trade_app/domain/services/a_share_service.dart';
+import 'package:dark_trade_app/domain/services/live_market_service.dart';
+import 'package:dark_trade_app/domain/services/market_data_service.dart';
+import 'package:dark_trade_app/domain/services/portfolio_service.dart';
+import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
+import 'package:dark_trade_app/domain/services/us_stock_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';

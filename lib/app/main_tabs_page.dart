@@ -1,7 +1,7 @@
 import 'package:dark_trade_app/assets_page.dart';
 import 'package:dark_trade_app/market_explorer.dart';
 import 'package:dark_trade_app/profile_page.dart';
-import 'package:dark_trade_app/services/trade_selection_service.dart';
+import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
 import 'package:dark_trade_app/presentation/pages/trade/trade_page.dart';
 import 'package:flutter/material.dart';
 import '../widgets/guest_banner.dart';

@@ -1,9 +1,9 @@
-import 'package:dark_trade_app/services/a_share_service.dart';
-import 'package:dark_trade_app/services/live_market_service.dart';
-import 'package:dark_trade_app/services/market_data_service.dart';
-import 'package:dark_trade_app/services/portfolio_service.dart';
-import 'package:dark_trade_app/services/us_stock_service.dart';
-import 'package:dark_trade_app/services/career_service.dart';
+import 'package:dark_trade_app/domain/services/a_share_service.dart';
+import 'package:dark_trade_app/domain/services/live_market_service.dart';
+import 'package:dark_trade_app/domain/services/market_data_service.dart';
+import 'package:dark_trade_app/domain/services/portfolio_service.dart';
+import 'package:dark_trade_app/domain/services/us_stock_service.dart';
+import 'package:dark_trade_app/domain/services/career_service.dart';
 import 'package:dark_trade_app/pages/trade_history_page.dart';
 import 'package:dark_trade_app/widgets/career_selector.dart';
 import 'package:dark_trade_app/widgets/gain_loss_card.dart';
