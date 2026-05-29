@@ -125,9 +125,10 @@ class AuthService extends ChangeNotifier {
         email: virtualEmail,
         password: password,
       );
-      if (res.user == null) return '注册失败，请重试';
+      final user = res.user;
+      if (user == null) return '注册失败，请重试';
 
-      final uid = res.user!.id;
+      final uid = user.id;
       final answerHash = _hashAnswer(securityAnswer);
 
       await SupabaseClientManager.instance.from('profiles').insert({
