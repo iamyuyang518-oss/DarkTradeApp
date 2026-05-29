@@ -10,7 +10,6 @@ class CareerService extends ChangeNotifier {
 
   List<Career> _careers = [];
   Career? _activeCareer;
-  bool _isLoggedIn = false;
 
   CareerService({
     required CareerRepository localRepo,
@@ -22,7 +21,6 @@ class CareerService extends ChangeNotifier {
 
   List<Career> get careers => List.unmodifiable(_careers);
   Career? get activeCareer => _activeCareer;
-  bool get isLoggedIn => _isLoggedIn;
 
   // ---- init ----
 
@@ -40,12 +38,10 @@ class CareerService extends ChangeNotifier {
 
   void setRemoteRepo(CareerRepository repo) {
     _remoteRepo = repo;
-    _isLoggedIn = true;
   }
 
   void clearRemoteRepo() {
     _remoteRepo = null;
-    _isLoggedIn = false;
   }
 
   // ---- internal helpers ----
