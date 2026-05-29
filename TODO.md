@@ -1,6 +1,6 @@
 # DarkTrade App — 项目进度与待办
 
-> 最后更新：2026-05-28
+> 最后更新：2026-05-30
 > 技术栈：Flutter · Provider · Hive · Supabase · 东方财富 API
 
 ---
@@ -68,12 +68,23 @@
 - [ ] CareerService 改造为依赖 Repository
 
 ### 账号系统
-- [ ] `AuthService`：注册（用户名+密码 → Supabase Auth）
-- [ ] `AuthService`：登录 / 登出
-- [ ] 游客模式保持（数据走 HiveLocalRepo）
-- [ ] 游客 → 登录数据迁移流程
-- [ ] 个人中心登录态（用户名 + UID 显示）
-- [ ] 退出登录 → 回退游客模式
+- [x] `AuthService`：注册（用户名+密码+安全问题 → Supabase Auth，虚拟邮箱映射）
+- [x] `AuthService`：登录（用户名+密码） / 登出
+- [x] 零门槛注册（无邮箱/手机），自定义安全问题找回密码
+- [x] Supabase Edge Function `reset-password`（service_role 重置密码）
+- [x] 游客模式保持（数据走 HiveLocalRepo）
+- [x] 游客 → 登录数据迁移流程（MigrationDialog）
+- [x] 个人中心登录态（用户名 + UID 显示）
+- [x] 退出登录 → 回退游客模式（AuthService 自动清理）
+- [x] auto-login 修复：重启 App 自动恢复登录 + 远程数据同步
+- [x] `onAuthStateChange` 监听：session 过期/刷新/异地登出
+- [x] 启动加载守卫（`auth.initialized`）：消除游客→登录闪屏
+- [x] 全部 `currentUser!` 强制解包替换为 null guard
+- [x] 所有 catch 块使用 `debugPrint`（不再静默吞异常）
+- [x] 清理 Hive 废弃 `auth` box
+- [x] 清理 `CareerService._isLoggedIn` 废弃字段
+- [x] `crypto` 依赖：SHA-256 哈希安全问题答案
+- [x] 单元测试：AuthService（6 个）+ AuthSheet widget（3 个），共 10 个测试
 
 ### 新手引导
 - [ ] 欢迎弹窗（首次启动检测本地无数据）
@@ -151,7 +162,7 @@ lib/
 - [x] M2：CoinGecko 真实行情
 - [x] M3：切换到 A 股 + 亮色暖调主题
 - [x] M4：生涯系统 + 交易闭环 + 本地持久化
-- [ ] M5：账号系统 + 游客模式 + 数据迁移（← 当前）
+- [x] M5：账号系统 + 游客模式 + 数据迁移 ✅ 已完成（2026-05-30）
 - [ ] M6：合规层 + 新手引导 + Tips + PWA 部署 → **MVP 公测**
 - [ ] M7：成就 + 教程 + 分享图 + 情绪仪表盘
 - [ ] M8：排行榜 + 好友对战 + 会员系统
@@ -179,3 +190,34 @@ flutter run -d chrome
 - [MVP 发布设计文档](docs/superpowers/specs/2026-05-28-mvp-launch-design.md)
 - [V2 设计文档（旧）](docs/superpowers/specs/2026-05-28-darktrade-v2-design.md)
 - [亮色主题改造](docs/superpowers/specs/2026-05-28-light-theme-redesign.md)
+- [认证系统重构设计](docs/superpowers/specs/2026-05-30-auth-redesign-design.md)
+- [认证系统重构实现计划](docs/superpowers/plans/2026-05-30-auth-redesign-plan.md)
+
+---
+## 十一、⚠️ 待手动操作（M5 认证系统）
+
+以下操作无法在代码中自动完成，需要你在网页后台手动执行：
+
+### 1. 运行数据库迁移（Supabase SQL Editor）
+
+1. 打开 https://supabase.com/dashboard/project/pzugizdkhvppqadiaxgq
+2. 左侧菜单 → **SQL Editor** → **New Query**
+3. 复制 `supabase/migrations/20260530_recreate_profiles.sql` 的全部内容
+4. 粘贴到 SQL Editor → 点击 **Run**
+5. 看到 "Success. No rows returned." 即成功
+
+### 2. 删除旧的测试用户
+
+1. Supabase 后台 → **Authentication** → **Users**
+2. 删除所有旧用户（之前用邮箱注册的测试用户）
+3. 确认用户列表为空
+
+### 3. 部署 Edge Function
+
+1. Supabase 后台 → **Edge Functions** → **Create Function**
+2. 名称填：`reset-password`
+3. 复制 `supabase/functions/reset-password/index.ts` 全部内容粘贴进去
+4. 点击 **Deploy**
+5. 看到状态 "Deployed" 即成功
+
+完成后，认证系统即可完整运行：用户名注册/登录 + 安全问题找回密码。
