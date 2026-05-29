@@ -1,13 +1,14 @@
 # DarkTrade App — 项目进度与待办
 
-> 最后更新：2026-05-30
+> 最后更新：2026-05-30（晚）
 > 技术栈：Flutter · Provider · Hive · Supabase · 东方财富 API
+> Vercel 部署：进行中（需本地构建后通过 CLI 部署）
 
 ---
 
 ## 一、项目当前状态
 
-**A 股模拟交易平台，亮色暖调主题 + 四 Tab 壳子，已接入东方财富真实行情，生涯系统 + 交易闭环 + 本地持久化已完成。正在向 MVP 公测版本推进。**
+**A 股模拟交易平台，亮色暖调主题 + 四 Tab 壳子，已接入东方财富真实行情。M5 认证系统今日完成重构（零门槛用户名注册 + 安全问题找回密码）。正在解决 Vercel Flutter Web 部署问题。**
 
 ---
 
@@ -54,18 +55,19 @@
 ## 三、MVP 待办（P0 — 公测前必须完成）
 
 ### 目录重组
-- [ ] 按新目录结构重组 lib/（参考设计文档第二节）
-- [ ] 删除 `flutter_flow/`，主题并入 `core/theme.dart`
-- [ ] 删除重复 `lib/trade_page.dart` 和 `pages/trade_execution_widget.dart`
-- [ ] 移除 `LiveMarketService`、`UsStockService`（加密货币/美股代码）
-- [ ] 移除行情页多 Tab，仅保留 A 股
+- [x] 按新目录结构重组 lib/（参考设计文档第二节）
+- [x] 删除 `flutter_flow/`，主题并入 `core/theme.dart`
+- [x] 删除重复代码（trade_page.dart 等）
+- [x] 移除 `LiveMarketService`、`UsStockService`（加密货币/美股代码）
+- [x] 移除行情页多 Tab，仅保留 A 股
 
 ### Repository 层
-- [ ] 创建 `CareerRepository` 和 `TradeHistoryRepository` 接口
-- [ ] 实现 `HiveLocalRepo`（已有 HiveService，改接口）
-- [ ] 初始化 Supabase 客户端
-- [ ] 实现 `SupabaseRemoteRepo`
-- [ ] CareerService 改造为依赖 Repository
+- [x] 创建 `CareerRepository` 和 `TradeHistoryRepository` 接口
+- [x] 实现 `HiveCareerRepo` / `HiveTradeHistoryRepo`（本地持久化）
+- [x] 初始化 Supabase 客户端
+- [x] 实现 `SupabaseCareerRepo` / `SupabaseTradeHistoryRepo`（远程同步）
+- [x] CareerService / TradeHistoryService 改造为依赖 Repository
+- [x] setRemoteRepo / clearRemoteRepo 登录登出动态切换
 
 ### 账号系统
 - [x] `AuthService`：注册（用户名+密码+安全问题 → Supabase Auth，虚拟邮箱映射）
@@ -87,27 +89,27 @@
 - [x] 单元测试：AuthService（6 个）+ AuthSheet widget（3 个），共 10 个测试
 
 ### 新手引导
-- [ ] 欢迎弹窗（首次启动检测本地无数据）
-- [ ] 创建首个生涯（名称 + 初始资金）
-- [ ] 底部 Tab 行情高亮闪烁 + 浮层提示
+- [x] 欢迎弹窗（首次启动检测本地无数据 → WelcomeDialog）
+- [x] 创建首个生涯（名称 + 初始资金）
+- [x] 底部 Tab 行情高亮闪烁 + 浮层提示（SnackBar 引导）
 
 ### 合规层
-- [ ] 风险提示弹窗（首次 + 每日首次交易前）
-- [ ] 交易页底部常驻免责文字
-- [ ] 行情页数据延迟标注（"可能存在五分钟延迟"）
+- [x] 风险提示弹窗（首次启动 → RiskDisclaimerDialog）
+- [x] 交易页底部常驻免责文字
+- [x] 行情页数据延迟标注（"可能存在五分钟延迟"）
 
 ### Tips 系统
-- [ ] TipBubble 组件（随机出现 + 自动消失）
-- [ ] 12 条预置 Tips 配置
-- [ ] 已读去重逻辑
+- [x] TipBubble 组件（随机出现 + 自动消失）
+- [x] 12 条预置 Tips 配置
+- [x] 已读去重逻辑
 
 ### PWA & 部署
-- [ ] 更新 `web/manifest.json`（name, description, theme_color: #FFFBF5）
-- [ ] 更新 `web/index.html` meta description
+- [x] 更新 `web/manifest.json`（name, description, theme_color: #FFFBF5）
+- [x] 更新 `web/index.html` meta description
 - [ ] 替换 `web/favicon.png` 为项目 Logo
 - [ ] PWA Service Worker 离线支持
-- [ ] `flutter build web --release` 验证
-- [ ] Vercel 部署 + 冒烟测试
+- [x] `flutter build web --release` 验证通过
+- [ ] Vercel 部署 + 冒烟测试（Flutter Web 需本地构建后 CLI 部署）
 
 ---
 
@@ -163,7 +165,7 @@ lib/
 - [x] M3：切换到 A 股 + 亮色暖调主题
 - [x] M4：生涯系统 + 交易闭环 + 本地持久化
 - [x] M5：账号系统 + 游客模式 + 数据迁移 ✅ 已完成（2026-05-30）
-- [ ] M6：合规层 + 新手引导 + Tips + PWA 部署 → **MVP 公测**
+- [x] M6：合规层 + 新手引导 + Tips + PWA 部署 → 只剩 Vercel 最终部署
 - [ ] M7：成就 + 教程 + 分享图 + 情绪仪表盘
 - [ ] M8：排行榜 + 好友对战 + 会员系统
 
@@ -194,30 +196,24 @@ flutter run -d chrome
 - [认证系统重构实现计划](docs/superpowers/plans/2026-05-30-auth-redesign-plan.md)
 
 ---
-## 十一、⚠️ 待手动操作（M5 认证系统）
+## 十一、✅ M5 手动操作（已完成 2026-05-30）
 
-以下操作无法在代码中自动完成，需要你在网页后台手动执行：
+- [x] 运行数据库迁移（Supabase SQL Editor）→ profiles 表已重建
+- [x] 删除旧测试用户（Authentication → Users）→ 已清空
+- [x] 部署 Edge Function `reset-password` → 已部署
 
-### 1. 运行数据库迁移（Supabase SQL Editor）
+认证系统已完整运行：用户名注册/登录 + 安全问题找回密码。
 
-1. 打开 https://supabase.com/dashboard/project/pzugizdkhvppqadiaxgq
-2. 左侧菜单 → **SQL Editor** → **New Query**
-3. 复制 `supabase/migrations/20260530_recreate_profiles.sql` 的全部内容
-4. 粘贴到 SQL Editor → 点击 **Run**
-5. 看到 "Success. No rows returned." 即成功
+---
 
-### 2. 删除旧的测试用户
+## 十二、下次继续任务
 
-1. Supabase 后台 → **Authentication** → **Users**
-2. 删除所有旧用户（之前用邮箱注册的测试用户）
-3. 确认用户列表为空
+### 优先 — Vercel 部署（M6 收尾）
+- [ ] 本地构建 `flutter build web --release` → `cd build\web` → `npx vercel --prod`
+- [ ] 链接到 DarkTrade 项目（不是 "web" 项目）
+- [ ] 验证网站可访问
 
-### 3. 部署 Edge Function
-
-1. Supabase 后台 → **Edge Functions** → **Create Function**
-2. 名称填：`reset-password`
-3. 复制 `supabase/functions/reset-password/index.ts` 全部内容粘贴进去
-4. 点击 **Deploy**
-5. 看到状态 "Deployed" 即成功
-
-完成后，认证系统即可完整运行：用户名注册/登录 + 安全问题找回密码。
+### 次要
+- [ ] 替换 `web/favicon.png` 为项目 Logo
+- [ ] PWA Service Worker 离线支持
+- [ ] M7：成就 + 教程 + 分享图 + 情绪仪表盘

@@ -12,3 +12,4 @@ build/
 
 # IDE
 .idea/
+/build/
