@@ -21,6 +21,8 @@ class AuthService extends ChangeNotifier {
   CareerService? _careerService;
   TradeHistoryService? _tradeHistoryService;
 
+  static const _virtualDomain = '@darktrade.app';
+
   // ---- public getters ----
 
   AuthState get state => _state;
@@ -45,7 +47,7 @@ class AuthService extends ChangeNotifier {
 
   // ---- internal helpers ----
 
-  String _virtualEmail(String username) => '$username@darktrade.app';
+  String _virtualEmail(String username) => '${username.trim()}$_virtualDomain';
 
   String _hashAnswer(String answer) {
     return sha256.convert(utf8.encode(answer.trim().toLowerCase())).toString();
@@ -104,7 +106,7 @@ class AuthService extends ChangeNotifier {
           .eq('id', uid)
           .maybeSingle();
       if (data != null) {
-        _username = (data)['username'] as String?;
+        _username = data['username'] as String?;
       }
     } catch (e) {
       debugPrint('[AuthService] _loadProfile error: $e');
@@ -131,13 +133,19 @@ class AuthService extends ChangeNotifier {
       final uid = user.id;
       final answerHash = _hashAnswer(securityAnswer);
 
-      await SupabaseClientManager.instance.from('profiles').insert({
-        'id': uid,
-        'username': username,
-        'display_name': username,
-        'security_question': securityQuestion.trim(),
-        'security_answer_hash': answerHash,
-      });
+      try {
+        await SupabaseClientManager.instance.from('profiles').insert({
+          'id': uid,
+          'username': username,
+          'display_name': username,
+          'security_question': securityQuestion.trim(),
+          'security_answer_hash': answerHash,
+        });
+      } catch (e) {
+        // Profile insert failed but auth user exists. User is still
+        // logged in; profile can be repaired later or on next login.
+        debugPrint('[AuthService] profile insert failed (auth user exists): $e');
+      }
 
       _state = AuthState.loggedIn;
       _userId = uid;
@@ -191,7 +199,7 @@ class AuthService extends ChangeNotifier {
           .eq('username', username)
           .maybeSingle();
       if (data == null) return null;
-      return (data)['security_question'] as String?;
+      return data['security_question'] as String?;
     } catch (e) {
       debugPrint('[AuthService] getSecurityQuestion error: $e');
       return null;
@@ -214,10 +222,10 @@ class AuthService extends ChangeNotifier {
 
       if (data == null) return '用户名不存在';
 
-      final storedHash = (data)['security_answer_hash'] as String?;
+      final storedHash = data['security_answer_hash'] as String?;
       if (storedHash != _hashAnswer(answer)) return '答案错误';
 
-      final userId = (data)['id'] as String;
+      final userId = data['id'] as String;
 
       final res = await SupabaseClientManager.instance.functions.invoke(
         'reset-password',
@@ -250,6 +258,7 @@ class AuthService extends ChangeNotifier {
   }
 
   void _logoutLocal() {
+    if (_state == AuthState.guest) return; // already logged out
     _state = AuthState.guest;
     _username = null;
     _userId = null;
