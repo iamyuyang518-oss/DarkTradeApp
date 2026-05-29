@@ -229,6 +229,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
         return;
       }
 
+      if (!mounted) return;
       setState(() => _loading = false);
 
       if (mounted) {

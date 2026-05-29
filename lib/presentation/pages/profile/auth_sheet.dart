@@ -272,7 +272,8 @@ class _AuthSheetState extends State<AuthSheet> {
       }
     }
 
+    if (!mounted) return;
     setState(() => _loading = false);
-    if (mounted) Navigator.of(context).pop();
+    Navigator.of(context).pop();
   }
 }
