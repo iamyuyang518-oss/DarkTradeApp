@@ -1,5 +1,7 @@
 import 'package:dark_trade_app/core/constants.dart';
+import 'package:dark_trade_app/domain/services/auth_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
+import 'package:dark_trade_app/domain/services/trade_history_service.dart';
 import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
 import 'package:dark_trade_app/presentation/pages/assets/assets_page.dart';
 import 'package:dark_trade_app/presentation/pages/market/market_page.dart';
@@ -38,6 +40,10 @@ class _MainTabsPageState extends State<MainTabsPage> {
   @override
   void initState() {
     super.initState();
+    final auth = context.read<AuthService>();
+    final careerService = context.read<CareerService>();
+    final tradeHistory = context.read<TradeHistoryService>();
+    auth.wireServices(careerService, tradeHistory);
     context.read<TradeSelectionService>().addListener(_onTradeSelectionChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkOnboarding());
   }
@@ -99,63 +105,82 @@ class _MainTabsPageState extends State<MainTabsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthService>();
+
     return Scaffold(
       backgroundColor: MainTabsPage.background,
-      body: Column(
-        children: [
-          const GuestBanner(),
-          Expanded(
-            child: IndexedStack(
-              index: _index,
-              children: _pages,
+      body: auth.initialized
+          ? Column(
+              children: [
+                const GuestBanner(),
+                Expanded(
+                  child: IndexedStack(
+                    index: _index,
+                    children: _pages,
+                  ),
+                ),
+              ],
+            )
+          : const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: MainTabsPage.selectedGold,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    '正在加载...',
+                    style: TextStyle(
+                        color: MainTabsPage.unselectedGray, fontSize: 14),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          splashColor: MainTabsPage.selectedGold.withValues(alpha: 0.12),
-          highlightColor: Colors.transparent,
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _index,
-          onTap: (i) => setState(() => _index = i),
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: MainTabsPage.background,
-          selectedItemColor: MainTabsPage.selectedGold,
-          unselectedItemColor: MainTabsPage.unselectedGray,
-          selectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 12,
-          ),
-          unselectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 12,
-          ),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.show_chart_outlined),
-              activeIcon: Icon(Icons.show_chart),
-              label: '行情',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_balance_wallet_outlined),
-              activeIcon: Icon(Icons.account_balance_wallet),
-              label: '资产',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.swap_horiz_outlined),
-              activeIcon: Icon(Icons.swap_horiz),
-              label: '交易',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: '个人',
-            ),
-          ],
-        ),
-      ),
+      bottomNavigationBar: auth.initialized
+          ? Theme(
+              data: Theme.of(context).copyWith(
+                splashColor:
+                    MainTabsPage.selectedGold.withValues(alpha: 0.12),
+                highlightColor: Colors.transparent,
+              ),
+              child: BottomNavigationBar(
+                currentIndex: _index,
+                onTap: (i) => setState(() => _index = i),
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: MainTabsPage.background,
+                selectedItemColor: MainTabsPage.selectedGold,
+                unselectedItemColor: MainTabsPage.unselectedGray,
+                selectedLabelStyle: const TextStyle(
+                    fontWeight: FontWeight.w600, fontSize: 12),
+                unselectedLabelStyle: const TextStyle(
+                    fontWeight: FontWeight.w500, fontSize: 12),
+                items: const [
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.show_chart_outlined),
+                      activeIcon: Icon(Icons.show_chart),
+                      label: '行情'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.account_balance_wallet_outlined),
+                      activeIcon: Icon(Icons.account_balance_wallet),
+                      label: '资产'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.swap_horiz_outlined),
+                      activeIcon: Icon(Icons.swap_horiz),
+                      label: '交易'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.person_outline),
+                      activeIcon: Icon(Icons.person),
+                      label: '个人'),
+                ],
+              ),
+            )
+          : null,
     );
   }
 }
