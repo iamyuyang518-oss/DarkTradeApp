@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:dark_trade_app/core/constants.dart';
 import 'package:dark_trade_app/domain/services/auth_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
-import 'package:dark_trade_app/domain/services/trade_history_service.dart';
 import 'package:dark_trade_app/presentation/pages/profile/auth_sheet.dart';
 import 'package:dark_trade_app/presentation/pages/profile/career_management_sheet.dart';
+import 'package:dark_trade_app/presentation/pages/profile/forgot_password_sheet.dart';
 import 'package:dark_trade_app/presentation/pages/profile/trade_history_page.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -124,7 +124,16 @@ class ProfilePage extends StatelessWidget {
               }),
               if (isLoggedIn)
                 _menuItem('修改密码', Icons.lock_outline, () {
-                  // P2: stub — change password not yet implemented
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: AppColors.surface,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(AppDimens.radiusLg)),
+                    ),
+                    builder: (_) => const ForgotPasswordSheet(),
+                  );
                 }),
               _menuItem('关于 DarkTrade', Icons.info_outline, () {
                 showAboutDialog(
@@ -142,10 +151,6 @@ class ProfilePage extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: () async {
                     await auth.logout();
-                    final careerService = context.read<CareerService>();
-                    final tradeHistory = context.read<TradeHistoryService>();
-                    careerService.clearRemoteRepo();
-                    tradeHistory.clearRemoteRepo();
                   },
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.down),
