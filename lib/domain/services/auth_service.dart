@@ -74,26 +74,25 @@ class AuthService extends ChangeNotifier {
         await _loadProfile();
         // Remote repos wired via wireServices() after widget tree ready
       }
+      _authListener = SupabaseClientManager.instance.auth.onAuthStateChange.listen(
+        (event) {
+          final s = event.session;
+          if (s != null && _state != AuthState.loggedIn) {
+            _state = AuthState.loggedIn;
+            _userId = s.user.id;
+            _loadProfile();
+            _setupRemoteRepos();
+            notifyListeners();
+          } else if (s == null && _state == AuthState.loggedIn) {
+            _logoutLocal();
+          }
+        },
+      );
     } catch (e) {
       debugPrint('[AuthService] _init error: $e');
     }
     _initialized = true;
     notifyListeners();
-
-    _authListener = SupabaseClientManager.instance.auth.onAuthStateChange.listen(
-      (event) {
-        final s = event.session;
-        if (s != null && _state != AuthState.loggedIn) {
-          _state = AuthState.loggedIn;
-          _userId = s.user.id;
-          _loadProfile();
-          _setupRemoteRepos();
-          notifyListeners();
-        } else if (s == null && _state == AuthState.loggedIn) {
-          _logoutLocal();
-        }
-      },
-    );
   }
 
   Future<void> _loadProfile() async {

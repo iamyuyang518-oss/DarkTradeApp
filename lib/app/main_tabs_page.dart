@@ -28,6 +28,7 @@ class MainTabsPage extends StatefulWidget {
 class _MainTabsPageState extends State<MainTabsPage> {
   int _index = 0;
   bool _disclaimerShown = false;
+  late final TradeSelectionService _tradeSelection;
 
   /// Built once; [IndexedStack] keeps subtree state when switching tabs.
   late final List<Widget> _pages = <Widget>[
@@ -44,7 +45,8 @@ class _MainTabsPageState extends State<MainTabsPage> {
     final careerService = context.read<CareerService>();
     final tradeHistory = context.read<TradeHistoryService>();
     auth.wireServices(careerService, tradeHistory);
-    context.read<TradeSelectionService>().addListener(_onTradeSelectionChanged);
+    _tradeSelection = context.read<TradeSelectionService>();
+    _tradeSelection.addListener(_onTradeSelectionChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkOnboarding());
   }
 
@@ -91,12 +93,12 @@ class _MainTabsPageState extends State<MainTabsPage> {
 
   @override
   void dispose() {
-    context.read<TradeSelectionService>().removeListener(_onTradeSelectionChanged);
+    _tradeSelection.removeListener(_onTradeSelectionChanged);
     super.dispose();
   }
 
   void _onTradeSelectionChanged() {
-    final svc = context.read<TradeSelectionService>();
+    final svc = _tradeSelection;
     if (svc.shouldNavigateToTrade) {
       svc.clearNavigation();
       setState(() => _index = 2);
