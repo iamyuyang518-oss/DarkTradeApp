@@ -75,7 +75,8 @@ class SupabaseTradeHistoryRepo implements TradeHistoryRepository {
 
   @override
   Future<void> saveRecord(TradeRecord record) async {
-    final userId = SupabaseClientManager.instance.auth.currentUser!.id;
+    final userId = SupabaseClientManager.instance.auth.currentUser?.id;
+    if (userId == null) return;
     await SupabaseClientManager.instance
         .from('trade_records')
         .insert(_toJson(record, userId));
@@ -91,7 +92,8 @@ class SupabaseTradeHistoryRepo implements TradeHistoryRepository {
 
   @override
   Future<void> saveAllRecords(List<TradeRecord> records) async {
-    final userId = SupabaseClientManager.instance.auth.currentUser!.id;
+    final userId = SupabaseClientManager.instance.auth.currentUser?.id;
+    if (userId == null) return;
     final rows = records.map((r) => _toJson(r, userId)).toList();
     await SupabaseClientManager.instance.from('trade_records').insert(rows);
   }

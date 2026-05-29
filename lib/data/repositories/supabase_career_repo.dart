@@ -58,7 +58,8 @@ class SupabaseCareerRepo implements CareerRepository {
 
   @override
   Future<void> saveCareer(Career career) async {
-    final userId = SupabaseClientManager.instance.auth.currentUser!.id;
+    final userId = SupabaseClientManager.instance.auth.currentUser?.id;
+    if (userId == null) return;
     await SupabaseClientManager.instance
         .from('careers')
         .upsert(_toJson(career, userId));
@@ -74,7 +75,8 @@ class SupabaseCareerRepo implements CareerRepository {
 
   @override
   Future<void> saveAllCareers(List<Career> careers) async {
-    final userId = SupabaseClientManager.instance.auth.currentUser!.id;
+    final userId = SupabaseClientManager.instance.auth.currentUser?.id;
+    if (userId == null) return;
     final rows = careers.map((c) => _toJson(c, userId)).toList();
     await SupabaseClientManager.instance.from('careers').upsert(rows);
   }
