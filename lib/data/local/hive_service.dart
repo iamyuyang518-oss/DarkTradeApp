@@ -5,7 +5,6 @@ import 'models/trade_record.dart';
 class HiveService {
   static const String careersBox = 'careers';
   static const String tradeHistoryBox = 'tradeHistory';
-  static const String authBox = 'auth';
   static const String prefsBox = 'prefs';
 
   static Future<void> init() async {
@@ -17,7 +16,6 @@ class HiveService {
     await Future.wait([
       Hive.openBox<Career>(careersBox),
       Hive.openBox<TradeRecord>(tradeHistoryBox),
-      Hive.openBox(authBox),
       Hive.openBox(prefsBox),
     ]);
   }
@@ -25,6 +23,5 @@ class HiveService {
   static Box<Career> get careers => Hive.box<Career>(careersBox);
   static Box<TradeRecord> get tradeHistory =>
       Hive.box<TradeRecord>(tradeHistoryBox);
-  static Box get auth => Hive.box(authBox);
   static Box get prefs => Hive.box(prefsBox);
 }
