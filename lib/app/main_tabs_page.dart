@@ -1,4 +1,5 @@
 import 'package:dark_trade_app/core/constants.dart';
+import 'package:dark_trade_app/domain/services/achievement_service.dart';
 import 'package:dark_trade_app/domain/services/auth_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
 import 'package:dark_trade_app/domain/services/trade_history_service.dart';
@@ -122,6 +123,43 @@ class _MainTabsPageState extends State<MainTabsPage> {
                     index: _index,
                     children: _pages,
                   ),
+                ),
+                // Achievement unlock toast
+                Consumer<AchievementService>(
+                  builder: (context, service, _) {
+                    if (service.justUnlocked != null) {
+                      final a = service.achievements
+                          .firstWhere((a) => a.id == service.justUnlocked);
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            backgroundColor: AppColors.surface,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
+                            title: Text('${a.emoji} 成就解锁！',
+                                style: const TextStyle(
+                                    color: AppColors.gold,
+                                    fontWeight: FontWeight.bold)),
+                            content: Text('${a.name}\n${a.description}',
+                                style: const TextStyle(
+                                    color: AppColors.textPrimary)),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  service.clearJustUnlocked();
+                                },
+                                child: const Text('太棒了！',
+                                    style: TextStyle(color: AppColors.gold)),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                    }
+                    return const SizedBox.shrink();
+                  },
                 ),
               ],
             )

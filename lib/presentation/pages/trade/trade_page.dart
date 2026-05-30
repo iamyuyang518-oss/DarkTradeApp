@@ -7,7 +7,9 @@ import 'package:dark_trade_app/presentation/pages/trade/widgets/quick_position_c
 import 'package:dark_trade_app/presentation/pages/trade/widgets/side_toggle.dart';
 import 'package:dark_trade_app/presentation/pages/trade/widgets/symbol_bar.dart';
 import 'package:dark_trade_app/presentation/pages/trade/widgets/symbol_picker_sheet.dart';
+import 'package:dark_trade_app/data/local/models/trade_record.dart' as trade_model;
 import 'package:dark_trade_app/domain/services/a_share_service.dart';
+import 'package:dark_trade_app/domain/services/achievement_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
 import 'package:dark_trade_app/domain/services/portfolio_service.dart';
@@ -119,6 +121,9 @@ class _TradePageState extends State<TradePage> {
             ),
           ),
         );
+
+      // ---- achievement check (silent, after trade persists) ----
+      _runAchievementCheck();
     } else {
       HapticFeedback.heavyImpact();
       if (!mounted) return;
@@ -126,6 +131,56 @@ class _TradePageState extends State<TradePage> {
         SnackBar(content: Text(result.message)),
       );
     }
+  }
+
+  // ---- achievement ---------------------------------------------------------
+
+  void _runAchievementCheck() {
+    final achievementService = context.read<AchievementService>();
+    final tradeHistory = context.read<TradeHistoryService>();
+    final careerService = context.read<CareerService>();
+
+    final records = tradeHistory.records;
+    final totalTrades = records.length;
+    final consecutiveWins = _computeConsecutiveWins(records);
+    final activeCareer = careerService.activeCareer;
+    final totalReturn = activeCareer?.totalReturnRate ?? 0;
+    final totalAssets =
+        (activeCareer?.initialBalance ?? 0) * (1 + totalReturn / 100);
+    final today = DateTime.now();
+    final todayTradeCount = records
+        .where((r) =>
+            r.createdAt.year == today.year &&
+            r.createdAt.month == today.month &&
+            r.createdAt.day == today.day)
+        .length;
+
+    achievementService.checkAfterTrade(
+      totalTrades: totalTrades,
+      consecutiveWins: consecutiveWins,
+      totalReturn: totalReturn / 100,
+      totalAssets: totalAssets,
+      todayTradeCount: todayTradeCount,
+    );
+  }
+
+  /// Count how many most-recent trades in a row had a positive P&L.
+  /// Only considers trades where [trade_model.TradeRecord.pnl] is non-null
+  /// (i.e. closed/sell trades). A non-positive P&L breaks the streak.
+  static int _computeConsecutiveWins(List<trade_model.TradeRecord> records) {
+    int count = 0;
+    final sorted = List<trade_model.TradeRecord>.from(records)
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    for (final r in sorted) {
+      final pnl = r.pnl;
+      if (pnl == null) continue; // buy — skip, does not affect streak
+      if (pnl > 0) {
+        count++;
+      } else {
+        break;
+      }
+    }
+    return count;
   }
 
   // ---- lifecycle -----------------------------------------------------------
