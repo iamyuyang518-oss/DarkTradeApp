@@ -8,6 +8,8 @@ import 'package:dark_trade_app/presentation/pages/profile/trade_history_page.dar
 import 'package:dark_trade_app/presentation/widgets/career_selector.dart';
 import 'package:dark_trade_app/presentation/widgets/gain_loss_card.dart';
 import 'package:dark_trade_app/presentation/widgets/equity_curve_chart.dart';
+import 'package:dark_trade_app/presentation/widgets/share_card.dart';
+import 'package:dark_trade_app/domain/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -193,6 +195,34 @@ class AssetsPage extends StatelessWidget {
                 ),
               ),
             ),
+
+            // ---- 战绩分享 ----
+            if (activeCareer != null)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        final auth = context.read<AuthService>();
+                        final careerService = context.read<CareerService>();
+                        final activeCareer = careerService.activeCareer;
+                        if (activeCareer != null) {
+                          sharePerformanceCard(context, activeCareer, auth.username ?? '交易员');
+                        }
+                      },
+                      icon: const Icon(Icons.share, color: AppColors.gold),
+                      label: const Text('分享战绩', style: TextStyle(color: AppColors.gold)),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppColors.gold),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
 
             // ---- 权益曲线 ----
             if (activeCareer != null)
