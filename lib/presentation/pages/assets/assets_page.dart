@@ -1,3 +1,4 @@
+import 'package:dark_trade_app/core/constants.dart';
 import 'package:dark_trade_app/domain/services/a_share_service.dart';
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
 import 'package:dark_trade_app/domain/services/portfolio_service.dart';
@@ -9,16 +10,11 @@ import 'package:dark_trade_app/presentation/widgets/equity_curve_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// 极简黑金资产页：总折合、分布占比、持仓明细 —— 接入实时行情。
+/// Warm theme asset page: total in RMB, allocation, holdings — with live quotes.
 class AssetsPage extends StatelessWidget {
   const AssetsPage({super.key});
 
-  static const Color _bg = Color(0xFFFFFBF5);
-  static const Color _gold = Color(0xFFD4A853);
-  static const Color _white = Color(0xFF3D3025);
-  static const Color _muted = Color(0xFFB8A080);
-
-  static String _formatUsd(double v) {
+  static String _formatRmb(double v) {
     final s = v.toStringAsFixed(2);
     final dot = s.indexOf('.');
     var whole = s.substring(0, dot);
@@ -27,7 +23,7 @@ class AssetsPage extends StatelessWidget {
     if (neg) whole = whole.substring(1);
     final buf = StringBuffer();
     if (neg) buf.write('-');
-    buf.write(r'$');
+    buf.write('¥');
     for (var i = 0; i < whole.length; i++) {
       if (i > 0 && (whole.length - i) % 3 == 0) buf.write(',');
       buf.write(whole[i]);
@@ -57,31 +53,43 @@ class AssetsPage extends StatelessWidget {
         amount: h.amount,
         unit: h.symbol,
         price: livePrice,
-        valueUsd: h.amount * livePrice,
+        valueRmb: h.amount * livePrice,
       );
     }).toList();
 
-    // Total value = USDT balance + all holdings
+    // Total value = cash balance + all holdings
     final totalValue = portfolio.usdtBalance +
-        holdings.fold<double>(0, (s, h) => s + h.valueUsd);
+        holdings.fold<double>(0, (s, h) => s + h.valueRmb);
 
-    // Allocations: USDT + each holding
+    // Compute today's PnL from holdings * daily price change
+    double todayPnl = 0;
+    for (final h in portfolio.holdings) {
+      final quote = aShare.quotes.cast<StockQuote?>().firstWhere(
+        (q) => q?.symbol == h.symbol,
+        orElse: () => null,
+      );
+      if (quote != null) {
+        todayPnl += h.amount * (quote.changePct / 100) * quote.price;
+      }
+    }
+
+    // Allocations: cash + each holding
     final allocations = <_DisplayAllocation>[];
     if (portfolio.usdtBalance > 0) {
       allocations.add(_DisplayAllocation(
-        symbol: 'USDT',
+        symbol: '现金',
         percent: totalValue > 0 ? portfolio.usdtBalance / totalValue : 0,
       ));
     }
     for (final h in holdings) {
       allocations.add(_DisplayAllocation(
         symbol: h.symbol,
-        percent: totalValue > 0 ? h.valueUsd / totalValue : 0,
+        percent: totalValue > 0 ? h.valueRmb / totalValue : 0,
       ));
     }
 
     return ColoredBox(
-      color: _bg,
+      color: AppColors.background,
       child: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -105,9 +113,9 @@ class AssetsPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '总资产折合',
+                      '总资产',
                       style: TextStyle(
-                        color: _white.withValues(alpha: 0.85),
+                        color: AppColors.textPrimary.withValues(alpha: 0.85),
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 1.2,
@@ -115,9 +123,9 @@ class AssetsPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _formatUsd(totalValue),
+                      _formatRmb(totalValue),
                       style: const TextStyle(
-                        color: _gold,
+                        color: AppColors.gold,
                         fontSize: 36,
                         fontWeight: FontWeight.w800,
                         height: 1.05,
@@ -126,9 +134,9 @@ class AssetsPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     const Text(
-                      '估值以 USDT 计价',
+                      '估值以人民币计价',
                       style: TextStyle(
-                        color: _muted,
+                        color: AppColors.textSecondary,
                         fontSize: 12,
                       ),
                     ),
@@ -142,7 +150,7 @@ class AssetsPage extends StatelessWidget {
               SliverToBoxAdapter(
                 child: GainLossCard(
                   career: activeCareer,
-                  todayPnl: 0, // TODO: compute from holdings * daily price change
+                  todayPnl: todayPnl,
                 ),
               ),
 
@@ -168,17 +176,17 @@ class AssetsPage extends StatelessWidget {
                           ),
                         );
                       },
-                      icon: const Icon(Icons.receipt_long, color: _bg),
+                      icon: const Icon(Icons.receipt_long, color: AppColors.background),
                       label: const Text(
                         '交易记录',
                         style: TextStyle(
-                          color: _bg,
+                          color: AppColors.background,
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _gold,
+                        backgroundColor: AppColors.gold,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -197,7 +205,7 @@ class AssetsPage extends StatelessWidget {
                   child: Text(
                     '资产分布',
                     style: TextStyle(
-                      color: _white.withValues(alpha: 0.9),
+                      color: AppColors.textPrimary.withValues(alpha: 0.9),
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
@@ -223,7 +231,7 @@ class AssetsPage extends StatelessWidget {
                   child: Text(
                     '持仓',
                     style: TextStyle(
-                      color: _white.withValues(alpha: 0.9),
+                      color: AppColors.textPrimary.withValues(alpha: 0.9),
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
@@ -248,14 +256,14 @@ class AssetsPage extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.account_balance_wallet_outlined,
+                      const Icon(Icons.account_balance_wallet_outlined,
                           size: 56,
-                          color: _muted.withValues(alpha: 0.5)),
+                          color: AppColors.unselectedBg),
                       const SizedBox(height: 12),
                       Text(
                         '暂无持仓',
                         style: TextStyle(
-                          color: _white.withValues(alpha: 0.65),
+                          color: AppColors.textPrimary.withValues(alpha: 0.65),
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -264,7 +272,7 @@ class AssetsPage extends StatelessWidget {
                       const Text(
                         '前往交易页开始你的第一笔交易',
                         style: TextStyle(
-                          color: _muted,
+                          color: AppColors.textSecondary,
                           fontSize: 13,
                         ),
                       ),
@@ -303,14 +311,14 @@ class _DisplayHolding {
     required this.amount,
     required this.unit,
     required this.price,
-    required this.valueUsd,
+    required this.valueRmb,
   });
   final String symbol;
   final String name;
   final double amount;
   final String unit;
   final double price;
-  final double valueUsd;
+  final double valueRmb;
 }
 
 // ---- tiles ----
@@ -331,7 +339,7 @@ class _DistributionTile extends StatelessWidget {
             Text(
               allocation.symbol,
               style: const TextStyle(
-                color: AssetsPage._white,
+                color: AppColors.textPrimary,
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),
@@ -339,7 +347,7 @@ class _DistributionTile extends StatelessWidget {
             Text(
               '$pct%',
               style: const TextStyle(
-                color: AssetsPage._gold,
+                color: AppColors.gold,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
@@ -352,9 +360,9 @@ class _DistributionTile extends StatelessWidget {
           child: LinearProgressIndicator(
             value: allocation.percent.clamp(0.0, 1.0),
             minHeight: 6,
-            backgroundColor: const Color(0xFFF5EDE0),
+            backgroundColor: AppColors.unselectedBg,
             valueColor:
-                const AlwaysStoppedAnimation<Color>(AssetsPage._gold),
+                const AlwaysStoppedAnimation<Color>(AppColors.gold),
           ),
         ),
       ],
@@ -375,10 +383,10 @@ class _HoldingTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: const Color(0xFF121212),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: AssetsPage._gold.withValues(alpha: 0.12),
+          color: AppColors.border,
         ),
       ),
       child: Row(
@@ -388,7 +396,7 @@ class _HoldingTile extends StatelessWidget {
             height: 40,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: AssetsPage._gold.withValues(alpha: 0.08),
+              color: AppColors.gold.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -396,7 +404,7 @@ class _HoldingTile extends StatelessWidget {
                   ? holding.symbol.substring(0, 3)
                   : holding.symbol,
               style: const TextStyle(
-                color: AssetsPage._gold,
+                color: AppColors.gold,
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
               ),
@@ -410,7 +418,7 @@ class _HoldingTile extends StatelessWidget {
                 Text(
                   holding.name,
                   style: const TextStyle(
-                    color: AssetsPage._white,
+                    color: AppColors.textPrimary,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -419,7 +427,7 @@ class _HoldingTile extends StatelessWidget {
                 Text(
                   '$amountStr ${holding.unit}',
                   style: const TextStyle(
-                    color: AssetsPage._muted,
+                    color: AppColors.textSecondary,
                     fontSize: 13,
                   ),
                 ),
@@ -427,9 +435,9 @@ class _HoldingTile extends StatelessWidget {
             ),
           ),
           Text(
-            AssetsPage._formatUsd(holding.valueUsd),
+            AssetsPage._formatRmb(holding.valueRmb),
             style: const TextStyle(
-              color: AssetsPage._gold,
+              color: AppColors.gold,
               fontSize: 15,
               fontWeight: FontWeight.w700,
             ),
