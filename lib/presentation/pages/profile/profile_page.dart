@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:dark_trade_app/core/constants.dart';
 import 'package:dark_trade_app/domain/services/auth_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
+import 'package:dark_trade_app/domain/services/achievement_service.dart';
 import 'package:dark_trade_app/presentation/pages/profile/auth_sheet.dart';
 import 'package:dark_trade_app/presentation/pages/profile/career_management_sheet.dart';
 import 'package:dark_trade_app/presentation/pages/profile/forgot_password_sheet.dart';
@@ -106,6 +107,8 @@ class ProfilePage extends StatelessWidget {
                   builder: (_) => const CareerManagementSheet(),
                 ),
               ),
+            const SizedBox(height: 12),
+            _buildAchievementSection(context),
             const SizedBox(height: 12),
             // Menu items
             _menuCard(context, [
@@ -232,6 +235,72 @@ class ProfilePage extends StatelessWidget {
       title: Text(title, style: const TextStyle(color: AppColors.textPrimary)),
       trailing: const Icon(Icons.chevron_right, color: AppColors.textSecondary),
       onTap: onTap,
+    );
+  }
+
+  Widget _buildAchievementSection(BuildContext context) {
+    final achievementService = context.watch<AchievementService>();
+    final achievements = achievementService.achievements;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('成就勋章', style: TextStyle(
+                color: AppColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w600,
+              )),
+              Text('${achievementService.unlocked.length}/${achievements.length}',
+                style: const TextStyle(color: AppColors.gold, fontSize: 13, fontWeight: FontWeight.w600)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: achievements.map((a) {
+              final unlocked = a.unlocked;
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 48, height: 48,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: unlocked ? AppColors.gold.withValues(alpha: 0.1) : AppColors.unselectedBg,
+                      border: Border.all(
+                        color: unlocked ? AppColors.gold : AppColors.border,
+                        width: unlocked ? 2 : 1,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        unlocked ? a.emoji : '🔒',
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    a.name,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: unlocked ? AppColors.textPrimary : AppColors.unselectedText,
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
 }
