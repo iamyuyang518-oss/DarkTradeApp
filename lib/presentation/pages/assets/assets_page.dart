@@ -3,11 +3,13 @@ import 'package:dark_trade_app/domain/services/a_share_service.dart';
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
 import 'package:dark_trade_app/domain/services/portfolio_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
+import 'package:dark_trade_app/domain/services/trade_history_service.dart';
 import 'package:dark_trade_app/presentation/pages/profile/trade_history_page.dart';
 import 'package:dark_trade_app/presentation/widgets/career_selector.dart';
 import 'package:dark_trade_app/presentation/widgets/gain_loss_card.dart';
 import 'package:dark_trade_app/presentation/widgets/equity_curve_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 /// Warm theme asset page: total in RMB, allocation, holdings — with live quotes.
@@ -153,6 +155,44 @@ class AssetsPage extends StatelessWidget {
                   todayPnl: todayPnl,
                 ),
               ),
+
+            // ---- 情绪仪表盘 ----
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                child: Consumer<TradeHistoryService>(
+                  builder: (context, tradeHistory, _) {
+                    final recentTrades = tradeHistory.records
+                        .where((r) => r.createdAt.isAfter(DateTime.now().subtract(const Duration(days: 7))))
+                        .length;
+                    final emoji = recentTrades <= 1 ? '🧘' : recentTrades <= 5 ? '🍿' : '🔥';
+                    final label = recentTrades <= 1 ? '佛系' : recentTrades <= 5 ? '吃瓜' : '上头';
+                    final hint = recentTrades <= 1 ? '淡定持有，心如止水'
+                        : recentTrades <= 5 ? '观望中，吃瓜看戏'
+                        : '交易频繁，注意休息';
+
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('$emoji $label', style: const TextStyle(fontSize: 16)),
+                          const SizedBox(width: 8),
+                          Text(hint, style: GoogleFonts.notoSansSc(
+                            fontSize: 12, color: AppColors.textSecondary,
+                          )),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
 
             // ---- 权益曲线 ----
             if (activeCareer != null)
