@@ -3,6 +3,7 @@ import 'package:dark_trade_app/domain/services/auth_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
 import 'package:dark_trade_app/domain/services/trade_history_service.dart';
 import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
+import 'package:dark_trade_app/domain/services/watchlist_service.dart';
 import 'package:dark_trade_app/presentation/pages/assets/assets_page.dart';
 import 'package:dark_trade_app/presentation/pages/market/market_page.dart';
 import 'package:dark_trade_app/presentation/pages/profile/profile_page.dart';
@@ -44,7 +45,8 @@ class _MainTabsPageState extends State<MainTabsPage> {
     final auth = context.read<AuthService>();
     final careerService = context.read<CareerService>();
     final tradeHistory = context.read<TradeHistoryService>();
-    auth.wireServices(careerService, tradeHistory);
+    final watchlistService = context.read<WatchlistService>();
+    auth.wireServices(careerService, tradeHistory, watchlistService);
     _tradeSelection = context.read<TradeSelectionService>();
     _tradeSelection.addListener(_onTradeSelectionChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkOnboarding());

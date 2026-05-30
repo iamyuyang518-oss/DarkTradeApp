@@ -8,6 +8,7 @@ import 'package:dark_trade_app/data/repositories/supabase_career_repo.dart';
 import 'package:dark_trade_app/data/repositories/supabase_trade_history_repo.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
 import 'package:dark_trade_app/domain/services/trade_history_service.dart';
+import 'package:dark_trade_app/domain/services/watchlist_service.dart';
 
 enum AuthState { guest, loggedIn }
 
@@ -20,6 +21,7 @@ class AuthService extends ChangeNotifier {
 
   CareerService? _careerService;
   TradeHistoryService? _tradeHistoryService;
+  WatchlistService? _watchlistService;
 
   static const _virtualDomain = '@darktrade.app';
 
@@ -37,17 +39,28 @@ class AuthService extends ChangeNotifier {
 
   // ---- wire services after provider tree is built ----
 
-  void wireServices(CareerService cs, TradeHistoryService th) {
+  void wireServices(CareerService cs, TradeHistoryService th, WatchlistService? ws) {
     _careerService = cs;
     _tradeHistoryService = th;
+    _watchlistService = ws;
     if (_state == AuthState.loggedIn) {
       _setupRemoteRepos();
+      _watchlistService?.onLogin(_userId!);
     }
   }
 
   // ---- internal helpers ----
 
-  String _virtualEmail(String username) => '${username.trim()}$_virtualDomain';
+  /// Generate an ASCII-safe virtual email from username.
+  /// Uses SHA-256 so the same username always maps to the same email,
+  /// supporting Chinese / emoji / any Unicode in the display name.
+  String _virtualEmail(String username) {
+    final hash = sha256
+        .convert(utf8.encode('darktrade:${username.trim().toLowerCase()}'))
+        .toString()
+        .substring(0, 20);
+    return '$hash$_virtualDomain';
+  }
 
   String _hashAnswer(String answer) {
     return sha256.convert(utf8.encode(answer.trim().toLowerCase())).toString();
@@ -82,6 +95,7 @@ class AuthService extends ChangeNotifier {
             _userId = s.user.id;
             _loadProfile();
             _setupRemoteRepos();
+            _watchlistService?.onLogin(s.user.id);
             notifyListeners();
           } else if (s == null && _state == AuthState.loggedIn) {
             _logoutLocal();
@@ -150,6 +164,7 @@ class AuthService extends ChangeNotifier {
       _userId = uid;
       _username = username;
       _setupRemoteRepos();
+      _watchlistService?.onLogin(uid);
       notifyListeners();
       return null;
     } on AuthException catch (e) {
@@ -178,6 +193,7 @@ class AuthService extends ChangeNotifier {
       _userId = uid;
       await _loadProfile();
       _setupRemoteRepos();
+      _watchlistService?.onLogin(uid);
       notifyListeners();
       return null;
     } on AuthException catch (e) {
@@ -262,6 +278,7 @@ class AuthService extends ChangeNotifier {
     _username = null;
     _userId = null;
     _clearRemoteRepos();
+    _watchlistService?.onLogout();
     notifyListeners();
   }
 

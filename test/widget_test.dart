@@ -53,7 +53,7 @@ void main() {
     final tradeHistory = TradeHistoryService(localRepo: tradeHistoryRepo);
     final auth = AuthService();
     // Wire services so MainTabsPage can wire them again without issue
-    auth.wireServices(careerService, tradeHistory);
+    auth.wireServices(careerService, tradeHistory, null);
 
     await tester.pumpWidget(
       MultiProvider(
