@@ -6,6 +6,7 @@ import 'package:dark_trade_app/domain/services/career_service.dart';
 import 'package:dark_trade_app/domain/services/achievement_service.dart';
 import 'package:dark_trade_app/presentation/pages/profile/auth_sheet.dart';
 import 'package:dark_trade_app/presentation/pages/profile/career_management_sheet.dart';
+import 'package:dark_trade_app/presentation/pages/tutorial/tutorial_page.dart';
 import 'package:dark_trade_app/presentation/pages/profile/forgot_password_sheet.dart';
 import 'package:dark_trade_app/presentation/pages/profile/trade_history_page.dart';
 
@@ -124,6 +125,9 @@ class ProfilePage extends StatelessWidget {
               }),
               _menuItem('交易记录', Icons.receipt_long, () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const TradeHistoryPage()));
+              }),
+              _menuItem('新手教程', Icons.school, () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const TutorialPage()));
               }),
               if (isLoggedIn)
                 _menuItem('修改密码', Icons.lock_outline, () {
