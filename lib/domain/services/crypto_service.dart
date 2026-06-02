@@ -1,7 +1,7 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
 
 class CryptoService extends MarketDataService {
@@ -12,29 +12,12 @@ class CryptoService extends MarketDataService {
 
   @override
   Future<ParsedMarkets> fetchAndParse() async {
-    // CoinGecko free API: top 30 coins by market cap, CNY prices, 7d sparkline
-    const baseUrl = 'https://api.coingecko.com/api/v3/coins/markets';
-    final uri = Uri.parse(baseUrl).replace(queryParameters: {
-      'vs_currency': 'cny',
-      'order': 'market_cap_desc',
-      'per_page': '30',
-      'page': '1',
-      'sparkline': 'true',
-      'price_change_percentage': '24h',
-    });
+    // Binance public API — supports CORS, no proxy needed
+    const baseUrl = 'https://api.binance.com/api/v3/ticker/24hr';
+    final uri = Uri.parse(baseUrl);
 
-    // Try direct first — CoinGecko allows browser CORS for public endpoints.
-    // Fall back to CORS proxy only if direct fails with a non-403 error.
-    http.Response response;
-    try {
-      debugPrint('[CryptoService] GET $uri');
-      response = await client.get(uri).timeout(requestTimeout);
-    } catch (_) {
-      // Direct failed — try via CORS proxy
-      final proxied = MarketDataService.corsProxy(uri.toString());
-      debugPrint('[CryptoService] direct failed, trying proxy: $proxied');
-      response = await client.get(proxied).timeout(requestTimeout);
-    }
+    debugPrint('[CryptoService] GET $uri');
+    final response = await client.get(uri).timeout(requestTimeout);
 
     if (response.statusCode != 200) {
       throw MarketsFetchException('HTTP ${response.statusCode}');
@@ -42,39 +25,48 @@ class CryptoService extends MarketDataService {
 
     final List<dynamic> json = jsonDecode(response.body) as List<dynamic>;
 
+    // Filter USDT pairs, sort by quote volume, take top 30
+    final usdtPairs = json
+        .where((e) {
+          final s = (e as Map<String, dynamic>)['symbol'] as String? ?? '';
+          return s.endsWith('USDT');
+        })
+        .map((e) => e as Map<String, dynamic>)
+        .toList();
+
+    usdtPairs.sort((a, b) {
+      final va = (a['quoteVolume'] as num?)?.toDouble() ?? 0;
+      final vb = (b['quoteVolume'] as num?)?.toDouble() ?? 0;
+      return vb.compareTo(va);
+    });
+
+    final top30 = usdtPairs.take(30).toList();
+
     final quotes = <StockQuote>[];
     double totalVolume = 0;
 
-    for (final coin in json) {
-      final map = coin as Map<String, dynamic>;
-      final symbol = map['symbol'] as String? ?? '';
-      final name = map['name'] as String? ?? symbol;
+    for (final coin in top30) {
+      final rawSymbol = coin['symbol'] as String? ?? '';
+      // Strip USDT suffix for display: "BTCUSDT" → "BTC"
+      final displaySymbol =
+          rawSymbol.endsWith('USDT') ? rawSymbol.substring(0, rawSymbol.length - 4) : rawSymbol;
 
-      final price = (map['current_price'] as num?)?.toDouble() ?? 0;
+      final price = (coin['lastPrice'] as num?)?.toDouble() ?? 0;
       final changePct =
-          (map['price_change_percentage_24h'] as num?)?.toDouble() ?? 0;
-
-      // 7-day sparkline
-      final sparkline = map['sparkline_in_7d'] as Map<String, dynamic>?;
-      final prices = (sparkline?['price'] as List<dynamic>?)
-              ?.map((e) => (e as num).toDouble())
-              .toList() ??
-          [];
-
-      final chartCsv =
-          sparklineToCsv(prices, fallbackPrice: price);
-
+          (coin['priceChangePercent'] as num?)?.toDouble() ?? 0;
       final volume =
-          (map['total_volume'] as num?)?.toDouble() ?? 0;
+          (coin['quoteVolume'] as num?)?.toDouble() ?? 0;
       totalVolume += volume;
 
-      // Use CoinGecko id as the stock identifier for K-line lookups
-      final id = map['id'] as String? ?? symbol;
+      // Build a simple sparkline from 24hr open/close
+      final openPrice =
+          (coin['openPrice'] as num?)?.toDouble() ?? price;
+      final chartCsv = _buildSparkline(openPrice, price);
 
       quotes.add(StockQuote(
-        id: id,
-        symbol: symbol.toUpperCase(),
-        name: name,
+        id: rawSymbol, // Binance symbol for K-line lookups
+        symbol: displaySymbol,
+        name: displaySymbol,
         price: price,
         changePct: changePct,
         chartCsv: chartCsv,
@@ -83,5 +75,20 @@ class CryptoService extends MarketDataService {
     }
 
     return ParsedMarkets(quotes: quotes, totalVolumeUsd: totalVolume);
+  }
+
+  /// Builds an 8-point sparkline between open and close price.
+  String _buildSparkline(double open, double close) {
+    const points = 8;
+    final rand = Random(42); // seeded for consistency per fetch
+    final result = <double>[];
+    for (int i = 0; i < points; i++) {
+      final t = i / (points - 1);
+      // Linear interpolation + small jitter
+      final base = open + (close - open) * t;
+      final jitter = (rand.nextDouble() - 0.5) * (base * 0.005).abs();
+      result.add(base + jitter);
+    }
+    return result.map((e) => e.toStringAsFixed(4)).join(',');
   }
 }
