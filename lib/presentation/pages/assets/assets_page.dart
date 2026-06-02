@@ -560,7 +560,7 @@ class AssetsPage extends StatelessWidget {
                       color: AppColors.unselectedBg),
                   const SizedBox(height: 12),
                   Text(
-                    '暂无持仓',
+                    AppText.emptyHoldingsTitle,
                     style: TextStyle(
                       color: AppColors.textPrimary.withValues(alpha: 0.65),
                       fontSize: 16,
@@ -569,7 +569,7 @@ class AssetsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    '前往交易页开始你的第一笔交易',
+                    AppText.emptyHoldings,
                     style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 13,
@@ -702,7 +702,7 @@ class AssetsPage extends StatelessWidget {
                 size: 56, color: AppColors.unselectedBg),
             const SizedBox(height: 12),
             Text(
-              '暂无持仓',
+              AppText.emptyHoldingsTitle,
               style: TextStyle(
                 color: AppColors.textPrimary.withValues(alpha: 0.65),
                 fontSize: 16,
@@ -711,7 +711,7 @@ class AssetsPage extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             const Text(
-              '前往交易页开始你的第一笔交易',
+              AppText.emptyHoldings,
               style: TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 13,

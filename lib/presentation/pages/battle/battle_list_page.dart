@@ -110,7 +110,7 @@ class _BattleListPageState extends State<BattleListPage> {
                 size: 64, color: AppColors.unselectedText),
             const SizedBox(height: 16),
             const Text(
-              '登录后参与好友对战',
+              '登录后参与好友对战，邀请好友一决高下 ⚔️',
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 18,

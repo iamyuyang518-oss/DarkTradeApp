@@ -102,7 +102,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 size: 64, color: AppColors.unselectedText),
             const SizedBox(height: 16),
             const Text(
-              '登录后查看排行榜',
+              '登录后查看排行榜，与全球交易者一较高下 🏆',
               style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 18,
