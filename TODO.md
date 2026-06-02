@@ -1,6 +1,6 @@
 # DarkTrade App — 项目进度与待办
 
-> 最后更新：2026-05-30（晚，M7 六项功能完成）
+> 最后更新：2026-06-02（M8 全部完成 🎉）
 > 技术栈：Flutter · Provider · Hive · Supabase · 东方财富 API
 > 生产环境：✅ https://darktrade.vercel.app
 
@@ -108,7 +108,7 @@
 - [x] 更新 `web/manifest.json`（name, description, theme_color: #FFFBF5）
 - [x] 更新 `web/index.html` meta description
 - [x] 替换 `web/favicon.png` 为项目 Logo
-- [ ] PWA Service Worker 离线支持
+- [x] ~~PWA Service Worker 离线支持~~（初期发布不需要，已跳过）
 - [x] `flutter build web --release` 验证通过
 - [x] Vercel 部署 + 冒烟测试（Flutter Web 需本地构建后 CLI 部署）
 
@@ -125,9 +125,9 @@
 
 ## 五、P2 — 社交 + 商业化
 
-- [ ] Supabase 远程排行榜（周/月/总）
-- [ ] 好友对战系统（房间 + 邀请码）
-- [ ] 会员系统 + 加密货币市场解锁
+- [x] Supabase 远程排行榜（周/月/总）✅ 2026-06-02
+- [x] 好友对战系统（房间 + 邀请码）✅ 2026-06-02
+- [x] 会员系统 + 加密货币市场解锁 ✅ 2026-06-02
 - [ ] 微信小程序（独立技术栈）
 - [ ] 独立域名购买绑定
 
@@ -169,7 +169,7 @@ lib/
 - [x] M5：账号系统 + 游客模式 + 数据迁移 ✅ 已完成（2026-05-30）
 - [x] M6：合规层 + 新手引导 + Tips + PWA 部署 → Vercel 已上线
 - [x] M7：成就 + 教程 + 分享图 + 情绪仪表盘 ✅ 已完成（2026-05-30）
-- [ ] M8：排行榜 + 好友对战 + 会员系统
+- [x] M8：排行榜 + 好友对战 + 会员系统 + 加密货币 ✅ 已完成（2026-06-02）
 
 ---
 
@@ -211,12 +211,21 @@ flutter run -d chrome
 
 ## 十二、下次继续任务
 
-### 优先 — Vercel 重新部署
+### 运维
 - [ ] Vercel 冒烟测试（在可访问网络环境中验证 https://darktrade.vercel.app）
+- [ ] Supabase 数据库迁移执行（`20260602_battle_tables.sql` + `20260602_add_membership_tier.sql`）
 
-### 次要 — M8 功能
-- [ ] Supabase 远程排行榜（周/月/总）
-- [ ] 好友对战系统（房间 + 邀请码）
-- [ ] 会员系统 + 加密货币市场解锁
+### P3 — 后续迭代
 - [ ] 微信小程序（独立技术栈）
 - [ ] 独立域名购买绑定
+- [ ] 真实支付集成（微信/支付宝）
+- [ ] Supabase Realtime 替换轮询（好友对战实时更新）
+- [ ] Push 通知（对战邀请、战斗结束）
+
+### 最近提交（2026-06-02）
+```
+83b90a0 feat: add VIP membership + cryptocurrency market unlock (M8)
+91701d5 feat: add friend battle system with invite codes (M8)
+3851006 feat: add Supabase remote leaderboard (M8)
+d219bcd feat: update app icons and add favicon generation scripts
+```
