@@ -35,8 +35,8 @@ class CryptoService extends MarketDataService {
         .toList();
 
     usdtPairs.sort((a, b) {
-      final va = (a['quoteVolume'] as num?)?.toDouble() ?? 0;
-      final vb = (b['quoteVolume'] as num?)?.toDouble() ?? 0;
+      final va = _parseNum(a['quoteVolume']);
+      final vb = _parseNum(b['quoteVolume']);
       return vb.compareTo(va);
     });
 
@@ -51,16 +51,13 @@ class CryptoService extends MarketDataService {
       final displaySymbol =
           rawSymbol.endsWith('USDT') ? rawSymbol.substring(0, rawSymbol.length - 4) : rawSymbol;
 
-      final price = (coin['lastPrice'] as num?)?.toDouble() ?? 0;
-      final changePct =
-          (coin['priceChangePercent'] as num?)?.toDouble() ?? 0;
-      final volume =
-          (coin['quoteVolume'] as num?)?.toDouble() ?? 0;
+      final price = _parseNum(coin['lastPrice']);
+      final changePct = _parseNum(coin['priceChangePercent']);
+      final volume = _parseNum(coin['quoteVolume']);
       totalVolume += volume;
 
       // Build a simple sparkline from 24hr open/close
-      final openPrice =
-          (coin['openPrice'] as num?)?.toDouble() ?? price;
+      final openPrice = _parseNum(coin['openPrice'], fallback: price);
       final chartCsv = _buildSparkline(openPrice, price);
 
       quotes.add(StockQuote(
@@ -75,6 +72,14 @@ class CryptoService extends MarketDataService {
     }
 
     return ParsedMarkets(quotes: quotes, totalVolumeUsd: totalVolume);
+  }
+
+  /// Parses a Binance API numeric value (may be String, int, or double).
+  double _parseNum(dynamic value, {double fallback = 0}) {
+    if (value == null) return fallback;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? fallback;
+    return fallback;
   }
 
   /// Builds an 8-point sparkline between open and close price.
