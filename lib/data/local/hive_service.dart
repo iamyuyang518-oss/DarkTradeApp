@@ -7,6 +7,7 @@ class HiveService {
   static const String tradeHistoryBox = 'tradeHistory';
   static const String prefsBox = 'prefs';
   static const String watchlistBox = 'watchlist';
+  static const String achievementsBox = 'achievements';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -19,6 +20,7 @@ class HiveService {
       Hive.openBox<TradeRecord>(tradeHistoryBox),
       Hive.openBox(prefsBox),
       Hive.openBox<List>(watchlistBox),
+      Hive.openBox(achievementsBox),
     ]);
   }
 
@@ -28,4 +30,5 @@ class HiveService {
   static Box get prefs => Hive.box(prefsBox);
   static Box<List> get watchlist =>
       Hive.box<List>(watchlistBox);
+  static Box get achievements => Hive.box(achievementsBox);
 }
