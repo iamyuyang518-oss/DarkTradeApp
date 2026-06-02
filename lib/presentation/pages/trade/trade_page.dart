@@ -90,25 +90,23 @@ class _TradePageState extends State<TradePage> {
           SnackBar(
             behavior: SnackBarBehavior.floating,
             margin: const EdgeInsets.all(16),
-            backgroundColor: AppColors.textPrimary,
+            backgroundColor: AppColors.surface,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: BorderSide(
-                  color: AppColors.gold.withValues(alpha: 0.45)),
+              borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+              side: const BorderSide(color: AppColors.gold, width: 1.5),
             ),
-            content: Row(
+            content: const Row(
               children: [
-                const Icon(Icons.task_alt_rounded,
+                Icon(Icons.task_alt_rounded,
                     color: AppColors.gold, size: 22),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    result.message,
-                    style: const TextStyle(
+                    AppText.tradeSuccess,
+                    style: TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
                     ),
                   ),
                 ),
@@ -123,7 +121,11 @@ class _TradePageState extends State<TradePage> {
       HapticFeedback.heavyImpact();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result.message)),
+        SnackBar(
+          content: Text(result.message),
+          backgroundColor: AppColors.down,
+          behavior: SnackBarBehavior.floating,
+        ),
       );
     }
   }
@@ -225,9 +227,15 @@ class _TradePageState extends State<TradePage> {
           child: SafeArea(
             child: ConfettiOverlay(
               play: _showConfetti,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isWide = constraints.maxWidth >= 700;
+                  return Center(
+                    child: SizedBox(
+                      width: isWide ? 480 : double.infinity,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                     child: SymbolBar(
@@ -320,8 +328,12 @@ class _TradePageState extends State<TradePage> {
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 11),
                     ),
-                  ),
-                ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),

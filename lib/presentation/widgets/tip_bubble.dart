@@ -6,6 +6,7 @@ class TipData {
   TipData._();
 
   static const all = [
+    AppText.newbieTip,
     'A 股实行 T+1 制度，今天买的股票最早明天才能卖',
     '一手 = 100 股，买股票必须按手买入',
     '涨停板是 ±10%（科创/创业板 ±20%），涨跌幅有限制的',
