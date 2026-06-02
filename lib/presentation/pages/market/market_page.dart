@@ -92,6 +92,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
         body: Column(
           children: [
             _buildHeader(context),
+            if (_selectedMarket == 0) _MarketSentimentStrip(aShare: aShare),
             // Market type selector (VIP only for crypto)
             if (auth.isVip) _buildMarketSelector(),
             _buildTabBar(),
@@ -277,7 +278,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
     }
 
     if (watchlist.symbols.isEmpty) {
-      return _emptyState('还没有关注股票', '去 🔥热门 发现感兴趣的股票，点击 ☆ 加入关注');
+      return _emptyState(AppText.emptyWatchlistTitle, AppText.emptyWatchlist);
     }
 
     var filtered = quotes
@@ -291,7 +292,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
     }
 
     if (filtered.isEmpty) {
-      return _emptyState('没有匹配结果', '试试其他搜索词');
+      return _emptyState(AppText.noMatchResult, AppText.tryOtherSearch);
     }
 
     return _buildStockListView(filtered, showStar: true);
@@ -301,7 +302,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
 
   Widget _buildHoldingsTab(PortfolioService portfolio, MarketDataService source, List<StockQuote> quotes) {
     if (portfolio.holdings.isEmpty) {
-      return _emptyState('还没有持仓', '前往交易页开始你的第一笔模拟交易吧');
+      return _emptyState(AppText.emptyHoldingsTitle, AppText.emptyHoldings);
     }
 
     final priceMap = <String, double>{};
@@ -404,7 +405,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
     }
 
     if (hot.isEmpty) {
-      return _emptyState('没有匹配结果', '试试其他搜索词');
+      return _emptyState(AppText.noMatchResult, AppText.tryOtherSearch);
     }
 
     return _buildStockListView(hot, showStar: true);
@@ -413,10 +414,28 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
   // ---- shared stock list ---------------------------------------------------
 
   Widget _buildStockListView(List<StockQuote> quotes, {bool showStar = false}) {
-    return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 60),
-      itemCount: quotes.length,
-      itemBuilder: (context, i) => _buildStockCard(quotes[i], showStar: showStar),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 700;
+        if (isWide) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(28, 8, 28, 60),
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: quotes.map((q) => SizedBox(
+                width: (constraints.maxWidth - 20) / 2,
+                child: _buildStockCard(q, showStar: showStar),
+              )).toList(),
+            ),
+          );
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 60),
+          itemCount: quotes.length,
+          itemBuilder: (context, i) => _buildStockCard(quotes[i], showStar: showStar),
+        );
+      },
     );
   }
 
@@ -556,6 +575,123 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
             fontSize: 13, color: AppColors.textMuted,
           )),
         ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Market Sentiment Strip
+// ---------------------------------------------------------------------------
+
+class _MarketSentimentStrip extends StatelessWidget {
+  const _MarketSentimentStrip({required this.aShare});
+  final AShareService aShare;
+
+  @override
+  Widget build(BuildContext context) {
+    final quotes = aShare.quotes;
+    if (quotes.isEmpty) return const SizedBox.shrink();
+
+    // Compute average absolute change
+    double totalAbs = 0;
+    for (final q in quotes) {
+      totalAbs += q.changePct.abs();
+    }
+    final avgVolatility = quotes.isNotEmpty ? totalAbs / quotes.length : 0.0;
+
+    String emoji;
+    String label;
+    String hint;
+    Color bgColor;
+    Color barColor;
+
+    if (avgVolatility < 0.5) {
+      emoji = '🧘';
+      label = '佛系';
+      hint = '市场风平浪静，适合慢慢研究';
+      bgColor = AppColors.emotionZenBg;
+      barColor = AppColors.emotionZen;
+    } else if (avgVolatility < 2.0) {
+      emoji = '🍿';
+      label = '吃瓜看戏';
+      hint = '小幅波动，市场正在寻找方向';
+      bgColor = AppColors.emotionPopcornBg;
+      barColor = AppColors.emotionPopcorn;
+    } else {
+      emoji = '🔥';
+      label = '上头';
+      hint = '波动较大，多看少动，注意风险';
+      bgColor = AppColors.emotionFireBg;
+      barColor = AppColors.emotionFire;
+    }
+
+    // Scale to 0..1 bar width (assuming max volatility ~5%)
+    final barFraction = (avgVolatility / 5.0).clamp(0.0, 1.0);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(AppDimens.radiusLg),
+          border: Border.all(color: barColor.withValues(alpha: 0.3), width: 1.5),
+        ),
+        child: Row(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 28)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '今日市场情绪：$label',
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    hint,
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              children: [
+                Text(
+                  '±${avgVolatility.toStringAsFixed(1)}%',
+                  style: const TextStyle(
+                    color: AppColors.gold,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                SizedBox(
+                  width: 60,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(3),
+                    child: LinearProgressIndicator(
+                      value: barFraction,
+                      minHeight: 6,
+                      backgroundColor: AppColors.goldBg,
+                      valueColor: AlwaysStoppedAnimation<Color>(barColor),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
