@@ -6,6 +6,7 @@ import 'package:dark_trade_app/domain/services/market_data_service.dart';
 import 'package:dark_trade_app/domain/services/watchlist_service.dart';
 import 'package:dark_trade_app/domain/services/portfolio_service.dart';
 import 'package:dark_trade_app/domain/services/auth_service.dart';
+import 'package:dark_trade_app/domain/services/market_sentiment_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   int _selectedMarket = 0; // 0 = A股, 1 = 加密货币
+  int _lastSentimentQuotesHash = 0;
 
 
   @override
@@ -74,6 +76,19 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
     // Pick data source based on market selection
     final source = _selectedMarket == 0 ? aShare : crypto;
     final quotes = source.quotes;
+
+    // Wire market sentiment service (guarded by quotes hash to avoid build loops)
+    if (_selectedMarket == 0 && aShare.quotes.isNotEmpty) {
+      final hash = Object.hashAll(aShare.quotes.map((q) => q.changePct));
+      if (hash != _lastSentimentQuotesHash) {
+        _lastSentimentQuotesHash = hash;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          final absChanges = aShare.quotes.map((q) => q.changePct.abs()).toList();
+          context.read<MarketSentimentService>().computeMarket(absChanges);
+        });
+      }
+    }
 
     // Set initial tab based on auth state
     WidgetsBinding.instance.addPostFrameCallback((_) {

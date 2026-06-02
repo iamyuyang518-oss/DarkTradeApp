@@ -11,6 +11,7 @@ import 'package:dark_trade_app/domain/services/battle_service.dart';
 import 'package:dark_trade_app/domain/services/leaderboard_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
 import 'package:dark_trade_app/domain/services/crypto_service.dart';
+import 'package:dark_trade_app/domain/services/market_sentiment_service.dart';
 import 'package:dark_trade_app/domain/services/portfolio_service.dart';
 import 'package:dark_trade_app/domain/services/trade_history_service.dart';
 import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
@@ -58,6 +59,7 @@ void main() async {
         ChangeNotifierProvider.value(value: tradeHistory),
         ChangeNotifierProvider(create: (_) => AuthService()),
         ChangeNotifierProvider(create: (_) => BattleService()),
+        ChangeNotifierProvider(create: (_) => MarketSentimentService()),
       ],
       child: const DarkTradeApp(),
     ),
