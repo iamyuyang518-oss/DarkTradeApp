@@ -8,6 +8,7 @@ import 'package:dark_trade_app/presentation/pages/profile/auth_sheet.dart';
 import 'package:dark_trade_app/presentation/pages/profile/career_management_sheet.dart';
 import 'package:dark_trade_app/presentation/pages/tutorial/tutorial_page.dart';
 import 'package:dark_trade_app/presentation/pages/leaderboard/leaderboard_page.dart';
+import 'package:dark_trade_app/presentation/pages/battle/battle_list_page.dart';
 import 'package:dark_trade_app/presentation/pages/profile/forgot_password_sheet.dart';
 import 'package:dark_trade_app/presentation/pages/profile/trade_history_page.dart';
 
@@ -129,6 +130,9 @@ class ProfilePage extends StatelessWidget {
               }),
               _menuItem('排行榜', Icons.leaderboard, () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const LeaderboardPage()));
+              }),
+              _menuItem('好友对战', Icons.sports_kabaddi, () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const BattleListPage()));
               }),
               _menuItem('新手教程', Icons.school, () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const TutorialPage()));
