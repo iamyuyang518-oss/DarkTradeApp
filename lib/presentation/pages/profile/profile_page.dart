@@ -11,6 +11,7 @@ import 'package:dark_trade_app/presentation/pages/leaderboard/leaderboard_page.d
 import 'package:dark_trade_app/presentation/pages/battle/battle_list_page.dart';
 import 'package:dark_trade_app/presentation/pages/profile/forgot_password_sheet.dart';
 import 'package:dark_trade_app/presentation/pages/profile/trade_history_page.dart';
+import 'package:dark_trade_app/presentation/pages/profile/widgets/vip_card.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -113,6 +114,8 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 12),
             _buildAchievementSection(context),
             const SizedBox(height: 12),
+            if (isLoggedIn) const VipCard(),
+            if (isLoggedIn) const SizedBox(height: 12),
             // Menu items
             _menuCard(context, [
               _menuItem('生涯管理', Icons.sports_esports, () {

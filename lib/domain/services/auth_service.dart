@@ -16,6 +16,7 @@ class AuthService extends ChangeNotifier {
   AuthState _state = AuthState.guest;
   String? _username;
   String? _userId;
+  String _membershipTier = 'free';
   bool _initialized = false;
   StreamSubscription? _authListener;
 
@@ -31,6 +32,8 @@ class AuthService extends ChangeNotifier {
   String? get username => _username;
   String? get userId => _userId;
   bool get isLoggedIn => _state == AuthState.loggedIn;
+  bool get isVip => _membershipTier == 'vip';
+  String get membershipTier => _membershipTier;
   bool get initialized => _initialized;
 
   AuthService() {
@@ -115,11 +118,13 @@ class AuthService extends ChangeNotifier {
     try {
       final data = await SupabaseClientManager.instance
           .from('profiles')
-          .select('username')
+          .select('username, membership_tier')
           .eq('id', uid)
           .maybeSingle();
       if (data != null) {
         _username = data['username'] as String?;
+        _membershipTier =
+            data['membership_tier'] as String? ?? 'free';
       }
     } catch (e) {
       debugPrint('[AuthService] _loadProfile error: $e');
@@ -277,9 +282,26 @@ class AuthService extends ChangeNotifier {
     _state = AuthState.guest;
     _username = null;
     _userId = null;
+    _membershipTier = 'free';
     _clearRemoteRepos();
     _watchlistService?.onLogout();
     notifyListeners();
+  }
+
+  // ---- VIP activation ----
+
+  Future<void> activateVip() async {
+    final uid = _userId;
+    if (uid == null) return;
+    try {
+      await SupabaseClientManager.instance
+          .from('profiles')
+          .update({'membership_tier': 'vip'}).eq('id', uid);
+      _membershipTier = 'vip';
+      notifyListeners();
+    } catch (e) {
+      debugPrint('[AuthService] activateVip error: $e');
+    }
   }
 
   @override

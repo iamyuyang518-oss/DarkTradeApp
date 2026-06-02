@@ -1,6 +1,7 @@
 import 'package:dark_trade_app/core/constants.dart';
 import 'package:dark_trade_app/presentation/pages/market/stock_detail_page.dart';
 import 'package:dark_trade_app/domain/services/a_share_service.dart';
+import 'package:dark_trade_app/domain/services/crypto_service.dart';
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
 import 'package:dark_trade_app/domain/services/watchlist_service.dart';
 import 'package:dark_trade_app/domain/services/portfolio_service.dart';
@@ -25,6 +26,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
   late final TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  int _selectedMarket = 0; // 0 = A股, 1 = 加密货币
 
   // ---- theme colors -------------------------------------------------------
   static const Color _amber = Color(0xFFD4A853);
@@ -77,9 +79,14 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
   @override
   Widget build(BuildContext context) {
     final aShare = context.watch<AShareService>();
+    final crypto = context.watch<CryptoService>();
     final watchlist = context.watch<WatchlistService>();
     final portfolio = context.watch<PortfolioService>();
     final auth = context.watch<AuthService>();
+
+    // Pick data source based on market selection
+    final source = _selectedMarket == 0 ? aShare : crypto;
+    final quotes = source.quotes;
 
     // Set initial tab based on auth state
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -98,16 +105,18 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
         body: Column(
           children: [
             _buildHeader(context),
+            // Market type selector (VIP only for crypto)
+            if (auth.isVip) _buildMarketSelector(),
             _buildTabBar(),
             _buildSearchBar(),
-            _buildDelayNote(),
+            if (_selectedMarket == 0) _buildDelayNote(),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  _buildWatchlistTab(watchlist, aShare),
-                  _buildHoldingsTab(portfolio, aShare),
-                  _buildHotTab(aShare),
+                  _buildWatchlistTab(watchlist, source, quotes),
+                  _buildHoldingsTab(portfolio, source, quotes),
+                  _buildHotTab(source, quotes),
                 ],
               ),
             ),
@@ -153,6 +162,43 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ---- market selector -----------------------------------------------------
+
+  Widget _buildMarketSelector() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 6),
+      child: Row(
+        children: [
+          _marketChip('🇨🇳 A股', 0),
+          const SizedBox(width: 8),
+          _marketChip('₿ 加密货币', 1),
+        ],
+      ),
+    );
+  }
+
+  Widget _marketChip(String label, int index) {
+    final isSelected = _selectedMarket == index;
+    return ChoiceChip(
+      label: Text(label,
+          style: GoogleFonts.notoSansSc(
+            fontSize: 12,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          )),
+      selected: isSelected,
+      onSelected: (_) => setState(() => _selectedMarket = index),
+      selectedColor: _amber,
+      backgroundColor: _chipBg,
+      labelStyle: TextStyle(
+        color: isSelected ? Colors.white : _textSecondary,
+      ),
+      side: BorderSide.none,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
       ),
     );
   }
@@ -233,41 +279,41 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
 
   // ---- Tab 1: Watchlist ----------------------------------------------------
 
-  Widget _buildWatchlistTab(WatchlistService watchlist, AShareService aShare) {
-    if (aShare.quotes.isEmpty) {
-      return _loadingOrError(aShare);
+  Widget _buildWatchlistTab(WatchlistService watchlist, MarketDataService source, List<StockQuote> quotes) {
+    if (quotes.isEmpty) {
+      return _loadingOrError(source);
     }
 
     if (watchlist.symbols.isEmpty) {
       return _emptyState('还没有关注股票', '去 🔥热门 发现感兴趣的股票，点击 ☆ 加入关注');
     }
 
-    var quotes = aShare.quotes
+    var filtered = quotes
         .where((q) => watchlist.isWatched(q.symbol))
         .toList();
 
     if (_searchQuery.isNotEmpty) {
-      quotes = quotes.where((q) =>
+      filtered = filtered.where((q) =>
           q.symbol.toLowerCase().contains(_searchQuery) ||
           q.name.toLowerCase().contains(_searchQuery)).toList();
     }
 
-    if (quotes.isEmpty) {
+    if (filtered.isEmpty) {
       return _emptyState('没有匹配结果', '试试其他搜索词');
     }
 
-    return _buildStockListView(quotes, showStar: true);
+    return _buildStockListView(filtered, showStar: true);
   }
 
   // ---- Tab 2: Holdings -----------------------------------------------------
 
-  Widget _buildHoldingsTab(PortfolioService portfolio, AShareService aShare) {
+  Widget _buildHoldingsTab(PortfolioService portfolio, MarketDataService source, List<StockQuote> quotes) {
     if (portfolio.holdings.isEmpty) {
       return _emptyState('还没有持仓', '前往交易页开始你的第一笔模拟交易吧');
     }
 
     final priceMap = <String, double>{};
-    for (final q in aShare.quotes) {
+    for (final q in quotes) {
       priceMap[q.symbol] = q.price;
     }
 
@@ -286,7 +332,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
         return GestureDetector(
           onTap: () {
             // Find matching StockQuote for detail navigation
-            final quote = aShare.quotes.cast<StockQuote?>().firstWhere(
+            final quote = quotes.cast<StockQuote?>().firstWhere(
               (q) => q?.symbol == h.symbol,
               orElse: () => null,
             );
@@ -352,12 +398,12 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
 
   // ---- Tab 3: Hot ----------------------------------------------------------
 
-  Widget _buildHotTab(AShareService aShare) {
-    if (aShare.quotes.isEmpty) {
-      return _loadingOrError(aShare);
+  Widget _buildHotTab(MarketDataService source, List<StockQuote> quotes) {
+    if (quotes.isEmpty) {
+      return _loadingOrError(source);
     }
 
-    var hot = _topHot(aShare.quotes);
+    var hot = _topHot(quotes);
 
     if (_searchQuery.isNotEmpty) {
       hot = hot.where((q) =>
@@ -476,19 +522,19 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
 
   // ---- shared states -------------------------------------------------------
 
-  Widget _loadingOrError(AShareService aShare) {
-    if (aShare.lastError != null) {
+  Widget _loadingOrError(MarketDataService source) {
+    if (source.lastError != null) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.cloud_off_rounded, size: 40, color: _textMuted),
             const SizedBox(height: 12),
-            Text(aShare.lastError!, textAlign: TextAlign.center,
+            Text(source.lastError!, textAlign: TextAlign.center,
               style: GoogleFonts.notoSansSc(fontSize: 14, color: _textSecondary)),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              onPressed: () => aShare.refresh(),
+              onPressed: () => source.refresh(),
               icon: const Icon(Icons.refresh_rounded, size: 18),
               label: const Text('重试'),
               style: ElevatedButton.styleFrom(

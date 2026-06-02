@@ -10,6 +10,7 @@ import 'package:dark_trade_app/domain/services/auth_service.dart';
 import 'package:dark_trade_app/domain/services/battle_service.dart';
 import 'package:dark_trade_app/domain/services/leaderboard_service.dart';
 import 'package:dark_trade_app/domain/services/career_service.dart';
+import 'package:dark_trade_app/domain/services/crypto_service.dart';
 import 'package:dark_trade_app/domain/services/portfolio_service.dart';
 import 'package:dark_trade_app/domain/services/trade_history_service.dart';
 import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
@@ -34,6 +35,7 @@ void main() async {
   final tradeHistory = TradeHistoryService(localRepo: tradeHistoryRepo);
 
   final aShare = AShareService()..start();
+  final crypto = CryptoService()..start();
   final portfolio = PortfolioService()..seedDemo();
   final tradeSelection = TradeSelectionService();
 
@@ -46,6 +48,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: aShare),
+        ChangeNotifierProvider.value(value: crypto),
         ChangeNotifierProvider.value(value: portfolio),
         ChangeNotifierProvider.value(value: tradeSelection),
         ChangeNotifierProvider.value(value: watchlistService),
