@@ -1,5 +1,6 @@
 import 'package:dark_trade_app/core/constants.dart';
 import 'package:dark_trade_app/presentation/pages/market/stock_detail_page.dart';
+import 'package:dark_trade_app/presentation/widgets/hover_card.dart';
 import 'package:dark_trade_app/domain/services/a_share_service.dart';
 import 'package:dark_trade_app/domain/services/crypto_service.dart';
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
@@ -462,85 +463,82 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
     final watchlist = context.watch<WatchlistService>();
     final isWatched = watchlist.isWatched(row.symbol);
 
-    return GestureDetector(
-      onTap: () => Navigator.push(context,
-        MaterialPageRoute(builder: (_) => StockDetailPage(quote: row))),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
-        ),
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          children: [
-            // Left: symbol + name + sector
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(row.symbol, style: GoogleFonts.notoSansSc(
-                        fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary,
-                      )),
-                      if (sector != null) ...[
-                        const SizedBox(width: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: AppColors.goldBg,
-                            borderRadius: BorderRadius.circular(4),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: HoverCard(
+        onTap: () => Navigator.push(context,
+            MaterialPageRoute(builder: (_) => StockDetailPage(quote: row))),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              // Left: symbol + name + sector
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(row.symbol, style: GoogleFonts.notoSansSc(
+                          fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary,
+                        )),
+                        if (sector != null) ...[
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.goldBg,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(sector, style: GoogleFonts.notoSansSc(
+                              fontSize: 9, color: AppColors.gold, fontWeight: FontWeight.w600,
+                            )),
                           ),
-                          child: Text(sector, style: GoogleFonts.notoSansSc(
-                            fontSize: 9, color: AppColors.gold, fontWeight: FontWeight.w600,
-                          )),
-                        ),
+                        ],
                       ],
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(row.name, style: GoogleFonts.notoSansSc(
-                    fontSize: 12, color: AppColors.textSecondary,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(row.name, style: GoogleFonts.notoSansSc(
+                      fontSize: 12, color: AppColors.textSecondary,
+                    )),
+                  ],
+                ),
+              ),
+              // Right: price + change + star
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(row.priceLabel, style: GoogleFonts.notoSansSc(
+                    fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary,
                   )),
+                  const SizedBox(height: 2),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: changeBg, borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${isUp ? "▲" : "▼"} ${row.changeLabel}',
+                      style: GoogleFonts.notoSansSc(
+                        fontSize: 11, fontWeight: FontWeight.w700, color: changeColor,
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            ),
-            // Right: price + change + star
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(row.priceLabel, style: GoogleFonts.notoSansSc(
-                  fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary,
-                )),
-                const SizedBox(height: 2),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: changeBg, borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    '${isUp ? "▲" : "▼"} ${row.changeLabel}',
-                    style: GoogleFonts.notoSansSc(
-                      fontSize: 11, fontWeight: FontWeight.w700, color: changeColor,
-                    ),
+              if (showStar) ...[
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () => context.read<WatchlistService>().toggleWatch(row.symbol),
+                  child: Icon(
+                    isWatched ? Icons.star : Icons.star_border,
+                    color: isWatched ? AppColors.gold : AppColors.textMuted,
+                    size: 22,
                   ),
                 ),
               ],
-            ),
-            if (showStar) ...[
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: () => context.read<WatchlistService>().toggleWatch(row.symbol),
-                child: Icon(
-                  isWatched ? Icons.star : Icons.star_border,
-                  color: isWatched ? AppColors.gold : AppColors.textMuted,
-                  size: 22,
-                ),
-              ),
             ],
-          ],
+          ),
         ),
       ),
     );

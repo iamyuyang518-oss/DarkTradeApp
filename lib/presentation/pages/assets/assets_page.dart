@@ -10,6 +10,7 @@ import 'package:dark_trade_app/presentation/widgets/career_selector.dart';
 import 'package:dark_trade_app/presentation/widgets/gain_loss_card.dart';
 import 'package:dark_trade_app/presentation/widgets/equity_curve_chart.dart';
 import 'package:dark_trade_app/presentation/widgets/share_card.dart';
+import 'package:dark_trade_app/presentation/widgets/hover_card.dart';
 import 'package:dark_trade_app/domain/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -808,15 +809,10 @@ class _HoldingTile extends StatelessWidget {
         ? holding.amount.toStringAsFixed(4)
         : holding.amount.toStringAsFixed(6);
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
-        border: Border.all(color: AppColors.border, width: 1.5),
-        boxShadow: AppShadows.card,
-      ),
-      child: Row(
+    return HoverCard(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
         children: [
           Container(
             width: 40,
@@ -870,6 +866,7 @@ class _HoldingTile extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
