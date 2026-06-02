@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
 
 class CryptoService extends MarketDataService {
@@ -12,8 +13,7 @@ class CryptoService extends MarketDataService {
   @override
   Future<ParsedMarkets> fetchAndParse() async {
     // CoinGecko free API: top 30 coins by market cap, CNY prices, 7d sparkline
-    const baseUrl =
-        'https://api.coingecko.com/api/v3/coins/markets';
+    const baseUrl = 'https://api.coingecko.com/api/v3/coins/markets';
     final uri = Uri.parse(baseUrl).replace(queryParameters: {
       'vs_currency': 'cny',
       'order': 'market_cap_desc',
@@ -23,12 +23,18 @@ class CryptoService extends MarketDataService {
       'price_change_percentage': '24h',
     });
 
-    // Use CORS proxy for web builds (CoinGecko may block browser requests)
-    final proxied = MarketDataService.corsProxy(uri.toString());
-    debugPrint('[CryptoService] GET $proxied');
-    final response = await client
-        .get(proxied)
-        .timeout(requestTimeout);
+    // Try direct first — CoinGecko allows browser CORS for public endpoints.
+    // Fall back to CORS proxy only if direct fails with a non-403 error.
+    http.Response response;
+    try {
+      debugPrint('[CryptoService] GET $uri');
+      response = await client.get(uri).timeout(requestTimeout);
+    } catch (_) {
+      // Direct failed — try via CORS proxy
+      final proxied = MarketDataService.corsProxy(uri.toString());
+      debugPrint('[CryptoService] direct failed, trying proxy: $proxied');
+      response = await client.get(proxied).timeout(requestTimeout);
+    }
 
     if (response.statusCode != 200) {
       throw MarketsFetchException('HTTP ${response.statusCode}');
