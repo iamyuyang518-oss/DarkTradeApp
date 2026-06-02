@@ -23,12 +23,9 @@ class ProfilePage extends StatelessWidget {
     final isLoggedIn = auth.isLoggedIn;
     final activeCareer = careerService.activeCareer;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
             const SizedBox(height: 20),
             // Avatar + identity
             Center(
@@ -188,9 +185,7 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        );
   }
 
   void _showAuthSheet(BuildContext context) {
@@ -230,7 +225,9 @@ class ProfilePage extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
+        border: Border.all(color: AppColors.border, width: 1.5),
+        boxShadow: AppShadows.card,
       ),
       child: Column(children: items),
     );
@@ -258,10 +255,12 @@ class ProfilePage extends StatelessWidget {
     final achievements = achievementService.achievements;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppDimens.paddingCard),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
+        border: Border.all(color: AppColors.border, width: 1.5),
+        boxShadow: AppShadows.card,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,7 +268,7 @@ class ProfilePage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('成就勋章', style: TextStyle(
+              const Text('🏅 成就勋章', style: TextStyle(
                 color: AppColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w600,
               )),
               Text('${achievementService.unlocked.length}/${achievements.length}',
@@ -289,7 +288,7 @@ class ProfilePage extends StatelessWidget {
                     width: 48, height: 48,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: unlocked ? AppColors.gold.withValues(alpha: 0.1) : AppColors.unselectedBg,
+                      color: unlocked ? AppColors.goldBg : AppColors.unselectedBg,
                       border: Border.all(
                         color: unlocked ? AppColors.gold : AppColors.border,
                         width: unlocked ? 2 : 1,
@@ -307,7 +306,7 @@ class ProfilePage extends StatelessWidget {
                     a.name,
                     style: TextStyle(
                       fontSize: 10,
-                      color: unlocked ? AppColors.textPrimary : AppColors.unselectedText,
+                      color: unlocked ? AppColors.textPrimary : AppColors.textMuted,
                     ),
                   ),
                 ],
