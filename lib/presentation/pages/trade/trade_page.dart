@@ -53,10 +53,10 @@ class _TradePageState extends State<TradePage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF121212),
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-        side: BorderSide(color: Color(0xFFD4A853), width: 0.5),
+        side: BorderSide(color: AppColors.gold, width: 0.5),
       ),
       builder: (_) => const SymbolPickerSheet(),
     );
