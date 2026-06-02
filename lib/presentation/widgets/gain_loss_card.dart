@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dark_trade_app/core/constants.dart';
 import 'package:dark_trade_app/data/local/models/career.dart';
 
 class GainLossCard extends StatelessWidget {
@@ -11,23 +12,23 @@ class GainLossCard extends StatelessWidget {
     super.key,
     required this.career,
     required this.todayPnl,
-    this.upColor = const Color(0xFF00C853),
-    this.downColor = const Color(0xFFFF1744),
+    this.upColor = AppColors.up,
+    this.downColor = AppColors.down,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(AppDimens.paddingCard),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFFFFFFF), Color(0xFFF5EDE0)],
+          colors: [AppColors.surface, AppColors.goldBg],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFFE8DCC8)),
+        borderRadius: BorderRadius.circular(AppDimens.radiusLg),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
@@ -45,7 +46,7 @@ class GainLossCard extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          Text(label, style: const TextStyle(color: Color(0xFFA09078), fontSize: 12)),
+          Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
           const SizedBox(height: 4),
           Text(
             '${value >= 0 ? "+" : ""}${value.toStringAsFixed(2)}$suffix',
@@ -57,6 +58,6 @@ class GainLossCard extends StatelessWidget {
   }
 
   Widget _divider() {
-    return Container(width: 1, height: 40, color: Color(0xFFE8DCC8));
+    return Container(width: 1, height: 40, color: AppColors.border);
   }
 }

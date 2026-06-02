@@ -1,3 +1,4 @@
+import 'package:dark_trade_app/core/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -12,11 +13,6 @@ class LabeledField extends StatelessWidget {
     this.accentGold = false,
   });
 
-  static const Color _gold = Color(0xFFD4A853);
-  static const Color _white = Color(0xFF3D3025);
-  static const Color _muted = Color(0xFFB8A080);
-  static const Color _bg = Color(0xFFF5EDE0);
-
   final String label;
   final String hint;
   final TextEditingController controller;
@@ -26,7 +22,7 @@ class LabeledField extends StatelessWidget {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
       borderSide: BorderSide(
-        color: _gold.withValues(alpha: focused ? 0.55 : 0.28),
+        color: AppColors.gold.withValues(alpha: focused ? 0.55 : 0.28),
         width: focused ? 1.4 : 1,
       ),
     );
@@ -43,8 +39,8 @@ class LabeledField extends StatelessWidget {
               label,
               style: TextStyle(
                 color: accentGold
-                    ? _gold
-                    : _white.withValues(alpha: 0.9),
+                    ? AppColors.gold
+                    : AppColors.textPrimary.withValues(alpha: 0.9),
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.6,
@@ -53,7 +49,7 @@ class LabeledField extends StatelessWidget {
             const Spacer(),
             Text(
               hint,
-              style: const TextStyle(color: _muted, fontSize: 12),
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
             ),
           ],
         ),
@@ -65,19 +61,19 @@ class LabeledField extends StatelessWidget {
             FilteringTextInputFormatter.allow(RegExp(r'[\d\.,]')),
           ],
           style: const TextStyle(
-            color: _white,
+            color: AppColors.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.3,
           ),
-          cursorColor: _gold,
+          cursorColor: AppColors.gold,
           decoration: InputDecoration(
             isDense: true,
             filled: true,
-            fillColor: _bg,
+            fillColor: AppColors.goldBg,
             hintText: '0.00',
             hintStyle: TextStyle(
-              color: _muted.withValues(alpha: 0.45),
+              color: AppColors.textSecondary.withValues(alpha: 0.45),
               fontSize: 18,
               fontWeight: FontWeight.w500,
             ),

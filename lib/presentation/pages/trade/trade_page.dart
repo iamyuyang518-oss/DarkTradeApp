@@ -25,11 +25,6 @@ import 'package:provider/provider.dart';
 /// 所有可复用组件已抽离至 [widgets/]，核心逻辑由 [TradeFormController] 管理。
 class TradePage extends StatefulWidget {
   const TradePage({super.key});
-
-  static const Color bg = Color(0xFFFFFBF5);
-  static const Color gold = Color(0xFFD4A853);
-  static const Color white = Color(0xFF3D3025);
-
   @override
   State<TradePage> createState() => _TradePageState();
 }
@@ -95,22 +90,22 @@ class _TradePageState extends State<TradePage> {
           SnackBar(
             behavior: SnackBarBehavior.floating,
             margin: const EdgeInsets.all(16),
-            backgroundColor: const Color(0xFF0A0A0A),
+            backgroundColor: AppColors.textPrimary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(
-                  color: TradePage.gold.withValues(alpha: 0.45)),
+                  color: AppColors.gold.withValues(alpha: 0.45)),
             ),
             content: Row(
               children: [
                 const Icon(Icons.task_alt_rounded,
-                    color: TradePage.gold, size: 22),
+                    color: AppColors.gold, size: 22),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     result.message,
                     style: const TextStyle(
-                      color: TradePage.white,
+                      color: AppColors.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.5,
@@ -226,7 +221,7 @@ class _TradePageState extends State<TradePage> {
       listenable: _c,
       builder: (context, _) {
         return ColoredBox(
-          color: TradePage.bg,
+          color: AppColors.background,
           child: SafeArea(
             child: ConfettiOverlay(
               play: _showConfetti,
@@ -244,12 +239,12 @@ class _TradePageState extends State<TradePage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Row(
                       children: [
-                        const Text('可用', style: TextStyle(color: Color(0xFFA09078), fontSize: 13)),
+                        const Text('可用', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                         const SizedBox(width: 8),
                         Text(
                           '${careerService.activeCareer?.currentBalance.toStringAsFixed(2) ?? "0.00"} USDT',
                           style: const TextStyle(
-                            color: Color(0xFFD4A853),
+                            color: AppColors.gold,
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                           ),
@@ -287,7 +282,7 @@ class _TradePageState extends State<TradePage> {
                           Text(
                             '快捷仓位',
                             style: TextStyle(
-                              color: TradePage.white.withValues(alpha: 0.75),
+                              color: AppColors.textPrimary.withValues(alpha: 0.75),
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.5,

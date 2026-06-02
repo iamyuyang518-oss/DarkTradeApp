@@ -1,19 +1,16 @@
+import 'package:dark_trade_app/core/constants.dart';
 import 'package:flutter/material.dart';
 
 /// Full-width gradient execute button with heavy drop shadow.
 class ExecuteButton extends StatelessWidget {
   const ExecuteButton({super.key, required this.isBuy, required this.onPressed});
 
-  static const Color _gold = Color(0xFFD4A853);
-  static const Color _green = Color(0xFF43A047);
-  static const Color _red = Color(0xFFE57373);
-
   final bool isBuy;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final accent = isBuy ? _green : _red;
+    final accent = isBuy ? AppColors.up : AppColors.down;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -25,7 +22,7 @@ class ExecuteButton extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
             gradient: LinearGradient(
-              colors: [_gold, _gold.withValues(alpha: 0.82)],
+              colors: [AppColors.gold, AppColors.goldDark],
             ),
             boxShadow: [
               BoxShadow(
@@ -42,7 +39,7 @@ class ExecuteButton extends StatelessWidget {
           ),
           child: const Center(
             child: Text(
-              '立即执行',
+              '确认交易',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 17,

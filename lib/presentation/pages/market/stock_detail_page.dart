@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dark_trade_app/core/constants.dart';
 import 'package:dark_trade_app/domain/services/a_share_service.dart';
 import 'package:dark_trade_app/domain/services/market_data_service.dart';
 import 'package:dark_trade_app/domain/services/trade_selection_service.dart';
@@ -26,14 +27,6 @@ class _StockDetailPageState extends State<StockDetailPage> {
 
   static const _periods = [7, 30, 90, 0]; // 0 = all
 
-  static const Color _bg = Color(0xFFFFFBF5);
-  static const Color _amber = Color(0xFFD4A853);
-  static const Color _muted = Color(0xFFB8A080);
-  static const Color _surface = Color(0xFFFFFFFF);
-  static const Color _green = Color(0xFF43A047);
-  static const Color _red = Color(0xFFE57373);
-  static const Color _text = Color(0xFF3D3025);
-  static const Color _border = Color(0xFFE8DCC8);
 
   @override
   void initState() {
@@ -114,12 +107,12 @@ class _StockDetailPageState extends State<StockDetailPage> {
   }
 
   Color _trendColor() {
-    if (_bars == null || _bars!.length < 5) return _muted;
+    if (_bars == null || _bars!.length < 5) return AppColors.textSecondary;
     final upDays = _bars!.where((b) => b.isUp).length;
     final pct = (upDays / _bars!.length * 100).round();
-    if (pct >= 55) return _green;
-    if (pct >= 45) return _amber;
-    return _red;
+    if (pct >= 55) return AppColors.up;
+    if (pct >= 45) return AppColors.gold;
+    return AppColors.down;
   }
 
   String _labelFor(MarketType t) {
@@ -144,26 +137,26 @@ class _StockDetailPageState extends State<StockDetailPage> {
     final q = widget.quote;
 
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: _bg,
+        backgroundColor: AppColors.background,
         title: Row(
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
               decoration: BoxDecoration(
-                color: _amber.withAlpha(25),
+                color: AppColors.gold.withAlpha(25),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: Text(q.symbol, style: const TextStyle(color: _amber, fontSize: 16, fontWeight: FontWeight.w700)),
+              child: Text(q.symbol, style: const TextStyle(color: AppColors.gold, fontSize: 16, fontWeight: FontWeight.w700)),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: Text(q.name, style: const TextStyle(color: _text, fontSize: 15, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis),
+              child: Text(q.name, style: const TextStyle(color: AppColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis),
             ),
           ],
         ),
-        leading: IconButton(icon: const Icon(Icons.arrow_back_rounded, color: _text), onPressed: () => Navigator.pop(context)),
+        leading: IconButton(icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary), onPressed: () => Navigator.pop(context)),
       ),
       body: Column(
         children: [
@@ -194,23 +187,23 @@ class _StockDetailPageState extends State<StockDetailPage> {
     final up = q.isUp;
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-      color: _bg,
+      color: AppColors.background,
       child: Column(
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(q.priceLabel, style: const TextStyle(color: _text, fontSize: 36, fontWeight: FontWeight.w800, height: 1.05)),
+              Text(q.priceLabel, style: const TextStyle(color: AppColors.textPrimary, fontSize: 36, fontWeight: FontWeight.w800, height: 1.05)),
               const SizedBox(width: 12),
               Padding(
                 padding: const EdgeInsets.only(bottom: 3),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: up ? _green.withAlpha(25) : _red.withAlpha(25),
+                    color: up ? AppColors.up.withAlpha(25) : AppColors.down.withAlpha(25),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(q.changeLabel, style: TextStyle(color: up ? _green : _red, fontSize: 15, fontWeight: FontWeight.w700)),
+                  child: Text(q.changeLabel, style: TextStyle(color: up ? AppColors.up : AppColors.down, fontSize: 15, fontWeight: FontWeight.w700)),
                 ),
               ),
             ],
@@ -256,14 +249,14 @@ class _StockDetailPageState extends State<StockDetailPage> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 7),
                   decoration: BoxDecoration(
-                    color: selected ? _amber : _surface,
+                    color: selected ? AppColors.gold : AppColors.surface,
                     borderRadius: BorderRadius.circular(20),
-                    border: selected ? null : Border.all(color: _border),
-                    boxShadow: selected ? [BoxShadow(color: _amber.withAlpha(50), blurRadius: 6, offset: const Offset(0, 2))] : null,
+                    border: selected ? null : Border.all(color: AppColors.border),
+                    boxShadow: selected ? [BoxShadow(color: AppColors.gold.withAlpha(50), blurRadius: 6, offset: const Offset(0, 2))] : null,
                   ),
                   child: Text(_periodLabel(d), style: TextStyle(
                     fontSize: 13, fontWeight: FontWeight.w600,
-                    color: selected ? Colors.white : _muted,
+                    color: selected ? Colors.white : AppColors.textSecondary,
                   )),
                 ),
               ),
@@ -273,13 +266,13 @@ class _StockDetailPageState extends State<StockDetailPage> {
           // Chart mode tip
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(color: _surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: _border)),
+            decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border)),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(_chartMode == ChartMode.area ? Icons.show_chart_rounded : Icons.candlestick_chart_rounded, size: 14, color: _muted),
+                Icon(_chartMode == ChartMode.area ? Icons.show_chart_rounded : Icons.candlestick_chart_rounded, size: 14, color: AppColors.textSecondary),
                 const SizedBox(width: 4),
-                Text('长按切换', style: TextStyle(fontSize: 10, color: _muted)),
+                Text('长按切换', style: TextStyle(fontSize: 10, color: AppColors.textSecondary)),
               ],
             ),
           ),
@@ -319,7 +312,7 @@ class _StockDetailPageState extends State<StockDetailPage> {
         children: [
           Text(emoji, style: const TextStyle(fontSize: 24)),
           const SizedBox(width: 10),
-          Expanded(child: Text(summary, style: TextStyle(color: _text, fontSize: 13, fontWeight: FontWeight.w500))),
+          Expanded(child: Text(summary, style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w500))),
         ],
       ),
     );
@@ -331,27 +324,27 @@ class _StockDetailPageState extends State<StockDetailPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_error!, style: const TextStyle(color: _red, fontSize: 13), textAlign: TextAlign.center),
+            Text(_error!, style: const TextStyle(color: AppColors.down, fontSize: 13), textAlign: TextAlign.center),
             const SizedBox(height: 16),
             TextButton(onPressed: () { setState(() { _bars = null; _error = null; }); _load(); }, child: const Text('重试')),
           ],
         ),
       );
     }
-    return const Center(child: CircularProgressIndicator(color: _amber));
+    return const Center(child: CircularProgressIndicator(color: AppColors.gold));
   }
 
   Widget _buildFooter() {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
       decoration: BoxDecoration(
-        color: _surface,
-        border: Border(top: BorderSide(color: _border)),
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.border)),
       ),
       child: Row(
         children: [
           Text('${_chartMode == ChartMode.area ? "面积图" : "K线"} · ${_labelFor(widget.quote.marketType)}',
-            style: const TextStyle(color: _muted, fontSize: 11)),
+            style: const TextStyle(color: AppColors.textSecondary, fontSize: 11)),
           const Spacer(),
           _TradeButton(onTap: _goTrade),
         ],
@@ -380,9 +373,9 @@ class _StatPill extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: const Color(0xFFFFFFFF),
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFE8DCC8)),
+          border: Border.all(color: AppColors.border),
         ),
         child: Row(
           children: [
@@ -391,8 +384,8 @@ class _StatPill extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(color: Color(0xFFB8A080), fontSize: 10)),
-                Text(value, style: const TextStyle(color: Color(0xFF3D3025), fontSize: 13, fontWeight: FontWeight.w700)),
+                Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+                Text(value, style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w700)),
               ],
             ),
           ],
@@ -419,8 +412,8 @@ class _TradeButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 11),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            gradient: const LinearGradient(colors: [Color(0xFFD4A853), Color(0xFFC49B38)]),
-            boxShadow: [BoxShadow(color: const Color(0xFFD4A853).withAlpha(50), blurRadius: 10, offset: const Offset(0, 3))],
+            gradient: const LinearGradient(colors: [AppColors.gold, AppColors.goldDark]),
+            boxShadow: [BoxShadow(color: AppColors.gold.withAlpha(50), blurRadius: 10, offset: const Offset(0, 3))],
           ),
           child: const Text('去交易', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700)),
         ),

@@ -1,14 +1,9 @@
+import 'package:dark_trade_app/core/constants.dart';
 import 'package:flutter/material.dart';
 
 /// Buy / Sell toggle bar with animated selection indicator.
 class SideToggle extends StatelessWidget {
   const SideToggle({super.key, required this.isBuy, required this.onChanged});
-
-  static const Color _gold = Color(0xFFD4A853);
-  static const Color _green = Color(0xFF43A047);
-  static const Color _red = Color(0xFFE57373);
-  static const Color _idleBg = Color(0xFFF5EDE0);
-  static const Color _idleText = Color(0xFFB8A080);
 
   final bool isBuy;
   final ValueChanged<bool> onChanged;
@@ -18,9 +13,9 @@ class SideToggle extends StatelessWidget {
     return Container(
       height: 48,
       decoration: BoxDecoration(
-        color: _idleBg,
+        color: AppColors.goldBg,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: _gold.withValues(alpha: 0.12)),
+        border: Border.all(color: AppColors.gold.withValues(alpha: 0.12)),
       ),
       child: Row(
         children: [
@@ -28,7 +23,7 @@ class SideToggle extends StatelessWidget {
             child: _ToggleCell(
               label: '买入',
               selected: isBuy,
-              selectedColor: _green,
+              selectedColor: AppColors.up,
               onTap: () => onChanged(true),
             ),
           ),
@@ -36,7 +31,7 @@ class SideToggle extends StatelessWidget {
             child: _ToggleCell(
               label: '卖出',
               selected: !isBuy,
-              selectedColor: _red,
+              selectedColor: AppColors.down,
               onTap: () => onChanged(false),
             ),
           ),
@@ -73,7 +68,7 @@ class _ToggleCell extends StatelessWidget {
           curve: Curves.easeOutCubic,
           margin: const EdgeInsets.all(3),
           decoration: BoxDecoration(
-            color: selected ? selectedColor : SideToggle._idleBg,
+            color: selected ? selectedColor : AppColors.goldBg,
             borderRadius: BorderRadius.circular(8),
             boxShadow: selected
                 ? [
@@ -89,7 +84,7 @@ class _ToggleCell extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              color: selected ? Colors.white : SideToggle._idleText,
+              color: selected ? Colors.white : AppColors.textSecondary,
               fontSize: 15,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.0,

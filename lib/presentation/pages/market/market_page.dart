@@ -28,19 +28,6 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
   String _searchQuery = '';
   int _selectedMarket = 0; // 0 = A股, 1 = 加密货币
 
-  // ---- theme colors -------------------------------------------------------
-  static const Color _amber = Color(0xFFD4A853);
-  static const Color _bg = Color(0xFFFFFBF5);
-  static const Color _cardBg = Color(0xFFFFFFFF);
-  static const Color _textPrimary = Color(0xFF3D3025);
-  static const Color _textSecondary = Color(0xFFA09078);
-  static const Color _textMuted = Color(0xFFC4B898);
-  static const Color _border = Color(0xFFE8DCC8);
-  static const Color _chipBg = Color(0xFFF5EDE0);
-  static const Color _greenBg = Color(0xFFE8F5E9);
-  static const Color _redBg = Color(0xFFFFF0F0);
-  static const Color _green = Color(0xFF43A047);
-  static const Color _red = Color(0xFFE57373);
 
   @override
   void initState() {
@@ -101,7 +88,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: _bg,
+        backgroundColor: AppColors.background,
         body: Column(
           children: [
             _buildHeader(context),
@@ -137,26 +124,26 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
           Text(
             '行情',
             style: GoogleFonts.playfairDisplay(
-              fontSize: 26, fontWeight: FontWeight.bold, color: _textPrimary,
+              fontSize: 26, fontWeight: FontWeight.bold, color: AppColors.textPrimary,
             ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: _chipBg,
+              color: AppColors.goldBg,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: _border),
+              border: Border.all(color: AppColors.border),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   width: 8, height: 8,
-                  decoration: const BoxDecoration(color: _green, shape: BoxShape.circle),
+                  decoration: const BoxDecoration(color: AppColors.up, shape: BoxShape.circle),
                 ),
                 const SizedBox(width: 6),
                 Text('实时', style: GoogleFonts.notoSansSc(
-                  fontSize: 12, color: _textSecondary,
+                  fontSize: 12, color: AppColors.textSecondary,
                 )),
               ],
             ),
@@ -196,10 +183,10 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
           context.read<CryptoService>().start();
         }
       },
-      selectedColor: _amber,
-      backgroundColor: _chipBg,
+      selectedColor: AppColors.gold,
+      backgroundColor: AppColors.goldBg,
       labelStyle: TextStyle(
-        color: isSelected ? Colors.white : _textSecondary,
+        color: isSelected ? Colors.white : AppColors.textSecondary,
       ),
       side: BorderSide.none,
       shape: RoundedRectangleBorder(
@@ -214,18 +201,18 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
       decoration: BoxDecoration(
-        color: _chipBg,
+        color: AppColors.goldBg,
         borderRadius: BorderRadius.circular(12),
       ),
       child: TabBar(
         controller: _tabController,
         indicator: BoxDecoration(
-          color: _amber,
+          color: AppColors.gold,
           borderRadius: BorderRadius.circular(10),
         ),
         indicatorSize: TabBarIndicatorSize.tab,
         labelColor: Colors.white,
-        unselectedLabelColor: _textSecondary,
+        unselectedLabelColor: AppColors.textSecondary,
         labelStyle: GoogleFonts.notoSansSc(fontSize: 13, fontWeight: FontWeight.w600),
         dividerColor: Colors.transparent,
         tabs: const [
@@ -246,25 +233,25 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
         height: 40,
         child: TextField(
           controller: _searchController,
-          style: GoogleFonts.notoSansSc(fontSize: 13, color: _textPrimary),
+          style: GoogleFonts.notoSansSc(fontSize: 13, color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: '搜索股票代码或名称...',
-            hintStyle: GoogleFonts.notoSansSc(fontSize: 13, color: _textMuted),
-            prefixIcon: const Icon(Icons.search_rounded, color: _textMuted, size: 18),
+            hintStyle: GoogleFonts.notoSansSc(fontSize: 13, color: AppColors.textMuted),
+            prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textMuted, size: 18),
             filled: true,
-            fillColor: _cardBg,
+            fillColor: AppColors.surface,
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: _border),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: _border),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: _amber, width: 1.5),
+              borderSide: const BorderSide(color: AppColors.gold, width: 1.5),
             ),
           ),
         ),
@@ -277,7 +264,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 2),
       child: Text(
         AppText.dataDelayNote,
-        style: TextStyle(color: _textMuted, fontSize: 11),
+        style: TextStyle(color: AppColors.textMuted, fontSize: 11),
       ),
     );
   }
@@ -350,9 +337,9 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: _cardBg,
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: _border),
+              border: Border.all(color: AppColors.border),
             ),
             child: Row(
               children: [
@@ -363,17 +350,17 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
                       Row(
                         children: [
                           Text(h.symbol, style: GoogleFonts.notoSansSc(
-                            fontSize: 16, fontWeight: FontWeight.w700, color: _textPrimary,
+                            fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary,
                           )),
                           const SizedBox(width: 8),
                           Text(h.name, style: GoogleFonts.notoSansSc(
-                            fontSize: 12, color: _textSecondary,
+                            fontSize: 12, color: AppColors.textSecondary,
                           )),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Text('持有 ${h.amount.toStringAsFixed(0)}股 · 成本 ¥${costPrice.toStringAsFixed(2)}',
-                        style: GoogleFonts.notoSansSc(fontSize: 11, color: _textMuted)),
+                        style: GoogleFonts.notoSansSc(fontSize: 11, color: AppColors.textMuted)),
                     ],
                   ),
                 ),
@@ -382,13 +369,13 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
                   children: [
                     Text('¥${livePrice.toStringAsFixed(2)}',
                       style: GoogleFonts.notoSansSc(
-                        fontSize: 16, fontWeight: FontWeight.w700, color: _textPrimary,
+                        fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary,
                       )),
                     Text(
                       '${isUp ? "+" : ""}¥${pnl.toStringAsFixed(2)} (${isUp ? "+" : ""}${pnlPercent.toStringAsFixed(1)}%)',
                       style: GoogleFonts.notoSansSc(
                         fontSize: 12, fontWeight: FontWeight.w600,
-                        color: isUp ? _green : _red,
+                        color: isUp ? AppColors.up : AppColors.down,
                       ),
                     ),
                   ],
@@ -435,8 +422,8 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
 
   Widget _buildStockCard(StockQuote row, {bool showStar = false}) {
     final isUp = row.isUp;
-    final changeColor = isUp ? _green : _red;
-    final changeBg = isUp ? _greenBg : _redBg;
+    final changeColor = isUp ? AppColors.up : AppColors.down;
+    final changeBg = isUp ? AppColors.upBg : AppColors.downBg;
     final sector = _sectorFor(row);
     final watchlist = context.watch<WatchlistService>();
     final isWatched = watchlist.isWatched(row.symbol);
@@ -447,9 +434,9 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         decoration: BoxDecoration(
-          color: _cardBg,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _border),
+          border: Border.all(color: AppColors.border),
         ),
         padding: const EdgeInsets.all(14),
         child: Row(
@@ -462,18 +449,18 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
                   Row(
                     children: [
                       Text(row.symbol, style: GoogleFonts.notoSansSc(
-                        fontSize: 16, fontWeight: FontWeight.w700, color: _textPrimary,
+                        fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary,
                       )),
                       if (sector != null) ...[
                         const SizedBox(width: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: _chipBg,
+                            color: AppColors.goldBg,
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(sector, style: GoogleFonts.notoSansSc(
-                            fontSize: 9, color: _amber, fontWeight: FontWeight.w600,
+                            fontSize: 9, color: AppColors.gold, fontWeight: FontWeight.w600,
                           )),
                         ),
                       ],
@@ -481,7 +468,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
                   ),
                   const SizedBox(height: 2),
                   Text(row.name, style: GoogleFonts.notoSansSc(
-                    fontSize: 12, color: _textSecondary,
+                    fontSize: 12, color: AppColors.textSecondary,
                   )),
                 ],
               ),
@@ -491,7 +478,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(row.priceLabel, style: GoogleFonts.notoSansSc(
-                  fontSize: 16, fontWeight: FontWeight.w700, color: _textPrimary,
+                  fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary,
                 )),
                 const SizedBox(height: 2),
                 Container(
@@ -514,7 +501,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
                 onTap: () => context.read<WatchlistService>().toggleWatch(row.symbol),
                 child: Icon(
                   isWatched ? Icons.star : Icons.star_border,
-                  color: isWatched ? _amber : _textMuted,
+                  color: isWatched ? AppColors.gold : AppColors.textMuted,
                   size: 22,
                 ),
               ),
@@ -533,17 +520,17 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.cloud_off_rounded, size: 40, color: _textMuted),
+            const Icon(Icons.cloud_off_rounded, size: 40, color: AppColors.textMuted),
             const SizedBox(height: 12),
             Text(source.lastError!, textAlign: TextAlign.center,
-              style: GoogleFonts.notoSansSc(fontSize: 14, color: _textSecondary)),
+              style: GoogleFonts.notoSansSc(fontSize: 14, color: AppColors.textSecondary)),
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () => source.refresh(),
               icon: const Icon(Icons.refresh_rounded, size: 18),
               label: const Text('重试'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: _amber, foregroundColor: Colors.white,
+                backgroundColor: AppColors.gold, foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),
@@ -551,7 +538,7 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
         ),
       );
     }
-    return const Center(child: CircularProgressIndicator(color: _amber));
+    return const Center(child: CircularProgressIndicator(color: AppColors.gold));
   }
 
   Widget _emptyState(String title, String subtitle) {
@@ -559,14 +546,14 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.inbox_rounded, size: 48, color: _textMuted.withValues(alpha: 0.5)),
+          Icon(Icons.inbox_rounded, size: 48, color: AppColors.textMuted.withValues(alpha: 0.5)),
           const SizedBox(height: 12),
           Text(title, style: GoogleFonts.notoSansSc(
-            fontSize: 16, fontWeight: FontWeight.w600, color: _textSecondary,
+            fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textSecondary,
           )),
           const SizedBox(height: 4),
           Text(subtitle, style: GoogleFonts.notoSansSc(
-            fontSize: 13, color: _textMuted,
+            fontSize: 13, color: AppColors.textMuted,
           )),
         ],
       ),

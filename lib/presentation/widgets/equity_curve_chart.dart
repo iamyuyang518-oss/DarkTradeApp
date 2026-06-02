@@ -1,3 +1,4 @@
+import 'package:dark_trade_app/core/constants.dart';
 import 'package:flutter/material.dart';
 
 class EquityCurveChart extends StatelessWidget {
@@ -13,11 +14,11 @@ class EquityCurveChart extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 16),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFFFFFFFF),
-          borderRadius: BorderRadius.circular(12),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppDimens.radiusMd),
         ),
         child: const Center(
-          child: Text('数据不足', style: TextStyle(color: Color(0xFFA09078))),
+          child: Text('数据不足', style: TextStyle(color: AppColors.textSecondary)),
         ),
       );
     }
@@ -27,8 +28,8 @@ class EquityCurveChart extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFFFFF),
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDimens.radiusMd),
       ),
       child: CustomPaint(
         size: const Size(double.infinity, 56),
@@ -53,7 +54,7 @@ class _EquityCurvePainter extends CustomPainter {
     if (range == 0) return;
 
     final paint = Paint()
-      ..color = const Color(0xFFD4A853)
+      ..color = AppColors.gold
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
@@ -78,8 +79,8 @@ class _EquityCurvePainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          const Color(0xFFD4A853).withAlpha(60),
-          const Color(0xFFD4A853).withAlpha(0),
+          AppColors.gold.withAlpha(60),
+          AppColors.gold.withAlpha(0),
         ],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
