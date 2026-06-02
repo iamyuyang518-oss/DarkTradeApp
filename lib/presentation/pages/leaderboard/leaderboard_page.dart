@@ -32,13 +32,22 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     final auth = context.watch<AuthService>();
     final lb = context.watch<LeaderboardService>();
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('排行榜'),
-        backgroundColor: AppColors.background,
-      ),
-      body: _buildBody(auth, lb),
+    return Column(
+      children: [
+        // Warm header
+        const Padding(
+          padding: EdgeInsets.fromLTRB(20, 16, 20, 12),
+          child: Text(
+            '🏆 排行榜',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+        Expanded(child: _buildBody(auth, lb)),
+      ],
     );
   }
 
