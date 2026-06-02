@@ -190,7 +190,12 @@ class _MarketExplorerWidgetState extends State<MarketExplorerWidget>
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
           )),
       selected: isSelected,
-      onSelected: (_) => setState(() => _selectedMarket = index),
+      onSelected: (_) {
+        setState(() => _selectedMarket = index);
+        if (index == 1) {
+          context.read<CryptoService>().start();
+        }
+      },
       selectedColor: _amber,
       backgroundColor: _chipBg,
       labelStyle: TextStyle(

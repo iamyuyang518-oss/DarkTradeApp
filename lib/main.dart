@@ -35,7 +35,7 @@ void main() async {
   final tradeHistory = TradeHistoryService(localRepo: tradeHistoryRepo);
 
   final aShare = AShareService()..start();
-  final crypto = CryptoService()..start();
+  final crypto = CryptoService(); // lazy start — begins when user switches to crypto tab
   final portfolio = PortfolioService()..seedDemo();
   final tradeSelection = TradeSelectionService();
 
