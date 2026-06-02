@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DarkTrade v2 — 温暖陪伴 × 市场情绪</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800;900&family=Playfair+Display:wght@500;600;700;800&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Noto Sans SC',sans-serif;
+    background:#1a1815;
+    padding:40px 20px 60px;
+    display:flex; flex-direction:column; align-items:center;
+  }
+
+  h1 {
+    font-family:'Playfair Display',serif;
+    font-size:30px; color:#d4a853; text-align:center; margin-bottom:4px; letter-spacing:1px;
+  }
+  .subtitle { color:#8a7560; font-size:14px; text-align:center; margin-bottom:40px; }
+
+  .screen-row {
+    display:flex; gap:28px; justify-content:center; flex-wrap:wrap; max-width:1500px;
+  }
+
+  /* ---- Phone Frame ---- */
+  .phone-wrap { text-align:center; }
+  .phone-label {
+    font-size:13px; font-weight:600; color:#a09078; margin-bottom:14px; letter-spacing:0.5px;
+  }
+  .phone {
+    width:375px; height:740px; border-radius:36px; overflow:hidden;
+    box-shadow:0 24px 64px rgba(0,0,0,0.5), 0 0 0 2px #2a2520;
+    position:relative;
+  }
+
+  /* ====== THEME TOKENS ====== */
+  :root {
+    --bg:      #FFF9F0;
+    --surface: #FFFEFB;
+    --gold:    #D4A853;
+    --gold2:   #C49B38;
+    --gold-light: #F5E6C8;
+    --gold-bg: #FDF6E8;
+    --text:    #4A3828;
+    --text2:   #B8977A;
+    --text3:   #C8B898;
+    --border:  #ECDCC0;
+    --up:      #5CB860;
+    --up-bg:   #E8F5E9;
+    --down:    #E88580;
+    --down-bg: #FFF0F0;
+
+    /* emotion colors */
+    --emo-zen:     #B8D4C8;
+    --emo-zen-bg:  #EDF5F0;
+    --emo-popcorn: #F5E6C8;
+    --emo-popcorn-bg: #FDF6E8;
+    --emo-fire:    #F0C8C0;
+    --emo-fire-bg: #FDF2F0;
+  }
+
+  /* ====== PAGE 1: 行情 (Market) ====== */
+  .page-market { background:var(--bg); height:100%; position:relative; overflow-y:auto; }
+  .page-market::-webkit-scrollbar { width:0; }
+
+  /* top gradient wash */
+  .top-wash {
+    position:absolute; top:0; left:0; right:0; height:200px;
+    background:linear-gradient(180deg, rgba(212,168,83,0.06) 0%, transparent 100%);
+    pointer-events:none; z-index:0;
+  }
+
+  /* sentiment banner */
+  .sentiment-bar {
+    margin:16px 20px 0; padding:14px 16px;
+    background:linear-gradient(135deg, #FFFEFB 0%, #FFF9F0 100%);
+    border-radius:18px;
+    border:1.5px solid var(--border);
+    display:flex; align-items:center; gap:12px;
+    position:relative; z-index:1;
+    box-shadow:0 2px 12px rgba(180,160,120,0.08);
+  }
+  .sentiment-bar .emoji-big { font-size:32px; }
+  .sentiment-bar .sent-text { flex:1; }
+  .sentiment-bar .sent-label { font-size:12px; color:var(--text2); }
+  .sentiment-bar .sent-value { font-size:17px; font-weight:700; color:var(--text); }
+  .sentiment-bar .sent-hint { font-size:11px; color:var(--text3); margin-top:2px; }
+  .sentiment-bar .sent-gauge {
+    width:48px; height:48px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:800;
+  }
+  .gauge-zen { background:var(--emo-zen-bg); color:#6A9B85; border:2px solid var(--emo-zen); }
+  .gauge-fire { background:var(--emo-fire-bg); color:#C07868; border:2px solid var(--emo-fire); }
+  .gauge-pop { background:var(--emo-popcorn-bg); color:#B8954A; border:2px solid var(--emo-popcorn); }
+
+  .section-header {
+    padding:20px 20px 8px; display:flex; justify-content:space-between; align-items:baseline;
+    position:relative; z-index:1;
+  }
+  .section-header .sh-title { font-size:17px; font-weight:700; color:var(--text); letter-spacing:0.3px; }
+  .section-header .sh-more { font-size:12px; color:var(--gold); font-weight:600; }
+
+  /* stock card */
+  .stock-list { padding:0 20px; position:relative; z-index:1; }
+  .stock-card {
+    background:var(--surface); border-radius:16px; padding:14px 16px; margin-bottom:10px;
+    border:1.5px solid var(--border);
+    display:flex; align-items:center; gap:12px;
+    cursor:pointer;
+    transition:all .2s ease;
+    box-shadow:0 1px 3px rgba(160,140,110,0.04);
+  }
+  .stock-card:hover { border-color:var(--gold); box-shadow:0 4px 18px rgba(212,168,83,0.12); transform:translateY(-1px); }
+  .stock-card .sc-icon {
+    width:44px; height:44px; border-radius:13px;
+    background:linear-gradient(135deg, var(--gold-bg), #FEF9EE);
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:800; color:var(--gold);
+    flex-shrink:0;
+  }
+  .stock-card .sc-info { flex:1; min-width:0; }
+  .stock-card .sc-symbol { font-size:15px; font-weight:700; color:var(--text); }
+  .stock-card .sc-name { font-size:12px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .stock-card .sc-sector { display:inline-block; padding:2px 6px; background:var(--gold-bg); color:var(--gold); font-size:9px; font-weight:700; border-radius:4px; margin-top:3px; }
+  .stock-card .sc-right { text-align:right; flex-shrink:0; }
+  .stock-card .sc-price { font-size:16px; font-weight:700; color:var(--text); }
+  .sc-change { font-size:11px; font-weight:700; padding:3px 8px; border-radius:8px; display:inline-block; }
+  .sc-change.up { color:var(--up); background:var(--up-bg); }
+  .sc-change.down { color:var(--down); background:var(--down-bg); }
+
+  .stock-card.starred { border-color:#E8D5A8; }
+  .sc-star { font-size:16px; cursor:pointer; }
+
+  /* tab pills */
+  .tab-row {
+    padding:10px 20px 6px; display:flex; gap:8px; position:relative; z-index:1;
+  }
+  .tab-pill {
+    flex:1; text-align:center; padding:10px 0; border-radius:13px;
+    font-size:12px; font-weight:600; color:var(--text2);
+    transition:all .25s ease;
+  }
+  .tab-pill.active { background:var(--gold); color:#fff; font-weight:700; box-shadow:0 3px 12px rgba(212,168,83,0.3); }
+
+  /* bottom nav */
+  .bottom-nav {
+    position:absolute; bottom:0; left:0; right:0; height:64px;
+    background:rgba(255,254,251,0.92); backdrop-filter:blur(12px);
+    border-top:1.5px solid var(--border);
+    display:flex; padding-bottom:8px;
+  }
+  .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; }
+  .nav-item .ni-icon { font-size:20px; }
+  .nav-item .ni-label { font-size:10px; font-weight:500; color:var(--text2); }
+  .nav-item.active .ni-label { color:var(--gold); font-weight:700; }
+
+  /* ====== PAGE 2: 资产 (Assets) ====== */
+  .page-assets { background:var(--bg); height:100%; position:relative; overflow-y:auto; padding:0 0 90px; }
+  .page-assets::-webkit-scrollbar { width:0; }
+
+  .assets-header { padding:40px 20px 0; position:relative; z-index:1; }
+  .assets-greeting { font-size:13px; color:var(--text2); margin-bottom:4px; }
+  .assets-total-label { font-size:13px; color:var(--text2); letter-spacing:1px; }
+  .assets-total {
+    font-size:38px; font-weight:900; color:var(--gold);
+    background:linear-gradient(135deg, #D4A853, #C8963E);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text;
+    margin:4px 0;
+  }
+  .assets-sub { font-size:11px; color:var(--text3); }
+
+  /* emotion card */
+  .emotion-card {
+    margin:16px 20px; padding:16px;
+    background:linear-gradient(135deg, #FFFEFB, #FFF8EC);
+    border-radius:18px; border:1.5px solid #E8DCC8;
+    position:relative; z-index:1;
+    box-shadow:0 2px 16px rgba(180,160,110,0.07);
+  }
+  .emotion-card .emo-top { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .emotion-card .emo-icon { font-size:28px; }
+  .emotion-card .emo-name { font-size:16px; font-weight:700; color:var(--text); }
+  .emotion-card .emo-desc { font-size:12px; color:var(--text2); }
+  .emotion-card .emo-bar-track {
+    height:6px; background:var(--gold-bg); border-radius:3px; overflow:hidden; margin-top:8px;
+  }
+  .emotion-card .emo-bar-fill { height:100%; border-radius:3px; transition:width .6s ease; }
+  .emo-bar-fill.zen { background:linear-gradient(90deg, #B8D4C8, #7BAF94); }
+  .emo-bar-fill.pop { background:linear-gradient(90deg, #F5E6C8, #E8C860); }
+  .emo-bar-fill.fire { background:linear-gradient(90deg, #F0C8C0, #E88870); }
+
+  /* gain-loss card */
+  .gl-card {
+    margin:0 20px 14px; padding:18px;
+    background:var(--surface); border-radius:18px; border:1.5px solid var(--border);
+    display:flex; justify-content:space-around; text-align:center;
+    position:relative; z-index:1;
+    box-shadow:0 1px 4px rgba(160,140,110,0.04);
+  }
+  .gl-card .gl-item { }
+  .gl-card .gl-label { font-size:11px; color:var(--text2); margin-bottom:4px; }
+  .gl-card .gl-value { font-size:20px; font-weight:800; color:var(--text); }
+  .gl-card .gl-change { font-size:12px; font-weight:600; margin-top:2px; }
+  .gl-card .gl-divider { width:1px; background:var(--border); }
+
+  /* holdings */
+  .holding-card {
+    margin:0 20px 10px; padding:14px 16px;
+    background:var(--surface); border-radius:16px; border:1.5px solid var(--border);
+    display:flex; align-items:center; gap:12px;
+    position:relative; z-index:1;
+    box-shadow:0 1px 3px rgba(160,140,110,0.04);
+  }
+  .holding-card .hc-icon {
+    width:42px; height:42px; border-radius:11px;
+    background:rgba(212,168,83,0.08);
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:800; color:var(--gold);
+    flex-shrink:0;
+  }
+  .holding-card .hc-info { flex:1; }
+  .holding-card .hc-name { font-size:15px; font-weight:700; color:var(--text); }
+  .holding-card .hc-amount { font-size:12px; color:var(--text2); }
+  .holding-card .hc-value { font-size:15px; font-weight:700; color:var(--gold); }
+
+  /* share button */
+  .share-btn {
+    margin:8px 20px; padding:12px; text-align:center;
+    border-radius:14px; border:1.5px solid var(--gold);
+    color:var(--gold); font-size:14px; font-weight:600;
+    position:relative; z-index:1; cursor:pointer;
+    transition:all .2s;
+  }
+  .share-btn:hover { background:var(--gold-bg); }
+
+  /* ====== PAGE 3: 交易 (Trade) ====== */
+  .page-trade { background:var(--bg); height:100%; position:relative; overflow-y:auto; padding:0 0 100px; }
+  .page-trade::-webkit-scrollbar { width:0; }
+
+  .trade-header { padding:36px 20px 0; position:relative; z-index:1; display:flex; align-items:center; gap:14px; }
+  .trade-symbol-box {
+    padding:6px 14px; background:rgba(212,168,83,0.08); border-radius:10px;
+    font-size:16px; font-weight:800; color:var(--gold);
+  }
+  .trade-symbol-name { font-size:15px; font-weight:600; color:var(--text); }
+  .trade-balance {
+    margin:12px 20px; padding:12px 16px; background:var(--surface);
+    border-radius:14px; border:1.5px solid var(--border);
+    display:flex; align-items:center; gap:8px;
+    position:relative; z-index:1;
+  }
+  .trade-balance .tb-label { font-size:12px; color:var(--text2); }
+  .trade-balance .tb-value { font-size:17px; font-weight:700; color:var(--gold); }
+
+  .trade-side-toggle {
+    margin:0 20px 16px; display:flex; position:relative; z-index:1;
+    background:var(--gold-bg); border-radius:14px; padding:4px;
+  }
+  .trade-side-btn {
+    flex:1; padding:12px; text-align:center; border-radius:11px;
+    font-size:14px; font-weight:700; transition:all .25s ease;
+  }
+  .trade-side-btn.buy { color:var(--up); }
+  .trade-side-btn.sell { color:var(--down); }
+  .trade-side-btn.active.buy { background:var(--up); color:#fff; box-shadow:0 3px 12px rgba(92,184,96,0.3); }
+  .trade-side-btn.active.sell { background:var(--down); color:#fff; box-shadow:0 3px 12px rgba(232,133,128,0.3); }
+
+  .trade-fields { margin:0 20px; position:relative; z-index:1; }
+  .trade-field {
+    margin-bottom:14px;
+  }
+  .trade-field .tf-label { font-size:12px; color:var(--text2); font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+  .trade-field .tf-input {
+    width:100%; padding:14px 16px; border-radius:13px;
+    border:1.5px solid var(--border); background:var(--surface);
+    font-size:17px; font-weight:700; color:var(--text);
+    font-family:'Noto Sans SC',sans-serif;
+    outline:none; transition:border .2s;
+  }
+  .trade-field .tf-input:focus { border-color:var(--gold); }
+  .trade-field .tf-input.gold-accent { color:var(--gold); }
+
+  .quick-chips { margin:0 20px 16px; display:flex; gap:8px; position:relative; z-index:1; }
+  .qc-chip {
+    flex:1; padding:10px 0; text-align:center; border-radius:10px;
+    font-size:13px; font-weight:600; color:var(--text2);
+    border:1.5px solid var(--border); cursor:pointer; transition:all .15s;
+    background:var(--surface);
+  }
+  .qc-chip:hover { border-color:var(--gold); color:var(--gold); background:var(--gold-bg); }
+
+  .trade-estimate {
+    margin:0 20px; padding:16px; background:var(--surface);
+    border-radius:14px; border:1.5px solid var(--border);
+    position:relative; z-index:1;
+  }
+  .trade-estimate .te-row { display:flex; justify-content:space-between; padding:4px 0; font-size:13px; }
+  .trade-estimate .te-row .te-label { color:var(--text2); }
+  .trade-estimate .te-row .te-value { font-weight:600; color:var(--text); }
+
+  .execute-btn {
+    margin:16px 20px; padding:16px; text-align:center; border-radius:14px;
+    font-size:16px; font-weight:800; color:#fff; letter-spacing:2px;
+    position:relative; z-index:1; cursor:pointer;
+    box-shadow:0 4px 20px rgba(212,168,83,0.3);
+    transition:all .2s;
+  }
+  .execute-btn.buy-btn { background:linear-gradient(135deg, #5CB860, #4CA850); }
+  .execute-btn.sell-btn { background:linear-gradient(135deg, #E88580, #D8706A); }
+  .execute-btn:hover { transform:translateY(-1px); box-shadow:0 6px 24px rgba(212,168,83,0.4); }
+
+  /* tip */
+  .trade-tip {
+    margin:0 20px; padding:12px 14px; background:var(--gold-bg);
+    border-radius:12px; font-size:11px; color:var(--text2);
+    display:flex; align-items:center; gap:6px;
+    position:relative; z-index:1;
+  }
+
+  /* ====== PAGE 4: 个人 (Profile) ====== */
+  .page-profile { background:var(--bg); height:100%; position:relative; overflow-y:auto; padding-bottom:90px; }
+  .page-profile::-webkit-scrollbar { width:0; }
+
+  .profile-top {
+    padding:44px 20px 20px; text-align:center; position:relative; z-index:1;
+  }
+  .profile-avatar {
+    width:72px; height:72px; border-radius:50%;
+    background:linear-gradient(135deg, #FFF9F0, #FDF2E0);
+    border:2.5px solid var(--gold);
+    margin:0 auto 12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:30px; color:var(--gold);
+    box-shadow:0 4px 16px rgba(212,168,83,0.15);
+  }
+  .profile-name { font-size:20px; font-weight:800; color:var(--text); }
+  .profile-uid { font-size:12px; color:var(--text2); margin-top:2px; }
+
+  .profile-card {
+    margin:0 20px 10px; padding:16px; background:var(--surface);
+    border-radius:16px; border:1.5px solid var(--border);
+    position:relative; z-index:1;
+    box-shadow:0 1px 3px rgba(160,140,110,0.04);
+  }
+  .profile-card .pc-title { font-size:15px; font-weight:700; color:var(--text); margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }
+  .profile-card .pc-badge { font-size:12px; color:var(--gold); font-weight:600; }
+
+  .achievement-grid { display:flex; gap:12px; flex-wrap:wrap; }
+  .ach-item { text-align:center; width:52px; }
+  .ach-circle {
+    width:44px; height:44px; border-radius:50%; margin:0 auto 4px;
+    display:flex; align-items:center; justify-content:center; font-size:20px;
+    background:var(--gold-bg); border:2px solid var(--gold);
+  }
+  .ach-circle.locked { background:#F5F0E8; border-color:#E0D8C8; }
+  .ach-name { font-size:9px; color:var(--text2); }
+
+  .menu-item {
+    display:flex; align-items:center; padding:14px 0; gap:12px;
+  }
+  .menu-item .mi-icon {
+    width:36px; height:36px; border-radius:10px;
+    background:rgba(212,168,83,0.08);
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; color:var(--gold);
+  }
+  .menu-item .mi-label { flex:1; font-size:14px; font-weight:600; color:var(--text); }
+  .menu-item .mi-arrow { color:var(--text3); font-size:14px; }
+
+  .vip-card {
+    margin:0 20px 10px; padding:16px;
+    background:linear-gradient(135deg, #FDF6E8, #FFF9F0);
+    border-radius:16px; border:1.5px solid var(--gold);
+    display:flex; align-items:center; gap:12px;
+    position:relative; z-index:1;
+  }
+  .vip-card .vc-icon {
+    width:40px; height:40px; border-radius:11px;
+    background:rgba(212,168,83,0.15);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+  }
+  .vip-card .vc-info { flex:1; }
+  .vip-card .vc-title { font-size:14px; font-weight:700; color:var(--gold); }
+  .vip-card .vc-sub { font-size:11px; color:var(--text2); }
+  .vip-card .vc-badge {
+    padding:5px 12px; background:rgba(212,168,83,0.12);
+    border-radius:12px; font-size:11px; font-weight:700; color:var(--gold);
+  }
+
+  /* ====== emotion label detail ====== */
+  .emotion-legend {
+    display:flex; gap:16px; justify-content:center;
+    margin-top:40px; margin-bottom:24px; flex-wrap:wrap;
+  }
+  .emotion-legend .el-item {
+    display:flex; align-items:center; gap:6px;
+    font-size:12px; color:var(--text2);
+  }
+  .el-dot {
+    width:10px; height:10px; border-radius:50%;
+  }
+  .el-dot.zen { background:var(--emo-zen); }
+  .el-dot.pop { background:var(--emo-popcorn); }
+  .el-dot.fire { background:var(--emo-fire); }
+
+  .design-notes {
+    max-width:800px; margin:0 auto; color:var(--text2); font-size:13px; line-height:1.9;
+    text-align:center; margin-top:48px;
+  }
+  .design-notes strong { color:#d4a853; }
+</style>
+</head>
+<body>
+
+<h1>DarkTrade · 温暖陪伴 × 市场情绪</h1>
+<p class="subtitle">核心页面预览 — 行情 · 资产 · 交易 · 个人</p>
+
+<div class="emotion-legend">
+  <div class="el-item"><span class="el-dot zen"></span> 市场平静 → 🧘 佛系</div>
+  <div class="el-item"><span class="el-dot pop"></span> 小幅波动 → 🍿 吃瓜看戏</div>
+  <div class="el-item"><span class="el-dot fire"></span> 大幅波动/频繁交易 → 🔥 上头</div>
+</div>
+
+<div class="screen-row">
+
+  <!-- ====== PHONE 1: 行情页 ====== -->
+  <div class="phone-wrap">
+    <div class="phone-label">📊 行情页 (Market)</div>
+    <div class="phone">
+      <div class="page-market">
+        <div class="top-wash"></div>
+
+        <!-- sentiment bar -->
+        <div class="sentiment-bar">
+          <div class="emoji-big">🍿</div>
+          <div class="sent-text">
+            <div class="sent-label">今日市场情绪</div>
+            <div class="sent-value">吃瓜看戏</div>
+            <div class="sent-hint">小幅波动，市场正在寻找方向</div>
+          </div>
+          <div class="sent-gauge gauge-pop">±0.8%</div>
+        </div>
+
+        <!-- watchlist -->
+        <div class="section-header">
+          <div class="sh-title">⭐ 自选</div>
+          <div class="sh-more">编辑</div>
+        </div>
+
+        <div class="stock-list">
+          <div class="stock-card starred">
+            <div class="sc-icon">茅台</div>
+            <div class="sc-info">
+              <div class="sc-symbol">600519 贵州茅台</div>
+              <div class="sc-name">白酒龙头</div>
+              <span class="sc-sector">白酒</span>
+            </div>
+            <div class="sc-right">
+              <div class="sc-price">¥1,682.50</div>
+              <span class="sc-change up">▲ +2.35%</span>
+            </div>
+            <div class="sc-star" style="color:#D4A853;">★</div>
+          </div>
+
+          <div class="stock-card">
+            <div class="sc-icon">宁德</div>
+            <div class="sc-info">
+              <div class="sc-symbol">300750 宁德时代</div>
+              <div class="sc-name">新能源电池</div>
+              <span class="sc-sector">新能源</span>
+            </div>
+            <div class="sc-right">
+              <div class="sc-price">¥208.40</div>
+              <span class="sc-change down">▼ -1.22%</span>
+            </div>
+            <div class="sc-star" style="color:#C8B898;">☆</div>
+          </div>
+
+          <div class="stock-card starred">
+            <div class="sc-icon">五粮</div>
+            <div class="sc-info">
+              <div class="sc-symbol">000858 五粮液</div>
+              <div class="sc-name">白酒</div>
+              <span class="sc-sector">白酒</span>
+            </div>
+            <div class="sc-right">
+              <div class="sc-price">¥146.80</div>
+              <span class="sc-change up">▲ +0.88%</span>
+            </div>
+            <div class="sc-star" style="color:#D4A853;">★</div>
+          </div>
+        </div>
+
+        <!-- tabs -->
+        <div class="tab-row">
+          <div class="tab-pill active">⭐ 关注</div>
+          <div class="tab-pill">📦 持仓</div>
+          <div class="tab-pill">🔥 热门</div>
+        </div>
+
+        <!-- bottom nav -->
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <div class="ni-icon" style="color:var(--gold);">📈</div>
+            <div class="ni-label">行情</div>
+          </div>
+          <div class="nav-item">
+            <div class="ni-icon">💰</div>
+            <div class="ni-label">资产</div>
+          </div>
+          <div class="nav-item">
+            <div class="ni-icon">📝</div>
+            <div class="ni-label">交易</div>
+          </div>
+          <div class="nav-item">
+            <div class="ni-icon">👤</div>
+            <div class="ni-label">个人</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== PHONE 2: 资产页 ====== -->
+  <div class="phone-wrap">
+    <div class="phone-label">💰 资产页 (Assets)</div>
+    <div class="phone">
+      <div class="page-assets">
+        <div class="top-wash" style="height:160px;"></div>
+
+        <div class="assets-header">
+          <div class="assets-greeting">下午好 ☀️</div>
+          <div class="assets-total-label">总资产 (RMB)</div>
+          <div class="assets-total">¥128,650.00</div>
+          <div class="assets-sub">估值以人民币计价</div>
+        </div>
+
+        <!-- emotion card -->
+        <div class="emotion-card">
+          <div class="emo-top">
+            <div class="emo-icon">🔥</div>
+            <div class="emo-name">交易上头</div>
+          </div>
+          <div class="emo-desc">本周已交易 12 次，注意控制节奏哦~ 休息一下，喝杯茶 🍵</div>
+          <div class="emo-bar-track"><div class="emo-bar-fill fire" style="width:78%;"></div></div>
+        </div>
+
+        <!-- gain/loss -->
+        <div class="gl-card">
+          <div class="gl-item">
+            <div class="gl-label">今日盈亏</div>
+            <div class="gl-value">+¥1,280.50</div>
+            <div class="gl-change" style="color:var(--up);">+₹ 2.35%</div>
+          </div>
+          <div class="gl-divider"></div>
+          <div class="gl-item">
+            <div class="gl-label">总收益</div>
+            <div class="gl-value">+¥28,650</div>
+            <div class="gl-change" style="color:var(--up);">+₹ 28.6%</div>
+          </div>
+        </div>
+
+        <!-- share -->
+        <div class="share-btn">📤 分享战绩</div>
+
+        <!-- holdings -->
+        <div class="section-header" style="padding-top:12px;">
+          <div class="sh-title">📦 持仓</div>
+        </div>
+
+        <div class="holding-card">
+          <div class="hc-icon">茅台</div>
+          <div class="hc-info">
+            <div class="hc-name">贵州茅台</div>
+            <div class="hc-amount">100 股 · ¥1,600.00</div>
+          </div>
+          <div class="hc-value">¥168,250</div>
+        </div>
+        <div class="holding-card">
+          <div class="hc-icon">宁德</div>
+          <div class="hc-info">
+            <div class="hc-name">宁德时代</div>
+            <div class="hc-amount">200 股 · ¥200.00</div>
+          </div>
+          <div class="hc-value">¥41,680</div>
+        </div>
+
+        <!-- bottom nav -->
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <div class="ni-icon">📈</div>
+            <div class="ni-label">行情</div>
+          </div>
+          <div class="nav-item active">
+            <div class="ni-icon" style="color:var(--gold);">💰</div>
+            <div class="ni-label">资产</div>
+          </div>
+          <div class="nav-item">
+            <div class="ni-icon">📝</div>
+            <div class="ni-label">交易</div>
+          </div>
+          <div class="nav-item">
+            <div class="ni-icon">👤</div>
+            <div class="ni-label">个人</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== PHONE 3: 交易页 ====== -->
+  <div class="phone-wrap">
+    <div class="phone-label">📝 交易页 (Trade)</div>
+    <div class="phone">
+      <div class="page-trade">
+
+        <div class="trade-header">
+          <div class="trade-symbol-box">600519</div>
+          <div class="trade-symbol-name">贵州茅台</div>
+        </div>
+
+        <div class="trade-balance">
+          <span class="tb-label">💰 可用资金</span>
+          <span class="tb-value">85,200.50 USDT</span>
+        </div>
+
+        <div class="trade-side-toggle">
+          <div class="trade-side-btn buy active">买入</div>
+          <div class="trade-side-btn sell">卖出</div>
+        </div>
+
+        <div class="trade-fields">
+          <div class="trade-field">
+            <div class="tf-label">💛 价格 <span style="font-size:10px;color:var(--text3);">USDT</span></div>
+            <input class="tf-input gold-accent" value="1,682.50" readonly>
+          </div>
+          <div class="trade-field">
+            <div class="tf-label">📊 数量 <span style="font-size:10px;color:var(--text3);">买入数量</span></div>
+            <input class="tf-input" placeholder="请输入数量">
+          </div>
+        </div>
+
+        <div class="quick-chips">
+          <div class="qc-chip">25%</div>
+          <div class="qc-chip">50%</div>
+          <div class="qc-chip">75%</div>
+          <div class="qc-chip">100%</div>
+        </div>
+
+        <div class="trade-estimate">
+          <div class="te-row">
+            <span class="te-label">预计成交金额</span>
+            <span class="te-value">¥16,825.00</span>
+          </div>
+          <div class="te-row">
+            <span class="te-label">手续费 (0.03%)</span>
+            <span class="te-value">¥5.05</span>
+          </div>
+        </div>
+
+        <div class="execute-btn buy-btn">确认买入</div>
+
+        <div class="trade-tip">
+          <span>💡</span> 新手提示：建议先用 25% 仓位小试牛刀
+        </div>
+
+        <div class="bottom-nav" style="position:absolute; bottom:0;">
+          <div class="nav-item">
+            <div class="ni-icon">📈</div>
+            <div class="ni-label">行情</div>
+          </div>
+          <div class="nav-item">
+            <div class="ni-icon">💰</div>
+            <div class="ni-label">资产</div>
+          </div>
+          <div class="nav-item active">
+            <div class="ni-icon" style="color:var(--gold);">📝</div>
+            <div class="ni-label">交易</div>
+          </div>
+          <div class="nav-item">
+            <div class="ni-icon">👤</div>
+            <div class="ni-label">个人</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== PHONE 4: 个人页 ====== -->
+  <div class="phone-wrap">
+    <div class="phone-label">👤 个人页 (Profile)</div>
+    <div class="phone">
+      <div class="page-profile">
+        <div class="top-wash" style="height:140px;"></div>
+
+        <div class="profile-top">
+          <div class="profile-avatar">😎</div>
+          <div class="profile-name">交易达人</div>
+          <div class="profile-uid">UID: a1b2c3d4</div>
+        </div>
+
+        <!-- achievements -->
+        <div class="profile-card">
+          <div class="pc-title">
+            🏅 成就勋章
+            <span class="pc-badge">5/10</span>
+          </div>
+          <div class="achievement-grid">
+            <div class="ach-item">
+              <div class="ach-circle">🎯</div>
+              <div class="ach-name">首笔交易</div>
+            </div>
+            <div class="ach-item">
+              <div class="ach-circle">🔥</div>
+              <div class="ach-name">连续盈利</div>
+            </div>
+            <div class="ach-item">
+              <div class="ach-circle">💎</div>
+              <div class="ach-name">资产翻倍</div>
+            </div>
+            <div class="ach-item">
+              <div class="ach-circle locked">🔒</div>
+              <div class="ach-name">交易王者</div>
+            </div>
+            <div class="ach-item">
+              <div class="ach-circle locked">🔒</div>
+              <div class="ach-name">百笔交易</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIP -->
+        <div class="vip-card">
+          <div class="vc-icon">💎</div>
+          <div class="vc-info">
+            <div class="vc-title">DarkTrade VIP</div>
+            <div class="vc-sub">已解锁加密货币市场</div>
+          </div>
+          <div class="vc-badge">已开通</div>
+        </div>
+
+        <!-- menu -->
+        <div class="profile-card">
+          <div class="menu-item"><span class="mi-icon">🎮</span><span class="mi-label">生涯管理</span><span class="mi-arrow">›</span></div>
+          <div class="menu-item"><span class="mi-icon">📋</span><span class="mi-label">交易记录</span><span class="mi-arrow">›</span></div>
+          <div class="menu-item"><span class="mi-icon">🏆</span><span class="mi-label">排行榜</span><span class="mi-arrow">›</span></div>
+          <div class="menu-item"><span class="mi-icon">⚔️</span><span class="mi-label">好友对战</span><span class="mi-arrow">›</span></div>
+          <div class="menu-item"><span class="mi-icon">📖</span><span class="mi-label">新手教程</span><span class="mi-arrow">›</span></div>
+        </div>
+
+        <div class="bottom-nav" style="position:absolute; bottom:0; left:0; right:0;">
+          <div class="nav-item">
+            <div class="ni-icon">📈</div>
+            <div class="ni-label">行情</div>
+          </div>
+          <div class="nav-item">
+            <div class="ni-icon">💰</div>
+            <div class="ni-label">资产</div>
+          </div>
+          <div class="nav-item">
+            <div class="ni-icon">📝</div>
+            <div class="ni-label">交易</div>
+          </div>
+          <div class="nav-item active">
+            <div class="ni-icon" style="color:var(--gold);">👤</div>
+            <div class="ni-label">个人</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="design-notes">
+  <p><strong>设计要点：</strong></p>
+  <p>✦ 统一暖金配色体系，背景 #FFF9F0 → 卡片 #FFFEFB → 金色 #D4A853</p>
+  <p>✦ 市场情绪作为一级信息展示在行情页顶部，用三色标记（绿=佛系 / 黄=吃瓜 / 粉=上头）</p>
+  <p>✦ 圆角统一 12-18px，柔和但不幼稚</p>
+  <p>✦ 卡片有微妙阴影 + 渐变背景，增加层次但不过度</p>
+  <p>✦ 交易页清晰的层级：选股 → 方向 → 价格/数量 → 快捷比例 → 确认</p>
+  <p>✦ 底部导航用 emoji 图标增加亲和力</p>
+  <p>✦ 提示文案用鼓励式口语（"小试牛刀"、"喝杯茶 🍵"）</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DarkTrade UI — 三种风格方向预览</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans SC',sans-serif; background:#1a1a1a; color:#fff; padding:32px 20px; }
+  h1 { text-align:center; font-size:28px; margin-bottom:8px; font-family:'Playfair Display',serif; letter-spacing:1px; }
+  .subtitle { text-align:center; color:#999; margin-bottom:48px; font-size:14px; }
+
+  .compare { display:flex; gap:24px; justify-content:center; flex-wrap:wrap; max-width:1400px; margin:0 auto; }
+  .col { flex:1; min-width:360px; max-width:440px; }
+  .col h2 { text-align:center; font-size:17px; margin-bottom:20px; padding:10px 0; border-radius:10px; }
+  .col:nth-child(1) h2 { background:linear-gradient(135deg, #fce4b8, #f8d89b); color:#5d3a1a; }
+  .col:nth-child(2) h2 { background:linear-gradient(135deg, #6c3ce0, #ff6b9d); color:#fff; }
+  .col:nth-child(3) h2 { background:linear-gradient(135deg, #f0f0f0, #e8e8e8); color:#333; }
+
+  .phone { background:#fff; border-radius:32px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+  .statusbar { height:36px; display:flex; align-items:center; justify-content:space-between; padding:0 24px; font-size:12px; font-weight:600; }
+  .statusbar .time { flex:1; }
+  .statusbar .icons { letter-spacing:2px; }
+
+  /* === STYLE 1: Warm Nurturing === */
+  .s1 .phone { background:#FFF8EF; }
+  .s1 .statusbar { background:#FFF8EF; color:#b8956e; }
+  .s1-page { padding:0 20px 20px; }
+  .s1-header { padding:32px 0 16px; display:flex; justify-content:space-between; align-items:center; }
+  .s1-header .title { font-size:22px; font-weight:700; color:#5d3a1a; display:flex; align-items:center; gap:8px; }
+  .s1-header .mascot { width:40px; height:40px; background:linear-gradient(135deg,#f5c56d,#e8a83a); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .s1-header .live-badge { background:#e8d5b0; color:#8a6d3b; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+  .s1-card { background:#fff; border-radius:18px; padding:16px; margin-bottom:10px; border:1.5px solid #f0e4cf; display:flex; align-items:center; gap:14px; cursor:pointer; transition:all .2s; }
+  .s1-card:hover { border-color:#d4a853; box-shadow:0 4px 20px rgba(212,168,83,0.12); transform:translateY(-1px); }
+  .s1-card .icon { width:46px; height:46px; background:linear-gradient(135deg,#fef6e8,#fdf0d5); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#d4a853; }
+  .s1-card .info { flex:1; }
+  .s1-card .symbol { font-size:15px; font-weight:700; color:#3d3025; }
+  .s1-card .name { font-size:12px; color:#a09078; }
+  .s1-card .price-col { text-align:right; }
+  .s1-card .price { font-size:16px; font-weight:700; color:#3d3025; }
+  .s1-card .change { font-size:12px; font-weight:600; color:#43a047; background:#e8f5e9; padding:2px 8px; border-radius:8px; }
+  .s1-bottom { display:flex; gap:8px; padding:8px 0 0; }
+  .s1-tab { flex:1; text-align:center; padding:10px; border-radius:14px; font-size:12px; font-weight:600; color:#a09078; }
+  .s1-tab.active { background:#d4a853; color:#fff; box-shadow:0 3px 12px rgba(212,168,83,0.3); }
+  .s1-tip { margin-top:14px; background:#fff9f0; border-radius:14px; padding:14px; display:flex; align-items:center; gap:10px; border:1.5px solid #f5e6c8; }
+  .s1-tip .emoji { font-size:24px; }
+  .s1-tip .msg { font-size:13px; color:#8a6d3b; line-height:1.5; }
+  .s1-tip .msg strong { color:#d4a853; }
+
+  /* === STYLE 2: Gamified Playful === */
+  .s2 .phone { background:#0f0c1f; }
+  .s2 .statusbar { background:#0f0c1f; color:#7b6faa; }
+  .s2-page { padding:0 20px 20px; }
+  .s2-header { padding:32px 0 16px; display:flex; justify-content:space-between; align-items:center; }
+  .s2-header .title { font-size:22px; font-weight:800; color:#fff; letter-spacing:0.5px; }
+  .s2-header .level { background:linear-gradient(135deg,#6c3ce0,#8b5cf6); color:#fff; padding:5px 12px; border-radius:20px; font-size:11px; font-weight:700; }
+  .s2-xp-bar { background:#1a1540; border-radius:10px; height:8px; margin-bottom:18px; overflow:hidden; }
+  .s2-xp-fill { width:68%; height:100%; background:linear-gradient(90deg,#f59e0b,#ef4444,#ec4899); border-radius:10px; animation:xp-glow 2s infinite; }
+  @keyframes xp-glow { 0%,100%{opacity:1} 50%{opacity:.7} }
+  .s2-card { background:#1a1540; border-radius:16px; padding:16px; margin-bottom:10px; border:1px solid #2d2660; display:flex; align-items:center; gap:14px; cursor:pointer; transition:all .2s; position:relative; overflow:hidden; }
+  .s2-card::after { content:''; position:absolute; top:0; right:0; width:60px; height:60px; background:linear-gradient(135deg,transparent 50%,rgba(108,60,224,0.08) 50%); border-radius:0 0 0 60px; }
+  .s2-card:hover { border-color:#6c3ce0; box-shadow:0 0 30px rgba(108,60,224,0.15); transform:translateY(-2px); }
+  .s2-card .icon { width:46px; height:46px; background:linear-gradient(135deg,#2d2060,#3d2a80); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#a78bfa; }
+  .s2-card .info { flex:1; }
+  .s2-card .symbol { font-size:15px; font-weight:700; color:#e2e8f0; }
+  .s2-card .name { font-size:12px; color:#7b6faa; }
+  .s2-card .streak { position:absolute; top:10px; right:16px; font-size:10px; color:#f59e0b; font-weight:700; }
+  .s2-card .price-col { text-align:right; }
+  .s2-card .price { font-size:16px; font-weight:700; color:#e2e8f0; }
+  .s2-card .change { font-size:12px; font-weight:600; color:#34d399; background:rgba(52,211,153,0.12); padding:2px 8px; border-radius:8px; }
+  .s2-bottom { display:flex; gap:8px; padding:8px 0 0; }
+  .s2-tab { flex:1; text-align:center; padding:10px; border-radius:14px; font-size:12px; font-weight:600; color:#7b6faa; }
+  .s2-tab.active { background:linear-gradient(135deg,#6c3ce0,#8b5cf6); color:#fff; box-shadow:0 4px 15px rgba(108,60,224,0.4); }
+  .s2-quest { margin-top:14px; background:linear-gradient(135deg,#1a1040,#1a1540); border-radius:14px; padding:14px; border:1px solid #2d2660; }
+  .s2-quest .top { display:flex; justify-content:space-between; }
+  .s2-quest .top span { color:#a78bfa; font-size:10px; font-weight:600; }
+  .s2-quest .q-title { color:#fff; font-size:14px; font-weight:700; margin:6px 0; }
+  .s2-quest .reward { color:#f59e0b; font-size:11px; font-weight:600; }
+
+  /* === STYLE 3: Minimal Clean === */
+  .s3 .phone { background:#fafafa; }
+  .s3 .statusbar { background:#fafafa; color:#999; }
+  .s3-page { padding:0 20px 20px; }
+  .s3-header { padding:36px 0 20px; display:flex; justify-content:space-between; align-items:baseline; }
+  .s3-header .title { font-size:28px; font-weight:300; color:#1a1a1a; letter-spacing:-0.5px; }
+  .s3-header .market-state { font-size:13px; color:#888; }
+  .s3-card { background:#fff; border-radius:12px; padding:18px; margin-bottom:6px; display:flex; align-items:center; gap:16px; cursor:pointer; transition:all .15s; }
+  .s3-card:hover { background:#f5f5f5; }
+  .s3-card .icon { width:42px; height:42px; background:#f0f0f0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#666; }
+  .s3-card .info { flex:1; }
+  .s3-card .symbol { font-size:14px; font-weight:600; color:#1a1a1a; }
+  .s3-card .name { font-size:12px; color:#999; }
+  .s3-card .price-col { text-align:right; }
+  .s3-card .price { font-size:15px; font-weight:500; color:#1a1a1a; }
+  .s3-card .change { font-size:11px; font-weight:500; color:#22c55e; }
+  .s3-bottom { display:flex; gap:0; padding:4px 0 0; border-bottom:2px solid #eee; }
+  .s3-tab { flex:1; text-align:center; padding:12px 0 8px; font-size:12px; font-weight:500; color:#999; border-bottom:2px solid transparent; margin-bottom:-2px; cursor:pointer; }
+  .s3-tab.active { color:#1a1a1a; border-bottom-color:#1a1a1a; font-weight:600; }
+  .s3-insight { margin-top:16px; padding:18px; background:#fff; border-radius:12px; border-left:3px solid #d4d4d4; }
+  .s3-insight .label { font-size:10px; color:#aaa; text-transform:uppercase; letter-spacing:1px; }
+  .s3-insight .text { margin-top:6px; font-size:13px; color:#555; line-height:1.6; }
+
+  /* Labels */
+  .tag { display:inline-block; padding:3px 10px; border-radius:12px; font-size:10px; font-weight:700; margin-top:8px; }
+  .tag-warm { background:#fdf0d5; color:#b8860b; }
+  .tag-game { background:rgba(108,60,224,0.15); color:#a78bfa; }
+  .tag-clean { background:#f0f0f0; color:#666; }
+
+  .feature-list { margin-top:12px; font-size:12px; line-height:1.8; }
+  .col:nth-child(1) .feature-list { color:#8a6d3b; }
+  .col:nth-child(2) .feature-list { color:#9b8ec4; }
+  .col:nth-child(3) .feature-list { color:#777; }
+
+  @media(max-width:1200px) { .compare { flex-direction:column; align-items:center; } }
+</style>
+</head>
+<body>
+
+<h1>DarkTrade UI 风格方向预览</h1>
+<p class="subtitle">三种设计语言 · 同一套布局结构 · 点击卡片感受差异</p>
+
+<div class="compare">
+
+  <!-- ========== STYLE 1: 温暖陪伴型 ========== -->
+  <div class="col s1">
+    <h2>🧸 温暖陪伴型</h2>
+    <div class="phone">
+      <div class="statusbar"><span class="time">9:41</span><span class="icons">●●●●○ ▮▮▮▮</span></div>
+      <div class="s1-page">
+        <div class="s1-header">
+          <div class="title"><span class="mascot">🐻</span>行情</div>
+          <div class="live-badge">🟢 实时</div>
+        </div>
+
+        <div class="s1-card">
+          <div class="icon">贵州</div>
+          <div class="info">
+            <div class="symbol">600519 贵州茅台</div>
+            <div class="name">白酒龙头 · 市值第一</div>
+          </div>
+          <div class="price-col">
+            <div class="price">¥1,682.50</div>
+            <div class="change">▲ +2.35%</div>
+          </div>
+        </div>
+
+        <div class="s1-card">
+          <div class="icon">宁德</div>
+          <div class="info">
+            <div class="symbol">300750 宁德时代</div>
+            <div class="name">新能源电池 · 创业板</div>
+          </div>
+          <div class="price-col">
+            <div class="price">¥208.40</div>
+            <div class="change" style="color:#e57373;background:#fff0f0;">▼ -1.22%</div>
+          </div>
+        </div>
+
+        <div class="s1-card">
+          <div class="icon">五粮</div>
+          <div class="info">
+            <div class="symbol">000858 五粮液</div>
+            <div class="name">白酒 · 深市</div>
+          </div>
+          <div class="price-col">
+            <div class="price">¥146.80</div>
+            <div class="change">▲ +0.88%</div>
+          </div>
+        </div>
+
+        <div class="s1-bottom">
+          <div class="s1-tab active">⭐ 关注</div>
+          <div class="s1-tab">📦 持仓</div>
+          <div class="s1-tab">🔥 热门</div>
+        </div>
+
+        <div class="s1-tip">
+          <span class="emoji">💡</span>
+          <span class="msg"><strong>新手小贴士：</strong>点击股票卡片可以查看详细走势图，试试看吧~</span>
+        </div>
+        <span class="tag tag-warm">柔和圆角 · 暖色渐变 · 鼓励文案 · 萌系元素</span>
+        <div class="feature-list">✦ 小熊导师陪伴<br>✦ 温暖的鼓励语<br>✦ 柔和色彩过渡<br>✦ 更像生活App</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== STYLE 2: 游戏化活泼型 ========== -->
+  <div class="col s2">
+    <h2>🎮 游戏化活泼型</h2>
+    <div class="phone">
+      <div class="statusbar"><span class="time">9:41</span><span class="icons">●●●●○ ▮▮▮▮</span></div>
+      <div class="s2-page">
+        <div class="s2-header">
+          <div class="title">⚔️ 行情</div>
+          <div class="level">🏆 Lv.12 交易学徒</div>
+        </div>
+
+        <div class="s2-xp-bar"><div class="s2-xp-fill"></div></div>
+
+        <div class="s2-card">
+          <div class="icon">贵州</div>
+          <div class="info">
+            <div class="symbol">600519 贵州茅台</div>
+            <div class="name">白酒龙头 · 市值第一</div>
+          </div>
+          <span class="streak">🔥 3连涨</span>
+          <div class="price-col">
+            <div class="price">¥1,682.50</div>
+            <div class="change">▲ +2.35%</div>
+          </div>
+        </div>
+
+        <div class="s2-card">
+          <div class="icon">宁德</div>
+          <div class="info">
+            <div class="symbol">300750 宁德时代</div>
+            <div class="name">新能源电池 · 创业板</div>
+          </div>
+          <div class="price-col">
+            <div class="price">¥208.40</div>
+            <div class="change" style="color:#f87171;background:rgba(248,113,113,0.12);">▼ -1.22%</div>
+          </div>
+        </div>
+
+        <div class="s2-card">
+          <div class="icon">五粮</div>
+          <div class="info">
+            <div class="symbol">000858 五粮液</div>
+            <div class="name">白酒 · 深市</div>
+          </div>
+          <div class="price-col">
+            <div class="price">¥146.80</div>
+            <div class="change">▲ +0.88%</div>
+          </div>
+        </div>
+
+        <div class="s2-bottom">
+          <div class="s2-tab active">⭐ 关注</div>
+          <div class="s2-tab">📦 持仓</div>
+          <div class="s2-tab">🔥 热门</div>
+        </div>
+
+        <div class="s2-quest">
+          <div class="top"><span>🎯 每日任务</span><span>2/3 完成</span></div>
+          <div class="q-title">完成 3 笔交易</div>
+          <div class="reward">🎁 奖励：+50 XP · 解锁"交易新星"徽章</div>
+        </div>
+        <span class="tag tag-game">等级系统 · 经验条 · 任务奖励 · 连涨标记</span>
+        <div class="feature-list">✦ 暗色游戏风<br>✦ 等级和经验值<br>✦ 每日任务<br>✦ 即时成就反馈</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== STYLE 3: 极简清新型 ========== -->
+  <div class="col s3">
+    <h2>🌿 极简清新型</h2>
+    <div class="phone">
+      <div class="statusbar"><span class="time">9:41</span><span class="icons">●●●●○ ▮▮▮▮</span></div>
+      <div class="s3-page">
+        <div class="s3-header">
+          <div class="title">行情</div>
+          <div class="market-state">A股 · 交易中</div>
+        </div>
+
+        <div class="s3-card">
+          <div class="icon">贵州</div>
+          <div class="info">
+            <div class="symbol">600519 贵州茅台</div>
+            <div class="name">白酒龙头</div>
+          </div>
+          <div class="price-col">
+            <div class="price">¥1,682.50</div>
+            <div class="change">+2.35%</div>
+          </div>
+        </div>
+
+        <div class="s3-card">
+          <div class="icon">宁德</div>
+          <div class="info">
+            <div class="symbol">300750 宁德时代</div>
+            <div class="name">新能源电池</div>
+          </div>
+          <div class="price-col">
+            <div class="price">¥208.40</div>
+            <div class="change" style="color:#ef4444;">-1.22%</div>
+          </div>
+        </div>
+
+        <div class="s3-card">
+          <div class="icon">五粮</div>
+          <div class="info">
+            <div class="symbol">000858 五粮液</div>
+            <div class="name">白酒</div>
+          </div>
+          <div class="price-col">
+            <div class="price">¥146.80</div>
+            <div class="change">+0.88%</div>
+          </div>
+        </div>
+
+        <div class="s3-bottom">
+          <div class="s3-tab active">关注</div>
+          <div class="s3-tab">持仓</div>
+          <div class="s3-tab">热门</div>
+        </div>
+
+        <div class="s3-insight">
+          <div class="label">市场洞察</div>
+          <div class="text">白酒板块整体走强。贵州茅台今日放量突破 5 日均线，短期趋势向好。</div>
+        </div>
+        <span class="tag tag-clean">留白呼吸 · 轻量字体 · 低饱和 · 克制的装饰</span>
+        <div class="feature-list">✦ 大量留白<br>✦ 细字体层级<br>✦ 最小化色彩<br>✦ 安静专注感</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="text-align:center; margin-top:48px; color:#777; font-size:13px;">
+  <p>三种风格共享相同的布局结构（Header → Cards → Tabs → Tip/Insight），仅在视觉语言上有所区别。</p>
+  <p style="margin-top:4px;">可以根据偏好混合搭配：例如温暖型的配色 + 游戏型的动效 + 极简型的排版。</p>
+</div>
+
+</body>
+</html>

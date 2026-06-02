@@ -1,0 +1,52 @@
+<h2>M7 功能候选 — 先做哪个？</h2>
+<p class="subtitle">PWA 离线模式已跳过。下面 5 项是 M7 里程碑的待办功能，建议按对用户价值排序推进。</p>
+
+<div class="options" data-multiselect>
+  <div class="option" data-choice="achievements" onclick="toggleSelect(this)">
+    <div class="letter">🥇</div>
+    <div class="content">
+      <h3>成就勋章系统</h3>
+      <p>15 枚勋章（MVP 做 8-10 枚）。例如"首次交易""连续盈利""日交易 10 笔"等。出现在个人中心，激励用户持续使用。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="tutorial" onclick="toggleSelect(this)">
+    <div class="letter">📖</div>
+    <div class="content">
+      <h3>教程系统</h3>
+      <p>7 章逐步教程，覆盖"什么是A股""如何看K线""限价vs市价"等。首次使用引导，可随时从个人中心进入。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="share" onclick="toggleSelect(this)">
+    <div class="letter">📤</div>
+    <div class="content">
+      <h3>战绩分享图导出</h3>
+      <p>RepaintBoundary + share_plus 生成收益曲线+关键数据的美观分享卡片，可分享到微信/朋友圈。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="emotion" onclick="toggleSelect(this)">
+    <div class="letter">🎭</div>
+    <div class="content">
+      <h3>情绪仪表盘</h3>
+      <p>"佛系 / 吃瓜 / 上头"三档情绪标签，根据交易频率和盈亏自动判断，增加趣味性和自我觉察。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="assets" onclick="toggleSelect(this)">
+    <div class="letter">📊</div>
+    <div class="content">
+      <h3>资产页收尾</h3>
+      <p>完善当前资产 Tab：更好的持仓列表、资产分布饼图、历史净值曲线缩放等。</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>推荐顺序</h3>
+  <p>建议按 <strong>资产页收尾 → 成就勋章 → 教程系统 → 情绪仪表盘 → 分享图</strong> 的顺序推进：</p>
+  <ol>
+    <li><strong>资产页</strong> — 先完善用户每天都会看的核心页面</li>
+    <li><strong>成就勋章</strong> — 增加留存和激励，实现成本适中</li>
+    <li><strong>教程系统</strong> — 降低新手上手门槛</li>
+    <li><strong>情绪仪表盘</strong> — 趣味功能，轻量实现</li>
+    <li><strong>分享图</strong> — 依赖前面功能的 UI 就绪后再做</li>
+  </ol>
+</div>

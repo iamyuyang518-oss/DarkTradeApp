@@ -1,0 +1,50 @@
+<h2>登录后首页展示策略</h2>
+<p class="subtitle">目前行情页展示所有A股。登录后改为个性化展示，三种方案供选择。</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>自选股优先 Tab</h3>
+      <p>行情页顶部两个 Tab：<strong>"自选" | "全部A股"</strong>。登录后默认显示"自选"Tab，展示用户关注的股票。游客模式只显示"全部A股"。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>持仓+自选合并首页</h3>
+      <p>登录后在行情页顶部展示<strong>持仓股票（带数量/盈亏）</strong>，下方是自选关注列表，再下面可展开"浏览全部"。一个页面集中展示所有个人相关信息。</p>
+    </div>
+  </div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>自选股过滤 + 搜索</h3>
+      <p>保持当前列表结构，但登录后默认<strong>只显示自选股</strong>。顶部搜索栏支持搜索全部A股代码/名称，搜到后可一键加自选。简洁不增加Tab层级。</p>
+    </div>
+  </div>
+</div>
+
+<div class="mockup" style="margin-top: 20px;">
+  <div class="mockup-header">方案 A 预览 — 自选/全部 Tab 切换</div>
+  <div class="mockup-body">
+    <div style="display:flex;gap:0;border-bottom:2px solid #e0d5c0;margin-bottom:12px;">
+      <div style="padding:8px 20px;background:#FFFBF5;border-bottom:2px solid #D4A853;color:#D4A853;font-weight:600;margin-bottom:-2px;">⭐ 自选 (3)</div>
+      <div style="padding:8px 20px;color:#999;">全部A股</div>
+    </div>
+    <div style="border:1px solid #eee;border-radius:8px;padding:8px 12px;margin:4px 0;">贵州茅台 600519 <span style="color:#e05252;float:right;">1,825.60 <span style="font-size:11px;">-1.2%</span></span></div>
+    <div style="border:1px solid #eee;border-radius:8px;padding:8px 12px;margin:4px 0;">宁德时代 300750 <span style="color:#4caf50;float:right;">218.50 <span style="font-size:11px;">+2.8%</span></span></div>
+    <div style="border:1px solid #eee;border-radius:8px;padding:8px 12px;margin:4px 0;">比亚迪 002594 <span style="color:#4caf50;float:right;">287.30 <span style="font-size:11px;">+0.6%</span></span></div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 20px;">
+  <h3>新增数据结构</h3>
+  <p>无论选哪个方案，都需要新增 <strong>Watchlist（自选股）</strong> 系统：</p>
+  <ul>
+    <li><code>WatchlistRepository</code> — 存储用户关注的股票代码列表</li>
+    <li>Hive 本地 + Supabase 远程双存储</li>
+    <li>⭐ 星标按钮 — 股票列表每行右侧/长按加自选</li>
+    <li>游客模式：自选存 Hive 本地，登录后可迁移</li>
+  </ul>
+</div>

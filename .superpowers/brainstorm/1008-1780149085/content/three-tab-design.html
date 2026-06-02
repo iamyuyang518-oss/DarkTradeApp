@@ -1,0 +1,113 @@
+<h2>行情页三 Tab 设计</h2>
+<p class="subtitle">登录后显示：关注 | 持仓 | 热门。游客模式：持仓为空引导登录，关注存本地Hive。</p>
+
+<!-- Tab bar mockup -->
+<div class="mockup" style="margin-bottom: 20px;">
+  <div class="mockup-header">行情页顶部 Tab 栏</div>
+  <div class="mockup-body">
+    <div style="display:flex;gap:0;border-bottom:1px solid #e0d5c0;background:#FFFBF5;">
+      <div style="flex:1;text-align:center;padding:10px 0;color:#D4A853;font-weight:600;border-bottom:2px solid #D4A853;">⭐ 关注</div>
+      <div style="flex:1;text-align:center;padding:10px 0;color:#888;">📦 持仓</div>
+      <div style="flex:1;text-align:center;padding:10px 0;color:#888;">🔥 热门</div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab 1: 关注 -->
+<div class="section">
+  <h3>Tab 1 — ⭐ 关注（自选股）</h3>
+  <p>用户主动收藏的股票。每行右侧有实心星标，点击取消关注。空状态引导"去热门Tab发现股票"。</p>
+  <div style="background:#FFFBF5;border:1px solid #eee;border-radius:8px;padding:4px 0;">
+    <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f5f0e5;">
+      <div><strong>贵州茅台</strong> <span style="color:#999;font-size:12px;">600519</span></div>
+      <div style="text-align:right;"><span style="font-weight:600;">1,825.60</span><br><span style="color:#e05252;font-size:12px;">-1.2%</span></div>
+      <div style="color:#D4A853;font-size:18px;margin-left:10px;">★</div>
+    </div>
+    <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f5f0e5;">
+      <div><strong>宁德时代</strong> <span style="color:#999;font-size:12px;">300750</span></div>
+      <div style="text-align:right;"><span style="font-weight:600;">218.50</span><br><span style="color:#4caf50;font-size:12px;">+2.8%</span></div>
+      <div style="color:#D4A853;font-size:18px;margin-left:10px;">★</div>
+    </div>
+    <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+      <div><strong>比亚迪</strong> <span style="color:#999;font-size:12px;">002594</span></div>
+      <div style="text-align:right;"><span style="font-weight:600;">287.30</span><br><span style="color:#4caf50;font-size:12px;">+0.6%</span></div>
+      <div style="color:#D4A853;font-size:18px;margin-left:10px;">★</div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab 2: 持仓 -->
+<div class="section">
+  <h3>Tab 2 — 📦 持仓</h3>
+  <p>从 PortfolioService 读取当前持仓。每行显示持有数量、成本价、盈亏。空状态显示"还没有持仓，去交易吧"。</p>
+  <div style="background:#FFFBF5;border:1px solid #eee;border-radius:8px;padding:4px 0;">
+    <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f5f0e5;">
+      <div>
+        <div><strong>贵州茅台</strong> <span style="color:#999;font-size:12px;">600519</span></div>
+        <div style="font-size:11px;color:#999;">持有 100股 · 成本 1,800.00</div>
+      </div>
+      <div style="text-align:right;"><span style="font-weight:600;">1,825.60</span><br><span style="color:#4caf50;font-size:12px;">+2,560.00 (+1.4%)</span></div>
+    </div>
+    <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div><strong>宁德时代</strong> <span style="color:#999;font-size:12px;">300750</span></div>
+        <div style="font-size:11px;color:#999;">持有 200股 · 成本 212.00</div>
+      </div>
+      <div style="text-align:right;"><span style="font-weight:600;">218.50</span><br><span style="color:#4caf50;font-size:12px;">+1,300.00 (+3.1%)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab 3: 热门 -->
+<div class="section">
+  <h3>Tab 3 — 🔥 热门</h3>
+  <p>东方财富API数据按当日涨幅/成交量综合排序，取Top 20。每行右侧空心星标 ☆ 可加关注。游客模式默认显示此Tab。</p>
+  <div style="background:#FFFBF5;border:1px solid #eee;border-radius:8px;padding:4px 0;">
+    <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f5f0e5;">
+      <div><strong>赛力斯</strong> <span style="color:#999;font-size:12px;">601127</span></div>
+      <div style="text-align:right;"><span style="font-weight:600;">98.50</span><br><span style="color:#e05252;font-size:12px;">+8.3% 🔥</span></div>
+      <div style="color:#ccc;font-size:18px;margin-left:10px;">☆</div>
+    </div>
+    <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f5f0e5;">
+      <div><strong>中际旭创</strong> <span style="color:#999;font-size:12px;">300308</span></div>
+      <div style="text-align:right;"><span style="font-weight:600;">156.20</span><br><span style="color:#e05252;font-size:12px;">+6.7%</span></div>
+      <div style="color:#ccc;font-size:18px;margin-left:10px;">☆</div>
+    </div>
+    <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+      <div><strong>昆仑万维</strong> <span style="color:#999;font-size:12px;">300418</span></div>
+      <div style="text-align:right;"><span style="font-weight:600;">42.80</span><br><span style="color:#4caf50;font-size:12px;">-3.1%</span></div>
+      <div style="color:#ccc;font-size:18px;margin-left:10px;">☆</div>
+    </div>
+  </div>
+</div>
+
+<!-- Data sources -->
+<div class="section" style="margin-top: 20px;">
+  <h3>各 Tab 数据来源</h3>
+  <table style="width:100%;border-collapse:collapse;">
+    <tr style="border-bottom:1px solid #eee;">
+      <th style="text-align:left;padding:8px;">Tab</th>
+      <th style="text-align:left;padding:8px;">数据源</th>
+      <th style="text-align:left;padding:8px;">存储</th>
+      <th style="text-align:left;padding:8px;">游客</th>
+    </tr>
+    <tr style="border-bottom:1px solid #eee;">
+      <td style="padding:8px;">⭐ 关注</td>
+      <td style="padding:8px;">WatchlistRepository</td>
+      <td style="padding:8px;">Hive + Supabase</td>
+      <td style="padding:8px;">Hive本地</td>
+    </tr>
+    <tr style="border-bottom:1px solid #eee;">
+      <td style="padding:8px;">📦 持仓</td>
+      <td style="padding:8px;">PortfolioService（已有）</td>
+      <td style="padding:8px;">Hive + Supabase</td>
+      <td style="padding:8px;">Hive本地</td>
+    </tr>
+    <tr>
+      <td style="padding:8px;">🔥 热门</td>
+      <td style="padding:8px;">AShareService（已有）</td>
+      <td style="padding:8px;">内存</td>
+      <td style="padding:8px;">默认Tab</td>
+    </tr>
+  </table>
+</div>
